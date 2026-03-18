@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Driver Pro</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js"></script>
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <h1>Welcome to Driver Pro</h1>
+    <p>This application supports real-time database, offline sync, and PWA capabilities.</p>
+    <script src="firebase-config.js"></script>
+    <script>
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database(app);
+
+        // Code for real-time syncing and offline functionality
+        // ...
+    </script>
+</body>
+</html>
