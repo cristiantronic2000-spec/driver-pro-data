@@ -1,1 +1,47 @@
-<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>PWA Example</title>\n    <link rel="manifest" href="manifest.json">\n    <link rel="stylesheet" href="styles.css">\n    <script>\n        if ('serviceWorker' in navigator) {\n            window.addEventListener('load', function() {\n                navigator.serviceWorker.register('service-worker.js').then(function(registration) {\n                    console.log('Service Worker registered with scope:', registration.scope);\n                }, function(error) {\n                    console.log('Service Worker registration failed:', error);\n                });\n            });\n        }\n    <\/script>\n</head>\n<body>\n    <header>\n        <h1>Welcome to PWA for Data Management</h1>\n    </header>\n    <main>\n        <section id="data-display">\n            <h2>Data Display Section</h2>\n            <div id="data-container">\n                <!-- Data will be dynamically inserted here -->\n            </div>\n        </section>\n        <section id="data-management">\n            <h2>Data Management Section</h2>\n            <form id="data-form">\n                <input type="text" id="data-input" placeholder="Enter data here" required>\n                <button type="submit">Submit</button>\n            </form>\n        </section>\n    </main>\n    <footer>\n        <p>&copy; 2026 Data Management PWA</p>\n    </footer>\n</body>\n</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Driver Pro PWA</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Driver Pro: Uber Earnings Tracker</h1>
+    <canvas id="myChart" width="400" height="400"></canvas>
+    <script>
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                datasets: [{
+                    label: 'Earnings',
+                    data: [12, 19, 3, 5, 2, 3],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(function() {
+                    console.log('Service Worker Registered');
+                });
+        }
+    </script>
+</body>
+</html>
