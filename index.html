@@ -13,6 +13,8 @@
 <link rel="apple-touch-icon" href="favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--black:#000;--white:#fff;--g50:#f7f7f7;--g100:#f0f0f0;--g200:#e0e0e0;--g400:#9e9e9e;--g600:#616161;--blue:#276EF1;--green:#00A651;--red:#E11900;--amber:#FFC043;--font:'Figtree',sans-serif;--nav-h:64px;--safe:env(safe-area-inset-bottom,0px)}
@@ -317,10 +319,14 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
   </div>
   <div id="gsub-combustible" style="display:none">
     <div style="height:12px"></div>
-    <div class="date-picker-wrap" style="justify-content:space-between">
-      <input type="date" class="date-pick-btn" id="comb-desde" style="flex:1;margin-right:6px" onchange="renderCombustible()">
-      <input type="date" class="date-pick-btn" id="comb-hasta" style="flex:1;margin-right:6px" onchange="renderCombustible()">
-      <button class="date-today-btn" onclick="resetCombFiltro()">7 días</button>
+    <div class="date-picker-wrap">
+      <input type="date" class="date-pick-btn" id="comb-desde" onchange="renderCombustible()" style="flex:1;margin-right:6px">
+      <input type="date" class="date-pick-btn" id="comb-hasta" onchange="renderCombustible()" style="flex:1;margin-right:6px">
+    </div>
+    <div style="display:flex;gap:6px;padding:0 16px 8px">
+      <button class="date-today-btn" style="flex:1;background:var(--g100);color:var(--black)" onclick="setCombRange(7)">7 días</button>
+      <button class="date-today-btn" style="flex:1;background:var(--g100);color:var(--black)" onclick="setCombRange(30)">30 días</button>
+      <button class="date-today-btn" style="flex:1;background:var(--g100);color:var(--black)" onclick="setCombRange(0)">Todo</button>
     </div>
     <div class="mgrid">
       <div class="mbox"><div class="mlbl">Gastado total</div><div class="mval cr" id="comb-total">$0</div><div class="msub">en bencina</div></div>
@@ -358,38 +364,8 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 
 ```
 <!-- MAPA GENERAL con zonas clicables posicionadas sobre los nombres -->
-<div style="margin:0 16px;border-radius:14px;overflow:hidden;border:1px solid var(--g200);position:relative;" id="map-general-wrap">
-  <img src="IMG_4628.jpeg"
-       onerror="this.src='';this.parentElement.style.background='#2d3748'"
-       style="width:100%;display:block;"
-       alt="Mapa zona de trabajo">
-
-  <!-- Zonas SVG posicionadas con % sobre la imagen real -->
-  <!-- El Monte: arriba izquierda ~18%x, 8%y -->
-  <div data-zone="El Monte"   id="zbox-El Monte"
-       onclick="selectZone('El Monte')"
-       style="position:absolute;left:6%;top:5%;width:24%;height:22%;cursor:pointer;border-radius:8px;border:2px solid transparent;transition:all .2s;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px">
-  </div>
-  <!-- Talagante: centro ~38%x, 22%y -->
-  <div data-zone="Talagante"  id="zbox-Talagante"
-       onclick="selectZone('Talagante')"
-       style="position:absolute;left:28%;top:15%;width:32%;height:26%;cursor:pointer;border-radius:8px;border:2px solid transparent;transition:all .2s">
-  </div>
-  <!-- Peñaflor: arriba derecha ~72%x, 12%y -->
-  <div data-zone="Peñaflor"   id="zbox-Peñaflor"
-       onclick="selectZone('Peñaflor')"
-       style="position:absolute;left:68%;top:8%;width:28%;height:26%;cursor:pointer;border-radius:8px;border:2px solid transparent;transition:all .2s">
-  </div>
-  <!-- Isla de Maipo: abajo izquierda ~8%x, 62%y -->
-  <div data-zone="Isla de Maipo" id="zbox-Isla de Maipo"
-       onclick="selectZone('Isla de Maipo')"
-       style="position:absolute;left:2%;top:58%;width:34%;height:28%;cursor:pointer;border-radius:8px;border:2px solid transparent;transition:all .2s">
-  </div>
-  <!-- Lonquén: centro-bajo ~40%x, 48%y -->
-  <div data-zone="Lonquén"    id="zbox-Lonquén"
-       onclick="selectZone('Lonquén')"
-       style="position:absolute;left:30%;top:44%;width:36%;height:28%;cursor:pointer;border-radius:8px;border:2px solid transparent;transition:all .2s">
-  </div>
+<div style="margin:0 16px;border-radius:14px;overflow:hidden;border:1px solid var(--g200);">
+  <div id="leaflet-map" style="height:280px;width:100%;"></div>
 </div>
 <div style="text-align:center;font-size:11px;color:var(--g400);padding:5px 0 2px">Toca una zona para ver detalle y notas</div>
 
@@ -716,11 +692,11 @@ function initDatePickers(){
     if(el){el.value=t;el.max=t;}
   });
   // Combustible: últimos 7 días por defecto
-  const d7=new Date();d7.setDate(d7.getDate()-6);
-  const desdeEl=document.getElementById('comb-desde');
-  const hastaEl=document.getElementById('comb-hasta');
-  if(desdeEl) desdeEl.value=d7.toISOString().slice(0,10);
-  if(hastaEl){hastaEl.value=t;hastaEl.max=t;}
+  const d7c=new Date();d7c.setDate(d7c.getDate()-6);
+  const desdeElC=document.getElementById('comb-desde');
+  const hastaElC=document.getElementById('comb-hasta');
+  if(desdeElC){desdeElC.value=d7c.toISOString().slice(0,10);desdeElC.max=t;}
+  if(hastaElC){hastaElC.value=t;hastaElC.max=t;}
 }
 
 function startListeners(){
@@ -803,7 +779,7 @@ window.showTab=function(id){
   if(id==='inicio') renderInicio();
   if(id==='viajes') renderVHoy();
   if(id==='ganancias') renderGan();
-  if(id==='mapa'){renderMapNotes();setTimeout(applyZoneColors,100);}
+  if(id==='mapa'){renderMapNotes();setTimeout(()=>{initLeafletMap();applyZoneColors();},150);}
   if(id==='mas'){renderCal();renderTurnos();renderCierreInfo();renderCierres();}
   const fbs=document.getElementById('fb-status');if(fbs) fbs.textContent=navigator.onLine?'🟢 Conectado a Firebase':'🔴 Offline';
 };
@@ -825,7 +801,7 @@ window.stab=function(prefix,sub,btn){
   if(prefix==='g'&&sub==='combustible'){resetCombFiltro();}
   if(prefix==='v'&&sub==='hoy') renderVHoy();
   if(prefix==='v'&&sub==='historial') renderVHist();
-  if(prefix==='m'&&sub==='mapa') setTimeout(applyZoneColors,80);
+  if(prefix==='m'&&sub==='mapa') setTimeout(()=>{initLeafletMap();applyZoneColors();},100);
   if(prefix==='m'&&sub==='notas') renderMapNotes();
   if(prefix==='x'&&sub==='turnos'){renderCal();renderTurnos();}
   if(prefix==='x'&&sub==='cierre') renderCierreInfo();
@@ -1155,14 +1131,14 @@ function renderInicio(){
   const hoy=vByDate(today());
   const bruto=hoy.reduce((a,v)=>a+v.monto,0);
   const cierre=CIERRES[today()]||{};
-  // Combustible: si hay cierre real usar ese, si no estimar desde kv+kj
+  // Combustible: solo si hay viajes hoy
   const tieneCierreReal=cierre.km>0;
-  const combCosto=tieneCierreReal ? combustibleReal(today()) : combustibleEstimado(hoy);
-  const kmMostrar=tieneCierreReal ? cierre.km : kmDesdeViajes(hoy);
-  // Neto = bruto - comisión - fondo - combustible (estimado o real)
-  const netoBase=calcNeto(hoy, false);
-  const neto=netoBase-combCosto;
-  const netoLabel=tieneCierreReal ? 'Neto real' : 'Neto est.';
+  const combCosto=(hoy.length>0)?(tieneCierreReal?combustibleReal(today()):combustibleEstimado(hoy)):0;
+  const kmMostrar=tieneCierreReal?cierre.km:kmDesdeViajes(hoy);
+  const netoBase=calcNeto(hoy,false);
+  // Si no hay viajes hoy → neto = 0, no negativo
+  const neto=(hoy.length>0)?(netoBase-combCosto):0;
+  const netoLabel=tieneCierreReal?'Neto real':'Neto est.';
   document.getElementById('h-total').textContent=CLP(bruto);
   document.getElementById('h-viajes').textContent=hoy.length;
   document.getElementById('h-km').textContent=kmMostrar.toFixed(0)+' km';
@@ -1341,16 +1317,23 @@ function renderPagos(){
 }
 
 // ── PDFs RENDER ───────────────────────────────────────────────────────────
-function resetCombFiltro(){
+function setCombRange(dias){
   const t=today();
-  const d7=new Date();d7.setDate(d7.getDate()-6);
-  const desde=d7.toISOString().slice(0,10);
   const desdeEl=document.getElementById('comb-desde');
   const hastaEl=document.getElementById('comb-hasta');
-  if(desdeEl) desdeEl.value=desde;
   if(hastaEl) hastaEl.value=t;
+  if(dias===0){
+    // Todo el historial
+    if(desdeEl) desdeEl.value='';
+  } else {
+    const d=new Date();d.setDate(d.getDate()-(dias-1));
+    if(desdeEl) desdeEl.value=d.toISOString().slice(0,10);
+  }
+  // Resaltar botón activo
+  document.querySelectorAll('#comb-range-btns button').forEach(b=>b.classList.remove('on'));
   renderCombustible();
 }
+function resetCombFiltro(){setCombRange(7);}
 
 function renderCombustible(){
   // Obtener rango de fechas del filtro
@@ -1382,7 +1365,7 @@ function renderCombustible(){
   // Lista por día
   const el=document.getElementById('comb-list');
   if(!allCierres.length){
-    el.innerHTML='<div class="empty"><div class="etxt">Sin cierres registrados</div><div class="esub">Ve a Más → Sync → Cargar datos históricos</div></div>';
+    el.innerHTML='<div class="empty"><div class="etxt">Sin datos en este período</div><div class="esub">Prueba seleccionar un rango más amplio o toca "Todo"</div></div>';
     document.getElementById('comb-total').textContent='$0';
     document.getElementById('comb-km').textContent='0 km';
     document.getElementById('comb-rend').textContent=CONFIG.rend+' km/L';
@@ -1521,26 +1504,69 @@ window.calClick=function(ds){
 
 // ── MAPA / ZONAS ──────────────────────────────────────────────────────────
 const ZONE_COLOR_MAP={none:'rgba(0,0,0,0)',green:'rgba(0,166,81,0.35)',yellow:'rgba(255,192,67,0.5)',red:'rgba(225,25,0,0.3)'};
-const ZONE_BORDER_MAP={none:'rgba(255,255,255,0.15)',green:'rgba(0,166,81,0.9)',yellow:'rgba(255,192,67,1)',red:'rgba(225,25,0,0.9)'};
+const ZONE_FILL={none:'#444',green:'#00A651',yellow:'#FFC043',red:'#E11900'};
 const ZONE_IMGS={'El Monte':'IMG_4631.jpeg','Talagante':'IMG_4630.jpeg','Peñaflor':'IMG_4632.jpeg','Isla de Maipo':'IMG_4629.jpeg','Lonquén':''};
 
+// Polígonos aproximados de cada comuna (lat/lng)
+const ZONE_POLYGONS={
+  'El Monte':     [[-33.66,-71.07],[-33.64,-70.99],[-33.70,-70.99],[-33.72,-71.07]],
+  'Talagante':    [[-33.64,-71.00],[-33.63,-70.92],[-33.69,-70.92],[-33.70,-71.00]],
+  'Peñaflor':     [[-33.60,-70.92],[-33.60,-70.84],[-33.66,-70.84],[-33.66,-70.92]],
+  'Isla de Maipo':[[-33.72,-71.07],[-33.70,-70.99],[-33.80,-70.99],[-33.82,-71.07]],
+  'Lonquén':      [[-33.70,-71.00],[-33.69,-70.92],[-33.76,-70.92],[-33.78,-71.00]],
+};
+
+let leafletMap=null;
+let leafletLayers={};
+
+function initLeafletMap(){
+  if(leafletMap) return;
+  leafletMap=L.map('leaflet-map',{
+    center:[-33.72,-71.0],zoom:11,
+    zoomControl:true,attributionControl:false
+  });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+    maxZoom:19,subdomains:'abcd'
+  }).addTo(leafletMap);
+  // Dibujar polígonos
+  Object.entries(ZONE_POLYGONS).forEach(([name,coords])=>{
+    const z=ZONAS[name]||{color:'none'};
+    const color=ZONE_FILL[z.color]||'#888';
+    const poly=L.polygon(coords,{
+      color:'#fff',weight:1.5,opacity:0.6,
+      fillColor:color,fillOpacity:z.color==='none'?0.15:0.45
+    }).addTo(leafletMap);
+    // Label centrado
+    const center=poly.getBounds().getCenter();
+    const icon=L.divIcon({
+      html:'<div style="color:#fff;font-size:12px;font-weight:800;font-family:Figtree,sans-serif;text-shadow:0 1px 3px rgba(0,0,0,.8);white-space:nowrap">'+name+'</div>',
+      className:'',iconAnchor:[0,0]
+    });
+    L.marker(center,{icon,interactive:false}).addTo(leafletMap);
+    poly.on('click',()=>selectZone(name));
+    leafletLayers[name]=poly;
+  });
+}
+
 function applyZoneColors(){
-  ZONE_NAMES.forEach(zn=>{
-    const z=ZONAS[zn]||{color:'none'};
-    const el=document.getElementById('zbox-'+zn);
-    if(!el) return;
-    el.style.background=ZONE_COLOR_MAP[z.color]||ZONE_COLOR_MAP.none;
-    el.style.borderColor=z.color!=='none'?ZONE_BORDER_MAP[z.color]:'rgba(255,255,255,0.15)';
+  if(!leafletMap){
+    // Si el mapa no está listo, inicializar cuando se abra la pestaña
+    return;
+  }
+  Object.entries(ZONE_POLYGONS).forEach(([name])=>{
+    const z=ZONAS[name]||{color:'none'};
+    const color=ZONE_FILL[z.color]||'#888';
+    const poly=leafletLayers[name];
+    if(poly) poly.setStyle({fillColor:color,fillOpacity:z.color==='none'?0.15:0.45});
   });
 }
 
 window.selectZone=function(zoneName){
   selCell={name:zoneName};
   const z=ZONAS[zoneName]||{};
-  // Highlight zona seleccionada
-  ZONE_NAMES.forEach(zn=>{
-    const el=document.getElementById('zbox-'+zn);
-    if(el) el.style.outline=zn===zoneName?'3px solid #fff':'none';
+  // Highlight en mapa
+  Object.entries(leafletLayers).forEach(([n,p])=>{
+    p.setStyle({weight:n===zoneName?3:1.5,opacity:n===zoneName?1:0.6});
   });
   // Mostrar panel detalle
   const panel=document.getElementById('zone-detail-panel');
@@ -1550,23 +1576,14 @@ window.selectZone=function(zoneName){
   // Imagen detallada
   const imgEl=document.getElementById('zone-detail-img');
   const imgSrc=ZONE_IMGS[zoneName];
-  if(imgSrc){
-    imgEl.src=imgSrc;
-    imgEl.parentElement.style.display='block';
-  } else {
-    imgEl.parentElement.style.display='none';
-  }
-  // Notas
-  renderZoneDetailNotes(zoneName, z);
-  // Scroll al panel
-  setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+  if(imgSrc){imgEl.src=imgSrc;imgEl.parentElement.style.display='block';}
+  else {imgEl.parentElement.style.display='none';}
+  renderZoneDetailNotes(zoneName,z);
+  setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'nearest'}),150);
 };
 
 window.clearZoneSelection=function(){
-  ZONE_NAMES.forEach(zn=>{
-    const el=document.getElementById('zbox-'+zn);
-    if(el) el.style.outline='none';
-  });
+  Object.values(leafletLayers).forEach(p=>p.setStyle({weight:1.5,opacity:0.6}));
   document.getElementById('zone-detail-panel').style.display='none';
   selCell=null;
 };
