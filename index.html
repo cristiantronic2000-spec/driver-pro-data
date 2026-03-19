@@ -312,6 +312,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       <div class="mbox"><div class="mlbl">Km recorridos</div><div class="mval" id="comb-km">0 km</div><div class="msub">días con cierre</div></div>
       <div class="mbox"><div class="mlbl">Rendimiento prom.</div><div class="mval" id="comb-rend">0 km/L</div><div class="msub">promedio</div></div>
       <div class="mbox"><div class="mlbl">Costo por km</div><div class="mval" id="comb-xkm">$—</div><div class="msub">bencina/km</div></div>
+      <div class="mbox"><div class="mlbl">Litros consumidos</div><div class="mval" id="comb-litros">0 L</div><div class="msub">km÷rendimiento</div></div>
     </div>
     <div class="slbl">Detalle por día</div>
     <div id="comb-list"></div>
@@ -981,10 +982,20 @@ window.confirmDel=function(tipo,fid,label){
 };
 
 // ── CALCS ─────────────────────────────────────────────────────────────────
+function litrosConsumidos(c){
+  // Litros = km recorridos / rendimiento
+  const km=c.km||0;
+  const rend=c.rend||CONFIG.rend||16;
+  return rend>0 ? km/rend : 0;
+}
+function costoBencina(c){
+  // $ = (km / rendimiento) * precio_litro
+  return litrosConsumidos(c) * (c.pli||CONFIG.bencina);
+}
 function calcBencina(fechas){
-  // Suma el costo de bencina de los cierres que correspondan al período
-  if(!fechas||fechas.length===0) return Object.values(CIERRES).reduce((a,c)=>a+((c.lit||0)*(c.pli||CONFIG.bencina)),0);
-  return fechas.reduce((a,f)=>{const c=CIERRES[f]||{};return a+((c.lit||0)*(c.pli||CONFIG.bencina));},0);
+  // Suma el costo calculado de los cierres del período
+  if(!fechas||fechas.length===0) return Object.values(CIERRES).reduce((a,c)=>a+costoBencina(c),0);
+  return fechas.reduce((a,f)=>{const c=CIERRES[f]||{};return a+costoBencina(c);},0);
 }
 function calcNeto(viajes){
   const b=viajes.reduce((a,v)=>a+v.monto,0);
@@ -1132,39 +1143,46 @@ function renderPagos(){
 
 // ── PDFs RENDER ───────────────────────────────────────────────────────────
 function renderCombustible(){
-  // Totales
   const allCierres=Object.entries(CIERRES).sort((a,b)=>b[0].localeCompare(a[0]));
-  let totalBen=0,totalKm=0,rendSum=0,rendCount=0;
+  let totalCosto=0,totalKm=0,totalLitros=0,rendSum=0,rendCount=0;
   allCierres.forEach(([f,c])=>{
-    const cost=(c.lit||0)*(c.pli||CONFIG.bencina);
-    totalBen+=cost;
+    const lits=litrosConsumidos(c);
+    const costo=costoBencina(c);
+    totalCosto+=costo;
     totalKm+=(c.km||0);
+    totalLitros+=lits;
     if(c.rend&&c.rend>0){rendSum+=c.rend;rendCount++;}
   });
   const rendProm=rendCount>0?(rendSum/rendCount):CONFIG.rend;
-  const costXkm=totalKm>0?totalBen/totalKm:0;
-  document.getElementById('comb-total').textContent=CLP(totalBen);
+  const costXkm=totalKm>0?totalCosto/totalKm:0;
+  document.getElementById('comb-total').textContent=CLP(totalCosto);
   document.getElementById('comb-km').textContent=totalKm+' km';
   document.getElementById('comb-rend').textContent=rendProm.toFixed(1)+' km/L';
   document.getElementById('comb-xkm').textContent=costXkm>0?CLP(costXkm)+'/km':'$—';
+  document.getElementById('comb-litros').textContent=totalLitros.toFixed(1)+' L';
   // Lista por día
   const el=document.getElementById('comb-list');
   if(!allCierres.length){el.innerHTML='<div class="empty"><div class="etxt">Sin cierres registrados</div></div>';return;}
-  el.innerHTML=allCierres.filter(([f,c])=>c.km||c.lit||c.hrs).map(([f,c])=>{
+  el.innerHTML=allCierres.filter(([f,c])=>c.km).map(([f,c])=>{
     const vs=vByDate(f);
     const bruto=vs.reduce((a,v)=>a+v.monto,0);
-    const benCost=(c.lit||0)*(c.pli||CONFIG.bencina);
+    const lits=litrosConsumidos(c);
+    const costo=costoBencina(c);
+    const km=c.km||0;
+    const rend=c.rend||CONFIG.rend;
+    const pli=c.pli||CONFIG.bencina;
     return `<div class="trow">
-      <div class="tico"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--g600);fill:none;stroke-width:1.8;stroke-linecap:round">
+      <div class="tico"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--g600);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round">
         <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
       </svg></div>
       <div class="tinfo">
         <div class="tname">${fmtD(f)}</div>
-        <div class="tmeta">${c.km||0} km · ${c.lit||0}L · ${c.rend||CONFIG.rend} km/L · ${c.hrs||0}h trabajadas</div>
+        <div class="tmeta">${km} km ÷ ${rend} km/L = ${lits.toFixed(2)}L × ${CLP(pli)}/L</div>
+        <div class="tmeta" style="margin-top:2px">${c.hrs||0}h trabajadas · ${CLP(bruto)} bruto</div>
       </div>
       <div style="text-align:right;flex-shrink:0;margin-left:8px">
-        <div style="font-size:13px;font-weight:800;color:var(--red)">${benCost>0?'-'+CLP(benCost):'$0'}</div>
-        <div style="font-size:11px;color:var(--g400)">${CLP(bruto)} bruto</div>
+        <div style="font-size:14px;font-weight:800;color:var(--red)">-${CLP(costo)}</div>
+        <div style="font-size:11px;color:var(--g400)">${lits.toFixed(2)} litros</div>
       </div>
     </div>`;
   }).join('');
