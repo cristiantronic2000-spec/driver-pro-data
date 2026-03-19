@@ -627,11 +627,11 @@ const SEED_VIAJES=[
   {id:'20260310001',fecha:'2026-03-10',hora:'14:23',monto:1852,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310002',fecha:'2026-03-10',hora:'14:40',monto:2427,kv:2,kj:3,tipo:'Prioridad UberX',pago:'ef'},{id:'20260310003',fecha:'2026-03-10',hora:'14:55',monto:1603,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310004',fecha:'2026-03-10',hora:'15:28',monto:6080,kv:4,kj:8,tipo:'UberX',pago:'ef'},{id:'20260310005',fecha:'2026-03-10',hora:'15:42',monto:1653,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310006',fecha:'2026-03-10',hora:'15:53',monto:1653,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310007',fecha:'2026-03-10',hora:'16:01',monto:1653,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310008',fecha:'2026-03-10',hora:'16:12',monto:1653,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310009',fecha:'2026-03-10',hora:'16:28',monto:1810,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310010',fecha:'2026-03-10',hora:'16:42',monto:2320,kv:2,kj:3,tipo:'UberX',pago:'ef'},{id:'20260310011',fecha:'2026-03-10',hora:'17:07',monto:1677,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310012',fecha:'2026-03-10',hora:'17:30',monto:1653,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310013',fecha:'2026-03-10',hora:'18:16',monto:3932,kv:3,kj:5,tipo:'UberX',pago:'ef'}
 ];
 const SEED_CIERRES=[
-  {fecha:'2026-03-10',km:0,  hrs:4,    rend:16,  lit:0,pli:1200},
-  {fecha:'2026-03-11',km:0,  hrs:5,    rend:16,  lit:0,pli:1200},
-  {fecha:'2026-03-13',km:0,  hrs:4,    rend:16,  lit:0,pli:1200},
-  {fecha:'2026-03-16',km:220,hrs:0,    rend:16.5,lit:0,pli:1200},
-  {fecha:'2026-03-17',km:181,hrs:8.17, rend:16,  lit:0,pli:1200}
+  {fecha:'2026-03-10',km:95, hrs:4,    rend:16,  pli:1200},
+  {fecha:'2026-03-11',km:130,hrs:5,    rend:16,  pli:1200},
+  {fecha:'2026-03-13',km:112,hrs:4,    rend:16,  pli:1200},
+  {fecha:'2026-03-16',km:220,hrs:8,    rend:16.5,pli:1200},
+  {fecha:'2026-03-17',km:181,hrs:8.17, rend:16,  pli:1200}
 ];
 const SEED_PDFS=[
   {periodo:'16 mar – 18 mar 2026',bruto:117357,flex:1380,sii:17113,pagado:102126,ef:47285,tr:54841,prio:2244,din:2750},
@@ -683,6 +683,9 @@ function startListeners(){
 
 function refreshAll(){
   renderInicio();renderVHoy();renderGan();renderCierreInfo();renderCierres();
+  // Actualizar combustible si el tab está visible
+  const combEl=document.getElementById('gsub-combustible');
+  if(combEl&&combEl.style.display!=='none') renderCombustible();
   const el=document.getElementById('fb-counts');if(el) el.textContent=VIAJES.length+' viajes · '+Object.keys(CIERRES).length+' cierres';
 }
 
@@ -983,14 +986,17 @@ window.confirmDel=function(tipo,fid,label){
 
 // ── CALCS ─────────────────────────────────────────────────────────────────
 function litrosConsumidos(c){
-  // Litros = km recorridos / rendimiento
-  const km=c.km||0;
-  const rend=c.rend||CONFIG.rend||16;
-  return rend>0 ? km/rend : 0;
+  // Litros consumidos = km recorridos / rendimiento (km/L)
+  const km=parseFloat(c.km)||0;
+  const rend=parseFloat(c.rend)||parseFloat(CONFIG.rend)||16;
+  if(km===0||rend===0) return 0;
+  return km/rend;
 }
 function costoBencina(c){
-  // $ = (km / rendimiento) * precio_litro
-  return litrosConsumidos(c) * (c.pli||CONFIG.bencina);
+  // Costo = (km / rendimiento) × precio por litro
+  const lits=litrosConsumidos(c);
+  const precio=parseFloat(c.pli)||parseFloat(CONFIG.bencina)||1200;
+  return lits * precio;
 }
 function calcBencina(fechas){
   // Suma el costo calculado de los cierres del período
@@ -1162,8 +1168,16 @@ function renderCombustible(){
   document.getElementById('comb-litros').textContent=totalLitros.toFixed(1)+' L';
   // Lista por día
   const el=document.getElementById('comb-list');
-  if(!allCierres.length){el.innerHTML='<div class="empty"><div class="etxt">Sin cierres registrados</div></div>';return;}
-  el.innerHTML=allCierres.filter(([f,c])=>c.km).map(([f,c])=>{
+  if(!allCierres.length){
+    el.innerHTML='<div class="empty"><div class="etxt">Sin cierres registrados</div><div class="esub">Ve a Más → Sync → Cargar datos históricos</div></div>';
+    document.getElementById('comb-total').textContent='$0';
+    document.getElementById('comb-km').textContent='0 km';
+    document.getElementById('comb-rend').textContent=CONFIG.rend+' km/L';
+    document.getElementById('comb-xkm').textContent='$—';
+    document.getElementById('comb-litros').textContent='0 L';
+    return;
+  }
+  el.innerHTML=allCierres.filter(([f,c])=>c.km||c.hrs).map(([f,c])=>{
     const vs=vByDate(f);
     const bruto=vs.reduce((a,v)=>a+v.monto,0);
     const lits=litrosConsumidos(c);
