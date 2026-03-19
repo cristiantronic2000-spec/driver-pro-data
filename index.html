@@ -1,1 +1,1890 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Driver Pro">
+<meta name="theme-color" content="#000000">
+<title>Driver Pro — Cristian</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--black:#000;--white:#fff;--g50:#f7f7f7;--g100:#f0f0f0;--g200:#e0e0e0;--g400:#9e9e9e;--g600:#616161;--blue:#276EF1;--green:#00A651;--red:#E11900;--amber:#FFC043;--font:'Figtree',sans-serif;--nav-h:64px;--safe:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);color:var(--black)}
+#app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;background:#fff;position:relative;overflow:hidden}
+.pages{flex:1;overflow:hidden;position:relative}
+.page{position:absolute;inset:0;overflow-y:auto;padding-bottom:calc(var(--nav-h) + var(--safe) + 20px);display:none;-webkit-overflow-scrolling:touch}
+.page.active{display:block}
+.nav{position:absolute;bottom:0;left:0;right:0;height:calc(var(--nav-h) + var(--safe));background:#fff;border-top:1px solid var(--g200);display:flex;align-items:flex-start;padding-top:8px;z-index:100}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;border:none;background:none;font-family:var(--font)}
+.ni svg{width:22px;height:22px;stroke:var(--g400);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:stroke .15s}
+.ni span{font-size:10px;color:var(--g400);font-weight:500;transition:color .15s}
+.ni.on svg{stroke:var(--black)}
+.ni.on span{color:var(--black);font-weight:700}
+.ph{padding:16px 20px 8px;background:#fff;position:sticky;top:0;z-index:10}
+.pt{font-size:28px;font-weight:900;letter-spacing:-.5px}
+.stabs{display:flex;border-bottom:1px solid var(--g200);background:#fff;position:sticky;top:0;z-index:9;overflow-x:auto;scrollbar-width:none}
+.stabs::-webkit-scrollbar{display:none}
+.stab{flex-shrink:0;padding:12px 16px;font-size:13px;font-weight:600;color:var(--g400);border:none;background:none;font-family:var(--font);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.stab.on{color:var(--black);border-bottom-color:var(--black)}
+.card{background:#fff;border:1px solid var(--g200);border-radius:16px;padding:16px;margin:0 16px 12px}
+.cflat{background:var(--g50);border-radius:16px;padding:16px;margin:0 16px 12px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;margin-bottom:12px}
+.mbox{background:var(--g50);border-radius:14px;padding:14px}
+.mlbl{font-size:11px;color:var(--g600);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.mval{font-size:22px;font-weight:900;letter-spacing:-.5px}
+.msub{font-size:11px;color:var(--g400);margin-top:2px}
+.cg{color:var(--green)}
+.cr{color:var(--red)}
+.slbl{font-size:13px;font-weight:700;color:var(--g600);text-transform:uppercase;letter-spacing:.05em;padding:0 20px;margin:16px 0 8px}
+.trow{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--g100)}
+.trow:last-child{border:none}
+.tico{width:38px;height:38px;background:var(--g100);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-right:12px;flex-shrink:0}
+.tico svg{width:18px;height:18px;stroke:var(--g600);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tinfo{flex:1;min-width:0}
+.tname{font-size:14px;font-weight:700}
+.tmeta{font-size:12px;color:var(--g400);margin-top:1px}
+.tamt{font-size:15px;font-weight:800;flex-shrink:0;margin-left:6px}
+.tamt.g{color:var(--green)}
+.tactions{display:flex;gap:4px;margin-left:6px;flex-shrink:0}
+.tacbtn{width:28px;height:28px;border-radius:8px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:opacity .15s;flex-shrink:0}
+.tacbtn:active{opacity:.6}
+.tacedit{background:var(--g100)}
+.tacdel{background:#FEE2E2}
+.bdg{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:6px}
+.bc{background:#E6F4EA;color:#1B5E20}
+.bk{background:#E3F2FD;color:#0D47A1}
+.bt{background:#FFF8E1;color:#E65100}
+.bp{width:100%;padding:16px;background:var(--black);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:800;font-family:var(--font);cursor:pointer;transition:opacity .15s}
+.bp:active{opacity:.8}
+.bs{width:100%;padding:14px;background:var(--g100);color:var(--black);border:none;border-radius:14px;font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;transition:opacity .15s}
+.bs:active{opacity:.7}
+.bgreen{background:var(--green)!important;color:#fff!important}
+.bred{background:var(--red)!important;color:#fff!important}
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end}
+.mbg.open{display:flex}
+.modal{background:#fff;border-radius:24px 24px 0 0;padding:24px 20px calc(24px + var(--safe));width:100%;max-height:92vh;overflow-y:auto}
+.mhdl{width:40px;height:4px;background:var(--g200);border-radius:2px;margin:0 auto 20px}
+.mtit{font-size:20px;font-weight:900;margin-bottom:20px}
+.fg{margin-bottom:16px}
+.fl{font-size:12px;font-weight:700;color:var(--g600);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;display:block}
+.fi{width:100%;padding:14px 16px;border:1.5px solid var(--g200);border-radius:12px;font-size:16px;font-family:var(--font);font-weight:500;outline:none;background:#fff;color:var(--black);transition:border-color .15s}
+.fi:focus{border-color:var(--black)}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.popts{display:flex;gap:8px}
+.popt{flex:1;padding:12px 8px;border:1.5px solid var(--g200);border-radius:12px;text-align:center;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;font-family:var(--font);background:#fff;color:var(--g600)}
+.popt.on{border-color:var(--black);background:var(--black);color:#fff}
+.chwrap{position:relative;width:100%;height:180px;margin-top:8px}
+.snav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px 4px}
+.sbtn{width:36px;height:36px;background:var(--g100);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.sbtn svg{width:16px;height:16px;stroke:var(--black);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.snlbl{font-size:16px;font-weight:800}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--black);color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;z-index:999;transition:transform .3s;pointer-events:none;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.psel{display:flex;background:var(--g100);border-radius:12px;padding:3px;margin:0 16px 16px}
+.pbtn{flex:1;padding:8px;border:none;background:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s;color:var(--g600)}
+.pbtn.on{background:#fff;color:var(--black);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.hero{background:var(--black);margin:16px;border-radius:20px;padding:24px;color:#fff}
+.hgreet{font-size:13px;color:rgba(255,255,255,.6);font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.hlogo{width:22px;height:22px;flex-shrink:0}
+.hamt{font-size:42px;font-weight:900;letter-spacing:-1px;line-height:1}
+.hlbl{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px}
+.hstats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.15);border-radius:12px;margin-top:20px;overflow:hidden}
+.hstat{background:rgba(255,255,255,.08);padding:12px;text-align:center}
+.hsval{font-size:16px;font-weight:800}
+.hslbl{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;font-weight:600;text-transform:uppercase}
+.pbreak{display:flex;gap:8px;padding:0 16px;margin-bottom:12px}
+.pbox{flex:1;background:var(--g50);border-radius:12px;padding:12px;text-align:center}
+.pbval{font-size:16px;font-weight:800}
+.pblbl{font-size:10px;color:var(--g600);font-weight:600;margin-top:2px;text-transform:uppercase}
+.drow{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--g100)}
+.drow:last-child{border:none}
+.dlbl{font-size:14px;color:var(--g600)}
+.dval{font-size:14px;font-weight:700}
+.cdname{text-align:center;font-size:11px;font-weight:700;color:var(--g400);padding:4px 0;text-transform:uppercase}
+.cday{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;position:relative;font-size:12px;font-weight:700;transition:all .15s;min-height:36px}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:0 12px;margin-bottom:2px}
+.cday.worked{background:var(--black);color:#fff}
+.cday.planned{background:var(--g100);border:2px dashed var(--g400)}
+.cday.today{outline:2px solid var(--blue)}
+.cday.empty{opacity:0;pointer-events:none}
+.cdot{width:5px;height:5px;border-radius:50%;background:var(--green);position:absolute;bottom:3px}
+.pbar{height:6px;background:var(--g100);border-radius:3px;overflow:hidden;margin-top:6px}
+.pfill{height:100%;border-radius:3px;background:var(--green);transition:width .5s}
+.empty{text-align:center;padding:40px 24px;color:var(--g400)}
+.etxt{font-size:15px;font-weight:600}
+.esub{font-size:13px;margin-top:4px}
+.pdfcard{background:var(--g50);border-radius:14px;padding:14px 16px;margin:0 16px 10px;position:relative}
+.pdfweek{font-size:12px;color:var(--g600);font-weight:600;margin-bottom:4px}
+.pdfamt{font-size:20px;font-weight:900;margin-bottom:10px}
+.pdfrow{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--g200)}
+.pdfrow:last-child{border:none}
+.pdflbl{color:var(--g600)}
+.pdfval{font-weight:700}
+.pdfval.r{color:var(--red)}
+.pdfval.g{color:var(--green)}
+.pdf-actions{display:flex;gap:6px;margin-top:10px}
+.pdf-actions button{flex:1;padding:8px;border-radius:10px;border:none;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer}
+.stsec{padding:0 20px}
+.sttit{font-size:13px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;margin:20px 0 12px}
+.strow{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--g100)}
+.strow:last-child{border:none}
+.stlbl{font-size:15px;font-weight:600}
+.stinput{text-align:right;border:1.5px solid var(--g200);border-radius:8px;padding:6px 10px;font-size:15px;font-weight:700;font-family:var(--font);outline:none;background:#fff;color:var(--black)}
+.copts{display:flex;gap:8px;margin-bottom:16px}
+.copt{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .15s}
+.copt.on{border-color:var(--black)}
+.notelist{max-height:200px;overflow-y:auto}
+.noteitem{padding:10px 0;border-bottom:1px solid var(--g100);font-size:13px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.noteitem:last-child{border:none}
+.notedt{font-size:11px;color:var(--g400);margin-bottom:2px;font-weight:600}
+.notedel{background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;line-height:1}
+[id^="zbox-"]{transition:background .2s,border-color .2s,outline .15s}
+[id^="zbox-"]:active{opacity:.7}
+.date-picker-wrap{display:flex;align-items:center;justify-content:center;padding:10px 20px 4px;gap:10px}
+.date-pick-btn{flex:1;padding:10px 14px;background:var(--g50);border:1.5px solid var(--g200);border-radius:12px;font-size:15px;font-weight:700;font-family:var(--font);color:var(--black);text-align:center;cursor:pointer;outline:none;-webkit-appearance:none}
+.date-pick-btn:focus{border-color:var(--black)}
+.date-today-btn{padding:10px 14px;background:var(--black);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;white-space:nowrap}
+.sync-bar{display:flex;align-items:center;gap:6px;padding:4px 20px 2px;font-size:11px;font-weight:600;color:var(--g400)}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--g400);flex-shrink:0}
+.sync-dot.online{background:var(--green)}
+.sync-dot.syncing{background:var(--amber);animation:pulse .8s infinite}
+.sync-dot.error{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.leaflet-div-icon{background:none!important;border:none!important;}
+.leaflet-div-icon span{transform:translate(-50%,-50%);display:block;}
+#splash{position:fixed;inset:0;background:#000;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .4s}
+#splash.hide{opacity:0;pointer-events:none}
+#splash img{width:80px;height:80px}
+#splash-lbl{color:rgba(255,255,255,.5);font-size:13px;font-weight:600;font-family:var(--font)}
+</style>
+</head>
+<body>
 
+<div id="splash">
+  <img src="favicon.png" alt="Driver Pro" onerror="this.style.display='none'">
+  <div id="splash-lbl">Conectando...</div>
+</div>
+
+<div id="app">
+<div class="pages">
+
+<!-- INICIO -->
+<div class="page active" id="page-inicio">
+  <div style="height:4px"></div>
+  <div class="sync-bar"><div class="sync-dot syncing" id="sync-dot"></div><span id="sync-lbl">Conectando...</span></div>
+  <div class="hero">
+    <div class="hgreet">
+      <img class="hlogo" src="favicon.png" alt="" onerror="this.style.display='none'">
+      Driver Pro · Cristian
+    </div>
+    <div class="hamt" id="h-total">$0</div>
+    <div class="hlbl">ganado hoy</div>
+    <div id="h-comb-est" style="display:none;font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;font-weight:600"></div>
+    <div class="hstats">
+      <div class="hstat"><div class="hsval" id="h-viajes">0</div><div class="hslbl">Viajes</div></div>
+      <div class="hstat"><div class="hsval" id="h-km">0 km</div><div class="hslbl">Km hoy</div></div>
+      <div class="hstat"><div class="hsval" id="h-neto">$0</div><div class="hslbl">Neto est.</div></div>
+    </div>
+  </div>
+  <div class="pbreak">
+    <div class="pbox"><div class="pbval" id="h-ef">$0</div><div class="pblbl">Efectivo</div></div>
+    <div class="pbox"><div class="pbval" id="h-tk">$0</div><div class="pblbl">Tarjeta</div></div>
+    <div class="pbox"><div class="pbval" id="h-tr">$0</div><div class="pblbl">Transfer.</div></div>
+  </div>
+  <div class="mgrid">
+    <div class="mbox"><div class="mlbl">Bruto semana</div><div class="mval" id="h-sb">$0</div><div class="msub" id="h-sv">0 viajes</div></div>
+    <div class="mbox"><div class="mlbl">Neto semana</div><div class="mval cg" id="h-sn">$0</div><div class="msub">est. después costos</div></div>
+  </div>
+  <div style="padding:0 16px 4px"><button class="bp" onclick="openM('modal-viaje')">+ Agregar viaje</button></div>
+  <div class="slbl">Últimos 10 viajes</div>
+  <div id="h-last10"><div class="empty"><div class="etxt">Cargando...</div></div></div>
+</div>
+
+<!-- VIAJES -->
+<div class="page" id="page-viajes">
+  <div class="ph"><div class="pt">Viajes</div></div>
+  <div class="stabs" id="vtabs">
+    <button class="stab on" onclick="stab('v','agregar',this)">Agregar</button>
+    <button class="stab" onclick="stab('v','hoy',this)">Hoy</button>
+    <button class="stab" onclick="stab('v','historial',this)">Historial</button>
+  </div>
+  <div id="vsub-agregar">
+    <div style="height:16px"></div>
+    <div style="padding:0 16px">
+      <div class="fg"><label class="fl">Monto cobrado (CLP)</label><input class="fi" type="number" id="v-monto" placeholder="1.735" inputmode="numeric"></div>
+      <div class="fgrid">
+        <div class="fg"><label class="fl">Km en vacío</label><input class="fi" type="number" id="v-kv" placeholder="2.7" inputmode="decimal" step="0.1"></div>
+        <div class="fg"><label class="fl">Km del viaje</label><input class="fi" type="number" id="v-kj" placeholder="1.6" inputmode="decimal" step="0.1"></div>
+      </div>
+      <div class="fg"><label class="fl">Tipo</label><select class="fi" id="v-tipo"><option>UberX</option><option>Prioridad UberX</option><option>Cancelación</option></select></div>
+      <div class="fg"><label class="fl">Método de pago</label>
+        <div class="popts" id="v-popts">
+          <button class="popt on" onclick="selPay('v',this,'ef')">Efectivo</button>
+          <button class="popt" onclick="selPay('v',this,'tk')">Tarjeta</button>
+          <button class="popt" onclick="selPay('v',this,'tr')">Transfer.</button>
+        </div>
+      </div>
+      <button class="bp" onclick="addViajeSimple()">Guardar viaje</button>
+    </div>
+  </div>
+  <div id="vsub-hoy" style="display:none">
+    <div id="v-hoy-list"></div>
+    <div style="padding:16px"><button class="bs" onclick="openM('modal-cierre')">Cerrar día</button></div>
+  </div>
+  <div id="vsub-historial" style="display:none">
+    <div class="snav">
+      <button class="sbtn" onclick="navDate('hist',-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div style="flex:1;text-align:center">
+        <input type="date" class="date-pick-btn" id="hist-date" onchange="pickDate('hist',this.value)" max="" style="border:none;background:none;font-size:16px;font-weight:800;text-align:center;padding:0;width:auto">
+      </div>
+      <button class="sbtn" onclick="navDate('hist',1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+    <div style="text-align:center;padding-bottom:8px"><button class="date-today-btn" style="font-size:12px;padding:6px 16px" onclick="pickDate('hist','')">Hoy</button></div>
+    <div id="v-hist-list"></div>
+  </div>
+</div>
+
+<!-- GANANCIAS -->
+<div class="page" id="page-ganancias">
+  <div class="ph"><div class="pt">Ganancias</div></div>
+  <div class="stabs" id="gtabs">
+    <button class="stab on" onclick="stab('g','resumen',this)">Resumen</button>
+    <button class="stab" onclick="stab('g','historial',this)">Historial</button>
+
+    <button class="stab" onclick="stab('g','pagos',this)">Pagos</button>
+    <button class="stab" onclick="stab('g','combustible',this)">Combustible</button>
+    <button class="stab" onclick="stab('g','uber',this)">Uber Info</button>
+  </div>
+  <div id="gsub-resumen">
+    <div style="height:12px"></div>
+    <div class="psel">
+      <button class="pbtn on" onclick="setPeriod('hoy',this)">Hoy</button>
+      <button class="pbtn" onclick="setPeriod('semana',this)">Semana</button>
+      <button class="pbtn" onclick="setPeriod('mes',this)">Mes</button>
+    </div>
+    <div class="card"><div class="chwrap"><canvas id="ch-gan"></canvas></div></div>
+    <div class="mgrid">
+      <div class="mbox"><div class="mlbl">Bruto generado</div><div class="mval" id="g-bruto">$0</div><div class="msub">total cobrado viajes</div></div>
+      <div class="mbox"><div class="mlbl">Total pagado Uber</div><div class="mval" id="g-uber-pagado">$—</div><div class="msub">último PDF cargado</div></div>
+      <div class="mbox" style="background:var(--black);border-radius:14px;padding:14px"><div class="mlbl" style="color:rgba(255,255,255,.6)">Total con descuentos</div><div class="mval" style="color:#fff" id="g-neto">$0</div><div class="msub" style="color:rgba(255,255,255,.5)">neto real estimado</div></div>
+      <div class="mbox"><div class="mlbl">Viajes</div><div class="mval" id="g-viajes">0</div></div>
+      <div class="mbox"><div class="mlbl">Por hora</div><div class="mval" id="g-hora">$—</div></div>
+      <div class="mbox"><div class="mlbl">Combustible</div><div class="mval cr" id="g-comb">$0</div><div class="msub">descontado del neto</div></div>
+    </div>
+    <div class="slbl">Últimos 10 viajes</div>
+    <div id="g-last10"></div>
+  </div>
+  <div id="gsub-historial" style="display:none">
+    <div class="snav">
+      <button class="sbtn" onclick="navDate('gan',-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div style="flex:1;text-align:center">
+        <input type="date" class="date-pick-btn" id="gan-date" onchange="pickDate('gan',this.value)" max="" style="border:none;background:none;font-size:16px;font-weight:800;text-align:center;padding:0;width:auto">
+      </div>
+      <button class="sbtn" onclick="navDate('gan',1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+    <div style="text-align:center;padding-bottom:8px"><button class="date-today-btn" style="font-size:12px;padding:6px 16px" onclick="pickDate('gan','')">Hoy</button></div>
+    <div id="g-hist-list"></div>
+  </div>
+
+  <div id="gsub-pagos" style="display:none">
+    <div style="height:12px"></div>
+    <!-- Sub-tabs dentro de Pagos -->
+    <div class="psel" id="pagos-subtabs">
+      <button class="pbtn on" onclick="setPagosTab('desglose',this)">Desglose</button>
+      <button class="pbtn" onclick="setPagosTab('app',this)">En app</button>
+      <button class="pbtn" onclick="setPagosTab('uber',this)">Uber PDF</button>
+    </div>
+
+    <!-- DESGLOSE: viajes filtrados por período -->
+    <div id="pagos-sub-desglose">
+      <div class="psel" id="pagos-psel">
+        <button class="pbtn on" onclick="setPagosPeriod('hoy',this)">Hoy</button>
+        <button class="pbtn" onclick="setPagosPeriod('semana',this)">Semana</button>
+        <button class="pbtn" onclick="setPagosPeriod('mes',this)">Mes</button>
+        <button class="pbtn" onclick="setPagosPeriod('anio',this)">Año</button>
+      </div>
+      <div class="card"><div class="chwrap"><canvas id="ch-pag-des"></canvas></div></div>
+      <div id="pagos-desglose-rows" style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden"></div>
+    </div>
+
+    <!-- EN APP: pagos registrados con selector período -->
+    <div id="pagos-sub-app" style="display:none">
+      <div class="psel" id="pagos-app-psel">
+        <button class="pbtn on" onclick="setPagosAppPeriod('hoy',this)">Hoy</button>
+        <button class="pbtn" onclick="setPagosAppPeriod('semana',this)">Semana</button>
+        <button class="pbtn" onclick="setPagosAppPeriod('mes',this)">Mes</button>
+        <button class="pbtn" onclick="setPagosAppPeriod('anio',this)">Año</button>
+      </div>
+      <div class="card"><div class="chwrap"><canvas id="ch-pag"></canvas></div></div>
+      <div class="pbreak">
+        <div class="pbox"><div class="pbval" id="p-ef">$0</div><div class="pblbl">Efectivo</div></div>
+        <div class="pbox"><div class="pbval" id="p-tk">$0</div><div class="pblbl">Tarjeta</div></div>
+        <div class="pbox"><div class="pbval" id="p-tr">$0</div><div class="pblbl">Transfer.</div></div>
+      </div>
+      <div class="slbl">Fondo mantención</div>
+      <div class="cflat">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:14px;font-weight:600">Acumulado</span>
+          <span style="font-size:18px;font-weight:900" id="fondo-tot">$0</span>
+        </div>
+        <div class="pbar"><div class="pfill" id="fondo-bar" style="width:0%"></div></div>
+        <div style="font-size:11px;color:var(--g400);margin-top:4px" id="fondo-meta">Meta: $50.000</div>
+      </div>
+    </div>
+
+    <!-- UBER PDF: solo último período -->
+    <div id="pagos-sub-uber" style="display:none">
+      <div class="slbl">Última semana Uber</div>
+      <div id="pagos-uber-resumen" style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden"></div>
+    </div>
+  </div>
+
+  <div id="gsub-combustible" style="display:none">
+    <div style="height:12px"></div>
+    <!-- Selector período combustible -->
+    <div class="psel" id="comb-psel">
+      <button class="pbtn on" onclick="setCombPeriod('hoy',this)">Hoy</button>
+      <button class="pbtn" onclick="setCombPeriod('7',this)">7 días</button>
+      <button class="pbtn" onclick="setCombPeriod('30',this)">30 días</button>
+      <button class="pbtn" onclick="setCombPeriod('0',this)">Todo</button>
+    </div>
+    <!-- Navegación con flechas -->
+    <div class="snav" id="comb-nav" style="display:none">
+      <button class="sbtn" onclick="navComb(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <span class="snlbl" id="comb-nav-lbl"></span>
+      <button class="sbtn" onclick="navComb(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+    <div class="card"><div class="chwrap"><canvas id="ch-comb"></canvas></div></div>
+    <div class="mgrid">
+      <div class="mbox"><div class="mlbl">Gastado total</div><div class="mval cr" id="comb-total">$0</div><div class="msub">en bencina</div></div>
+      <div class="mbox"><div class="mlbl">Km recorridos</div><div class="mval" id="comb-km">0 km</div><div class="msub">días con cierre</div></div>
+      <div class="mbox"><div class="mlbl">Rendimiento prom.</div><div class="mval" id="comb-rend">0 km/L</div><div class="msub">promedio</div></div>
+      <div class="mbox"><div class="mlbl">Costo por km</div><div class="mval" id="comb-xkm">$—</div><div class="msub">bencina/km</div></div>
+      <div class="mbox"><div class="mlbl">Litros consumidos</div><div class="mval" id="comb-litros">0 L</div><div class="msub">km÷rendimiento</div></div>
+    </div>
+    <div class="slbl">Detalle por día</div>
+    <div id="comb-list"></div>
+  </div>
+  <div id="gsub-uber" style="display:none">
+    <div style="height:16px"></div>
+    <div style="padding:0 16px;margin-bottom:16px"><button class="bp" onclick="openPdfModal()">+ Agregar resumen Uber</button></div>
+    <div class="slbl">Resumen total acumulado</div>
+    <div id="uber-resumen-total" style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden"></div>
+    <div class="slbl">Historial por período</div>
+    <div id="uber-list"></div>
+  </div>
+</div>
+
+<!-- MAPA -->
+<div class="page" id="page-mapa">
+  <div class="ph"><div class="pt">Zonas</div></div>
+  <div class="stabs" id="mtabs">
+    <button class="stab on" onclick="stab('m','mapa',this)">Mapa</button>
+    <button class="stab" onclick="stab('m','buscar',this)">Buscar</button>
+    <button class="stab" onclick="stab('m','notas',this)">Mis notas</button>
+  </div>
+  <div id="msub-mapa">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;padding:10px 16px 6px;font-size:11px;font-weight:600;color:var(--g600)">
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:rgba(0,166,81,.6);border-radius:2px;display:inline-block"></span>Tranquila</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:rgba(255,192,67,.7);border-radius:2px;display:inline-block"></span>Precaución</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:rgba(225,25,0,.5);border-radius:2px;display:inline-block"></span>Evitar</span>
+    </div>
+    <div style="margin:0 16px;border-radius:14px;overflow:hidden;border:1px solid var(--g200);">
+      <div id="leaflet-map" style="height:280px;width:100%;"></div>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--g400);padding:5px 0 2px">Toca una zona para ver detalle y notas</div>
+    <div id="zone-detail-panel" style="display:none;margin-top:4px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 6px">
+        <div style="font-size:17px;font-weight:900" id="zone-detail-name">—</div>
+        <button onclick="clearZoneSelection()" style="background:var(--g100);border:none;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer">✕ Cerrar</button>
+      </div>
+      <div style="margin:0 16px 10px;border-radius:12px;overflow:hidden;border:1px solid var(--g200)">
+        <img id="zone-detail-img" src="" style="width:100%;display:block;" alt="">
+      </div>
+      <div style="margin:0 16px;background:var(--g50);border-radius:14px;padding:14px;margin-bottom:10px">
+        <div style="font-size:13px;color:var(--g600);margin-bottom:8px" id="zone-detail-desc">Sin descripción</div>
+        <div id="zone-detail-notes" style="margin-bottom:10px"></div>
+        <button class="bs" style="padding:10px;font-size:13px" onclick="openZoneModal()">✏️ Editar notas</button>
+      </div>
+    </div>
+  </div>
+  <div id="msub-buscar" style="display:none">
+    <div style="padding:16px">
+      <div class="fg"><label class="fl">Buscar dirección</label><input class="fi" type="text" id="map-q" placeholder="Ej: Calle Samuel Santana 235, Talagante"></div>
+      <button class="bp" onclick="searchAddr()">Buscar</button>
+      <div id="map-result" style="margin-top:16px"></div>
+    </div>
+  </div>
+  <div id="msub-notas" style="display:none"><div id="map-notes-list" style="padding:8px 0"></div></div>
+</div>
+
+<!-- MÁS -->
+<div class="page" id="page-mas">
+  <div class="ph"><div class="pt">Más</div></div>
+  <div class="stabs" id="xtabs">
+    <button class="stab on" onclick="stab('x','turnos',this)">Turnos</button>
+    <button class="stab" onclick="stab('x','cierres',this)">Cierres</button>
+    <button class="stab" onclick="stab('x','cierre',this)">Cerrar día</button>
+    <button class="stab" onclick="stab('x','sync',this)">Sync</button>
+    <button class="stab" onclick="stab('x','config',this)">Config.</button>
+  </div>
+  <div id="xsub-turnos">
+    <div style="height:12px"></div>
+    <div style="display:flex;align-items:center;gap:8px;padding:0 16px;margin-bottom:16px">
+      <button class="sbtn" onclick="chCal(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div style="flex:1;text-align:center;font-size:16px;font-weight:800" id="cal-lbl">Marzo 2026</div>
+      <button class="sbtn" onclick="chCal(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+    <div class="calgrid" id="cal-header"><div class="cdname">L</div><div class="cdname">M</div><div class="cdname">M</div><div class="cdname">J</div><div class="cdname">V</div><div class="cdname">S</div><div class="cdname">D</div></div>
+    <div class="calgrid" id="cal-days"></div>
+    <div style="padding:16px;margin-top:8px"><button class="bp" onclick="openTurnoModal()">+ Planificar turno</button></div>
+    <div class="slbl">Turnos</div>
+    <div id="turnos-list"></div>
+  </div>
+  <div id="xsub-cierres" style="display:none">
+    <div style="height:12px"></div>
+    <div class="slbl">Historial de cierres</div>
+    <div id="cierres-list"></div>
+  </div>
+  <div id="xsub-cierre" style="display:none">
+    <div style="padding:16px">
+      <div class="cflat" style="margin:0 0 16px">
+        <div style="font-size:13px;font-weight:700;color:var(--g600);margin-bottom:6px">Hoy: <span id="cierre-fecha"></span></div>
+        <div style="font-size:22px;font-weight:900" id="cierre-bruto">$0 bruto</div>
+        <div style="font-size:14px;color:var(--g600)" id="cierre-viajes">0 viajes</div>
+      </div>
+      <div class="fg"><label class="fl">Km totales hoy</label><input class="fi" type="number" id="c-km" placeholder="180" inputmode="numeric"></div>
+      <div class="fg"><label class="fl">Horas trabajadas</label><input class="fi" type="number" id="c-hrs" placeholder="8.5" inputmode="decimal" step="0.5"></div>
+      <div class="fg"><label class="fl">Rendimiento (km/litro)</label><input class="fi" type="number" id="c-rend" placeholder="16" inputmode="decimal" step="0.1"></div>
+      <div class="fg"><label class="fl">¿Cargaste bencina hoy?</label>
+        <div class="popts"><button class="popt" onclick="toggleBen(true,this)">Sí</button><button class="popt on" onclick="toggleBen(false,this)">No</button></div>
+      </div>
+      <div id="ben-fields" style="display:none">
+        <div class="fgrid">
+          <div class="fg"><label class="fl">Litros cargados</label><input class="fi" type="number" id="c-lit" placeholder="30" inputmode="decimal"></div>
+          <div class="fg"><label class="fl">Precio / litro</label><input class="fi" type="number" id="c-pli" placeholder="1200" inputmode="numeric"></div>
+        </div>
+      </div>
+      <button class="bp bgreen" onclick="saveCierreHoy()" style="margin-top:8px">Guardar cierre del día</button>
+      <div id="cierre-diff" style="display:none;background:var(--g50);border-radius:14px;margin-top:12px;overflow:hidden"></div>
+    </div>
+  </div>
+  <div id="xsub-sync" style="display:none">
+    <div style="padding:16px">
+      <div class="cflat" style="margin:0 0 16px">
+        <div style="font-size:12px;font-weight:700;color:var(--g600);margin-bottom:4px">FIREBASE FIRESTORE</div>
+        <div style="font-size:15px;font-weight:700" id="fb-status">—</div>
+        <div style="font-size:12px;color:var(--g400);margin-top:4px" id="fb-counts"></div>
+      </div>
+      <button class="bp" onclick="seedFirebase()" style="margin-bottom:10px">📥 Cargar datos históricos a Firebase</button>
+      <button class="bs" onclick="updateCierres()" style="margin-bottom:10px">🔄 Actualizar cierres (km reales)</button>
+      <button class="bs" onclick="updatePagos()" style="margin-bottom:10px">💳 Corregir pagos EF/TK ($157.251 / $69.812)</button>
+      <button class="bs" onclick="exportData()" style="margin-bottom:10px">⬇ Exportar JSON de respaldo</button>
+      <button class="bs" onclick="document.getElementById('imp-file').click()" style="margin-bottom:10px">⬆ Importar JSON de respaldo</button>
+      <input type="file" id="imp-file" accept=".json" style="display:none" onchange="importData(this)">
+      <div style="margin-top:8px;font-size:12px;color:var(--g400);line-height:1.6">Los datos se sincronizan automáticamente en tiempo real con Firebase Firestore entre todos tus dispositivos.</div>
+    </div>
+  </div>
+  <div id="xsub-config" style="display:none">
+    <div class="stsec">
+      <div class="sttit">Vehículo</div>
+      <div class="strow"><div><div class="stlbl">Rendimiento base</div><div style="font-size:12px;color:var(--g400)">km por litro</div></div><input class="stinput" type="number" id="cfg-rend" value="16" style="width:70px" onchange="saveConfig()"></div>
+      <div class="strow"><div><div class="stlbl">Precio bencina</div><div style="font-size:12px;color:var(--g400)">CLP por litro</div></div><input class="stinput" type="number" id="cfg-ben" value="1200" style="width:80px" onchange="saveConfig()"></div>
+    </div>
+    <div class="stsec">
+      <div class="sttit">Fondos</div>
+      <div class="strow"><div><div class="stlbl">Fondo mantención</div><div style="font-size:12px;color:var(--g400)">% de cada viaje</div></div><input class="stinput" type="number" id="cfg-fondo" value="5" min="0" max="30" style="width:60px" onchange="saveConfig()"></div>
+      <div class="strow"><div><div class="stlbl">Meta fondo</div><div style="font-size:12px;color:var(--g400)">CLP objetivo</div></div><input class="stinput" type="number" id="cfg-meta" value="50000" style="width:90px" onchange="saveConfig()"></div>
+    </div>
+    <div class="stsec">
+      <div class="sttit">Uber</div>
+      <div class="strow"><div><div class="stlbl">Comisión Uber est.</div><div style="font-size:12px;color:var(--g400)">% por viaje</div></div><input class="stinput" type="number" id="cfg-com" value="14.5" min="10" max="30" style="width:60px" onchange="saveConfig()"></div>
+    </div>
+  </div>
+</div>
+</div><!-- /pages -->
+
+<nav class="nav">
+  <button class="ni on" onclick="showTab('inicio')" id="ni-inicio"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Inicio</span></button>
+  <button class="ni" onclick="showTab('viajes')" id="ni-viajes"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg><span>Viajes</span></button>
+  <button class="ni" onclick="showTab('ganancias')" id="ni-ganancias"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Ganancias</span></button>
+  <button class="ni" onclick="showTab('mapa')" id="ni-mapa"><svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg><span>Mapa</span></button>
+  <button class="ni" onclick="showTab('mas')" id="ni-mas"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Más</span></button>
+</nav>
+</div>
+
+<!-- MODALS -->
+<div class="mbg" id="modal-viaje" onclick="closeMBg(event,'modal-viaje')">
+  <div class="modal">
+    <div class="mhdl"></div>
+    <div class="mtit" id="mv-title">Agregar viaje</div>
+    <input type="hidden" id="mv-id">
+    <div class="fg"><label class="fl">Monto cobrado (CLP)</label><input class="fi" type="number" id="m-monto" inputmode="numeric" placeholder="1735"></div>
+    <div class="fgrid">
+      <div class="fg"><label class="fl">Km en vacío</label><input class="fi" type="number" id="m-kv" inputmode="decimal" step="0.1" placeholder="2.7"></div>
+      <div class="fg"><label class="fl">Km del viaje</label><input class="fi" type="number" id="m-kj" inputmode="decimal" step="0.1" placeholder="1.6"></div>
+    </div>
+    <div class="fgrid">
+      <div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" id="m-fecha"></div>
+      <div class="fg"><label class="fl">Hora</label><input class="fi" type="time" id="m-hora"></div>
+    </div>
+    <div class="fg"><label class="fl">Tipo</label><select class="fi" id="m-tipo"><option>UberX</option><option>Prioridad UberX</option><option>Cancelación</option></select></div>
+    <div class="fg"><label class="fl">Método de pago</label>
+      <div class="popts" id="m-popts">
+        <button class="popt on" onclick="selPay('m',this,'ef')">Efectivo</button>
+        <button class="popt" onclick="selPay('m',this,'tk')">Tarjeta</button>
+        <button class="popt" onclick="selPay('m',this,'tr')">Transfer.</button>
+      </div>
+    </div>
+    <div style="height:8px"></div>
+    <button class="bp" onclick="saveViajeModal()">Guardar viaje</button>
+    <div style="height:8px"></div>
+    <button class="bs" onclick="closeM('modal-viaje')">Cancelar</button>
+  </div>
+</div>
+
+<div class="mbg" id="modal-cierre" onclick="closeMBg(event,'modal-cierre')">
+  <div class="modal">
+    <div class="mhdl"></div>
+    <div class="mtit" id="mc-title">Cierre del día</div>
+    <input type="hidden" id="mc-id">
+    <div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" id="mc-fecha"></div>
+    <div class="fg"><label class="fl">Km totales</label><input class="fi" type="number" id="mc-km" placeholder="180" inputmode="numeric"></div>
+    <div class="fg"><label class="fl">Horas trabajadas</label><input class="fi" type="number" id="mc-hrs" placeholder="8.5" inputmode="decimal" step="0.5"></div>
+    <div class="fg"><label class="fl">Rendimiento (km/litro)</label><input class="fi" type="number" id="mc-rend" placeholder="16" inputmode="decimal"></div>
+    <div class="fg"><label class="fl">Litros bencina (0 si no cargaste)</label><input class="fi" type="number" id="mc-lit" placeholder="0" inputmode="decimal"></div>
+    <div class="fg"><label class="fl">Precio litro (CLP)</label><input class="fi" type="number" id="mc-pli" placeholder="1200" inputmode="numeric"></div>
+    <button class="bp bgreen" onclick="saveCierreModal()">Guardar</button>
+    <div style="height:8px"></div>
+    <button class="bs" onclick="closeM('modal-cierre')">Cancelar</button>
+  </div>
+</div>
+
+<div class="mbg" id="modal-turno" onclick="closeMBg(event,'modal-turno')">
+  <div class="modal">
+    <div class="mhdl"></div>
+    <div class="mtit" id="mt-title">Planificar turno</div>
+    <input type="hidden" id="mt-id">
+    <div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" id="t-fecha"></div>
+    <div class="fgrid">
+      <div class="fg"><label class="fl">Inicio</label><input class="fi" type="time" id="t-ini" value="08:00"></div>
+      <div class="fg"><label class="fl">Término</label><input class="fi" type="time" id="t-fin" value="18:00"></div>
+    </div>
+    <div class="fg"><label class="fl">Colación (ej: 14:00-15:00)</label><input class="fi" type="text" id="t-col" placeholder="opcional"></div>
+    <div class="fg"><label class="fl">Nota</label><input class="fi" type="text" id="t-nota" placeholder="Ej: turno mañana completo"></div>
+    <button class="bp" onclick="saveTurnoModal()">Guardar turno</button>
+    <div style="height:8px"></div>
+    <button class="bs" onclick="closeM('modal-turno')">Cancelar</button>
+  </div>
+</div>
+
+<div class="mbg" id="modal-zona" onclick="closeMBg(event,'modal-zona')">
+  <div class="modal">
+    <div class="mhdl"></div>
+    <div class="mtit" id="zona-title">Zona</div>
+    <div class="fg"><label class="fl">Descripción general</label><input class="fi" type="text" id="zona-desc" placeholder="Ej: zona residencial, calles angostas"></div>
+    <div class="fg"><label class="fl">Color de zona</label>
+      <div class="copts">
+        <div class="copt on" style="background:rgba(0,0,0,.1)" onclick="selZColor(this,'none')" data-c="none"></div>
+        <div class="copt" style="background:rgba(0,166,81,.5)" onclick="selZColor(this,'green')" data-c="green"></div>
+        <div class="copt" style="background:rgba(255,192,67,.6)" onclick="selZColor(this,'yellow')" data-c="yellow"></div>
+        <div class="copt" style="background:rgba(225,25,0,.4)" onclick="selZColor(this,'red')" data-c="red"></div>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">Agregar nota</label><input class="fi" type="text" id="zona-nota" placeholder="Ej: noche peligrosa en sector norte"></div>
+    <div class="notelist" id="zona-notes"></div>
+    <div style="height:12px"></div>
+    <button class="bp" onclick="saveZone()">Guardar</button>
+    <div style="height:8px"></div>
+    <button class="bs" onclick="closeM('modal-zona')">Cancelar</button>
+  </div>
+</div>
+
+<div class="mbg" id="modal-pdf" onclick="closeMBg(event,'modal-pdf')">
+  <div class="modal">
+    <div class="mhdl"></div>
+    <div class="mtit" id="mpdf-title">Agregar resumen Uber</div>
+    <input type="hidden" id="mpdf-id">
+    <div class="fg"><label class="fl">Período (ej: 16 mar – 22 mar 2026)</label><input class="fi" type="text" id="mpdf-periodo" placeholder="16 mar – 22 mar 2026"></div>
+    <div class="fg"><label class="fl">Ganancias brutas ($)</label><input class="fi" type="number" id="mpdf-bruto" inputmode="numeric"></div>
+    <div class="fg"><label class="fl">Tarifa pago flexible ($)</label><input class="fi" type="number" id="mpdf-flex" inputmode="numeric"></div>
+    <div class="fg"><label class="fl">Retención SII ($)</label><input class="fi" type="number" id="mpdf-sii" inputmode="numeric"></div>
+    <div class="fg"><label class="fl">Pagado total ($)</label><input class="fi" type="number" id="mpdf-pagado" inputmode="numeric"></div>
+    <div class="fgrid">
+      <div class="fg"><label class="fl">Efectivo recibido</label><input class="fi" type="number" id="mpdf-ef" inputmode="numeric"></div>
+      <div class="fg"><label class="fl">Transferido banco</label><input class="fi" type="number" id="mpdf-tr" inputmode="numeric"></div>
+    </div>
+    <div class="fgrid">
+      <div class="fg"><label class="fl">Prioridad UberX</label><input class="fi" type="number" id="mpdf-prio" inputmode="numeric"></div>
+      <div class="fg"><label class="fl">Tarifa dinámica</label><input class="fi" type="number" id="mpdf-din" inputmode="numeric"></div>
+    </div>
+    <button class="bp" onclick="savePdfModal()">Guardar resumen</button>
+    <div style="height:8px"></div>
+    <button class="bs" onclick="closeM('modal-pdf')">Cancelar</button>
+  </div>
+</div>
+
+<div class="mbg" id="modal-confirm" onclick="closeMBg(event,'modal-confirm')">
+  <div class="modal">
+    <div class="mhdl"></div>
+    <div class="mtit">¿Eliminar?</div>
+    <div style="font-size:15px;color:var(--g600);margin-bottom:24px" id="confirm-msg">Esta acción no se puede deshacer.</div>
+    <button class="bp bred" id="confirm-btn" style="margin-bottom:8px">Eliminar</button>
+    <button class="bs" onclick="closeM('modal-confirm')">Cancelar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore,collection,doc,setDoc,addDoc,deleteDoc,updateDoc,onSnapshot,getDocs,writeBatch,query,orderBy } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const firebaseConfig={apiKey:"AIzaSyDe-IaknwxkuVSJSnMKeKp1vLm_fUDi39Q",authDomain:"driver-pro-cristian.firebaseapp.com",projectId:"driver-pro-cristian",storageBucket:"driver-pro-cristian.firebasestorage.app",messagingSenderId:"852965608573",appId:"1:852965608573:web:ce2bb5b9beb5e24c2ef514"};
+const fbApp=initializeApp(firebaseConfig);
+const db=getFirestore(fbApp);
+
+const SEED_VIAJES=[
+  {id:'20260317001',fecha:'2026-03-17',hora:'10:09',monto:3624,kv:2,kj:4,tipo:'UberX',pago:'tk'},{id:'20260317002',fecha:'2026-03-17',hora:'10:32',monto:4267,kv:3,kj:5,tipo:'UberX',pago:'tk'},{id:'20260317003',fecha:'2026-03-17',hora:'10:54',monto:2071,kv:2,kj:3,tipo:'Prioridad UberX',pago:'tk'},{id:'20260317004',fecha:'2026-03-17',hora:'11:12',monto:3249,kv:3,kj:4,tipo:'UberX',pago:'tk'},{id:'20260317005',fecha:'2026-03-17',hora:'11:35',monto:2612,kv:2,kj:3,tipo:'UberX',pago:'ef'},{id:'20260317006',fecha:'2026-03-17',hora:'12:10',monto:1796,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260317007',fecha:'2026-03-17',hora:'13:07',monto:1683,kv:1,kj:2,tipo:'UberX',pago:'tk'},{id:'20260317008',fecha:'2026-03-17',hora:'13:20',monto:1683,kv:1,kj:2,tipo:'UberX',pago:'tk'},{id:'20260317009',fecha:'2026-03-17',hora:'13:26',monto:1786,kv:2,kj:2,tipo:'UberX',pago:'tk'},{id:'20260317010',fecha:'2026-03-17',hora:'13:42',monto:1683,kv:1,kj:2,tipo:'UberX',pago:'tk'},{id:'20260317011',fecha:'2026-03-17',hora:'14:43',monto:2624,kv:2,kj:4,tipo:'Prioridad UberX',pago:'tk'},{id:'20260317012',fecha:'2026-03-17',hora:'15:05',monto:3177,kv:3,kj:5,tipo:'UberX',pago:'tk'},{id:'20260317013',fecha:'2026-03-17',hora:'15:40',monto:2424,kv:2,kj:3,tipo:'UberX',pago:'ef'},{id:'20260317014',fecha:'2026-03-17',hora:'15:50',monto:2237,kv:2,kj:3,tipo:'UberX',pago:'ef'},{id:'20260317015',fecha:'2026-03-17',hora:'15:56',monto:2125,kv:2,kj:3,tipo:'UberX',pago:'ef'},{id:'20260317016',fecha:'2026-03-17',hora:'16:29',monto:2009,kv:2,kj:2,tipo:'UberX',pago:'tk'},{id:'20260317017',fecha:'2026-03-17',hora:'16:41',monto:1735,kv:1,kj:2,tipo:'UberX',pago:'tk'},{id:'20260317018',fecha:'2026-03-17',hora:'16:57',monto:2592,kv:2,kj:4,tipo:'UberX',pago:'tk'},{id:'20260317019',fecha:'2026-03-17',hora:'17:20',monto:2331,kv:2,kj:3,tipo:'UberX',pago:'ef'},{id:'20260317020',fecha:'2026-03-17',hora:'17:33',monto:4106,kv:4,kj:6,tipo:'UberX',pago:'tk'},{id:'20260317021',fecha:'2026-03-17',hora:'18:15',monto:7436,kv:5,kj:10,tipo:'UberX',pago:'tk'},{id:'20260317022',fecha:'2026-03-17',hora:'19:21',monto:1907,kv:1,kj:2,tipo:'UberX',pago:'tk'},{id:'20260317023',fecha:'2026-03-17',hora:'19:25',monto:1735,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260317024',fecha:'2026-03-17',hora:'19:33',monto:1819,kv:1,kj:2,tipo:'UberX',pago:'tk'},
+  {id:'20260316001',fecha:'2026-03-16',hora:'11:13',monto:1683,kv:1,kj:2,tipo:'UberX',pago:'tk'},{id:'20260316002',fecha:'2026-03-16',hora:'11:19',monto:1857,kv:1,kj:2,tipo:'UberX',pago:'tk'},{id:'20260316003',fecha:'2026-03-16',hora:'11:40',monto:4395,kv:3,kj:6,tipo:'UberX',pago:'tk'},{id:'20260316004',fecha:'2026-03-16',hora:'12:13',monto:1683,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260316005',fecha:'2026-03-16',hora:'13:19',monto:3822,kv:3,kj:5,tipo:'UberX',pago:'ef'},{id:'20260316006',fecha:'2026-03-16',hora:'13:47',monto:3712,kv:3,kj:5,tipo:'UberX',pago:'ef'},{id:'20260316007',fecha:'2026-03-16',hora:'14:03',monto:1683,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260316008',fecha:'2026-03-16',hora:'14:11',monto:4356,kv:3,kj:6,tipo:'Prioridad UberX',pago:'ef'},{id:'20260316009',fecha:'2026-03-16',hora:'14:42',monto:4274,kv:3,kj:6,tipo:'UberX',pago:'ef'},{id:'20260316010',fecha:'2026-03-16',hora:'15:03',monto:1683,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260316011',fecha:'2026-03-16',hora:'15:16',monto:1683,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260316012',fecha:'2026-03-16',hora:'15:34',monto:2583,kv:2,kj:3,tipo:'UberX',pago:'ef'},{id:'20260316013',fecha:'2026-03-16',hora:'15:50',monto:1683,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260316014',fecha:'2026-03-16',hora:'16:11',monto:4386,kv:3,kj:6,tipo:'Prioridad UberX',pago:'ef'},{id:'20260316015',fecha:'2026-03-16',hora:'16:39',monto:4723,kv:3,kj:6,tipo:'UberX',pago:'ef'},{id:'20260316016',fecha:'2026-03-16',hora:'17:04',monto:1923,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260316017',fecha:'2026-03-16',hora:'17:30',monto:5897,kv:4,kj:8,tipo:'UberX',pago:'ef'},{id:'20260316018',fecha:'2026-03-16',hora:'19:20',monto:2568,kv:2,kj:3,tipo:'UberX',pago:'ef'},
+  {id:'20260313001',fecha:'2026-03-13',hora:'15:38',monto:3215,kv:2,kj:5,tipo:'UberX',pago:'ef'},{id:'20260313002',fecha:'2026-03-13',hora:'16:03',monto:2123,kv:2,kj:3,tipo:'Prioridad UberX',pago:'ef'},{id:'20260313003',fecha:'2026-03-13',hora:'16:26',monto:4159,kv:3,kj:6,tipo:'UberX',pago:'ef'},{id:'20260313004',fecha:'2026-03-13',hora:'17:00',monto:3228,kv:2,kj:5,tipo:'UberX',pago:'ef'},{id:'20260313005',fecha:'2026-03-13',hora:'17:47',monto:3273,kv:2,kj:4,tipo:'Prioridad UberX',pago:'ef'},{id:'20260313006',fecha:'2026-03-13',hora:'18:00',monto:2090,kv:1,kj:3,tipo:'UberX',pago:'ef'},{id:'20260313007',fecha:'2026-03-13',hora:'18:21',monto:2879,kv:2,kj:4,tipo:'UberX',pago:'ef'},{id:'20260313008',fecha:'2026-03-13',hora:'18:41',monto:2105,kv:1,kj:3,tipo:'UberX',pago:'ef'},{id:'20260313009',fecha:'2026-03-13',hora:'19:25',monto:1736,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260313010',fecha:'2026-03-13',hora:'19:32',monto:2123,kv:2,kj:3,tipo:'Prioridad UberX',pago:'ef'},{id:'20260313011',fecha:'2026-03-13',hora:'20:15',monto:1973,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260313012',fecha:'2026-03-13',hora:'20:31',monto:3912,kv:3,kj:5,tipo:'UberX',pago:'ef'},
+  {id:'20260311001',fecha:'2026-03-11',hora:'14:39',monto:3212,kv:2,kj:4,tipo:'UberX',pago:'ef'},{id:'20260311002',fecha:'2026-03-11',hora:'15:08',monto:1683,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260311003',fecha:'2026-03-11',hora:'15:14',monto:1683,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260311004',fecha:'2026-03-11',hora:'15:21',monto:2168,kv:2,kj:3,tipo:'UberX',pago:'ef'},{id:'20260311005',fecha:'2026-03-11',hora:'15:33',monto:1771,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260311006',fecha:'2026-03-11',hora:'15:44',monto:1735,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260311007',fecha:'2026-03-11',hora:'16:14',monto:3180,kv:2,kj:4,tipo:'Prioridad UberX',pago:'ef'},{id:'20260311008',fecha:'2026-03-11',hora:'16:40',monto:3474,kv:2,kj:5,tipo:'UberX',pago:'ef'},{id:'20260311009',fecha:'2026-03-11',hora:'17:14',monto:1810,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260311010',fecha:'2026-03-11',hora:'17:45',monto:10203,kv:6,kj:14,tipo:'UberX',pago:'ef'},{id:'20260311011',fecha:'2026-03-11',hora:'18:31',monto:4204,kv:3,kj:6,tipo:'UberX',pago:'ef'},{id:'20260311012',fecha:'2026-03-11',hora:'18:54',monto:4166,kv:3,kj:6,tipo:'Prioridad UberX',pago:'ef'},{id:'20260311013',fecha:'2026-03-11',hora:'19:18',monto:3362,kv:2,kj:4,tipo:'UberX',pago:'ef'},
+  {id:'20260310001',fecha:'2026-03-10',hora:'14:23',monto:1852,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310002',fecha:'2026-03-10',hora:'14:40',monto:2427,kv:2,kj:3,tipo:'Prioridad UberX',pago:'ef'},{id:'20260310003',fecha:'2026-03-10',hora:'14:55',monto:1603,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310004',fecha:'2026-03-10',hora:'15:28',monto:6080,kv:4,kj:8,tipo:'UberX',pago:'ef'},{id:'20260310005',fecha:'2026-03-10',hora:'15:42',monto:1653,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310006',fecha:'2026-03-10',hora:'15:53',monto:1653,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310007',fecha:'2026-03-10',hora:'16:01',monto:1653,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310008',fecha:'2026-03-10',hora:'16:12',monto:1653,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310009',fecha:'2026-03-10',hora:'16:28',monto:1810,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310010',fecha:'2026-03-10',hora:'16:42',monto:2320,kv:2,kj:3,tipo:'UberX',pago:'ef'},{id:'20260310011',fecha:'2026-03-10',hora:'17:07',monto:1677,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310012',fecha:'2026-03-10',hora:'17:30',monto:1653,kv:1,kj:2,tipo:'UberX',pago:'ef'},{id:'20260310013',fecha:'2026-03-10',hora:'18:16',monto:3932,kv:3,kj:5,tipo:'UberX',pago:'ef'}
+];
+const SEED_CIERRES=[
+  {fecha:'2026-03-10',km:95, hrs:4,    rend:16,  pli:1200},
+  {fecha:'2026-03-11',km:130,hrs:5,    rend:16,  pli:1200},
+  {fecha:'2026-03-13',km:112,hrs:4,    rend:16,  pli:1200},
+  {fecha:'2026-03-16',km:220,hrs:8,    rend:16.5,pli:1200},
+  {fecha:'2026-03-17',km:181,hrs:8.17, rend:16,  pli:1200}
+];
+const SEED_PDFS=[
+  {periodo:'16 mar - 18 mar 2026',bruto:117357,flex:1380,sii:17113,pagado:102126,ef:47285,tr:54841,prio:2244,din:2750},
+  {periodo:'9 mar - 16 mar 2026', bruto:109706,flex:1380,sii:15960,pagado:89466, ef:74495,tr:14971,prio:2254,din:2250}
+];
+
+let VIAJES=[],CIERRES={},TURNOS=[],ZONAS={},PDFS=[];
+let CONFIG={rend:16,bencina:1200,fondo:5,meta:50000,comision:14.5};
+let payState={v:'ef',m:'ef'};
+let benState=false,period='hoy';
+let offsets={hist:0,gan:0};
+let selectedDates={hist:'',gan:''};
+let calY=new Date().getFullYear(),calM=new Date().getMonth();
+let selCell=null,selZC='none';
+let charts={};
+let pendingDeleteFn=null;
+let pagosPeriod='hoy',pagosAppPeriod='hoy',combPeriod='7',combDayOffset=0;
+const MONTHS=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const ZONE_NAMES=['El Monte','Talagante','Isla de Maipo','Lonquen','Penaflor'];
+
+function CLP(n){return '$'+Math.round(n).toLocaleString('es-CL');}
+function today(){return new Date().toISOString().slice(0,10);}
+function nowTime(){return new Date().toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});}
+function fmtD(d){return new Date(d+'T12:00:00').toLocaleDateString('es-CL',{weekday:'short',day:'numeric',month:'short'});}
+function fmtViajeFecha(v){var dt=new Date(v.fecha+'T12:00:00');return dt.getDate()+' '+dt.toLocaleDateString('es-CL',{month:'short'})+' · '+v.hora;}
+function sortViajes(arr){return arr.slice().sort((a,b)=>(a.fecha+' '+a.hora)<(b.fecha+' '+b.hora)?1:-1);}
+function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);}
+function setSyncStatus(state,msg){
+  const dot=document.getElementById('sync-dot'),lbl=document.getElementById('sync-lbl');
+  if(dot) dot.className='sync-dot '+state;
+  if(lbl) lbl.textContent=msg;
+}
+function hideSplash(){const s=document.getElementById('splash');if(s){s.classList.add('hide');setTimeout(()=>s.style.display='none',400);}}
+
+// Navegación de fechas con flechas
+window.navDate=function(key,dir){
+  const d=new Date(selectedDates[key]+'T12:00:00');
+  d.setDate(d.getDate()+dir);
+  const max=new Date();
+  if(d>max) return;
+  pickDate(key,d.toISOString().slice(0,10));
+};
+
+function initDatePickers(){
+  const t=today();
+  ['hist','gan'].forEach(k=>{
+    selectedDates[k]=t;
+    const el=document.getElementById(k+'-date');
+    if(el){el.value=t;el.max=t;}
+  });
+}
+
+function startListeners(){
+  setSyncStatus('syncing','Conectando...');
+  onSnapshot(collection(db,'viajes'),(snap)=>{
+    VIAJES=sortViajes(snap.docs.map(d=>({...d.data(),_fid:d.id})));
+    refreshAll();setSyncStatus('online','Sincronizado · '+VIAJES.length+' viajes');
+    hideSplash();
+  },(e)=>{setSyncStatus('error','Error: '+e.message);hideSplash();});
+  onSnapshot(collection(db,'cierres'),(snap)=>{CIERRES={};snap.docs.forEach(d=>{CIERRES[d.id]={...d.data(),_fid:d.id};});refreshAll();});
+  onSnapshot(collection(db,'turnos'),(snap)=>{TURNOS=snap.docs.map(d=>({...d.data(),_fid:d.id})).sort((a,b)=>b.fecha.localeCompare(a.fecha));renderTurnos();renderCal();});
+  onSnapshot(collection(db,'zonas'),(snap)=>{ZONAS={};snap.docs.forEach(d=>{ZONAS[d.id]={...d.data()};});applyZoneColors();renderMapNotes();});
+  onSnapshot(collection(db,'pdfs'),(snap)=>{PDFS=snap.docs.map(d=>({...d.data(),_fid:d.id})).sort((a,b)=>b.periodo.localeCompare(a.periodo));renderPdfs();});
+  onSnapshot(doc(db,'config','main'),(snap)=>{if(snap.exists()){CONFIG={...CONFIG,...snap.data()};document.getElementById('cfg-rend').value=CONFIG.rend;document.getElementById('cfg-ben').value=CONFIG.bencina;document.getElementById('cfg-fondo').value=CONFIG.fondo;document.getElementById('cfg-meta').value=CONFIG.meta;document.getElementById('cfg-com').value=CONFIG.comision;}});
+}
+
+function refreshAll(){
+  renderInicio();renderVHoy();renderGan();renderCierreInfo();renderCierres();
+  const combEl=document.getElementById('gsub-combustible');
+  if(combEl&&combEl.style.display!=='none') renderCombustible();
+  const el=document.getElementById('fb-counts');if(el) el.textContent=VIAJES.length+' viajes · '+Object.keys(CIERRES).length+' cierres';
+}
+
+window.updateCierres=async function(){
+  setSyncStatus('syncing','Actualizando cierres...');
+  try{
+    const b=writeBatch(db);
+    for(const c of SEED_CIERRES){
+      const{fecha,...data}=c;
+      b.set(doc(db,'cierres',fecha),data);
+    }
+    await b.commit();
+    toast('Cierres actualizados con km reales');
+    setSyncStatus('online','Sincronizado');
+  }catch(e){
+    toast('Error: '+e.message);
+    setSyncStatus('error',e.message);
+  }
+};
+
+// IDs que deben ser 'tk' según cálculo exacto para EF=157251, TK=69812
+const TK_IDS=new Set([
+  '20260317001','20260317002','20260317003','20260317004',
+  '20260317007','20260317008','20260317009','20260317010',
+  '20260317011','20260317012','20260317016','20260317017',
+  '20260317018','20260317020','20260317021','20260317022',
+  '20260317024','20260316001','20260316002','20260316003'
+]);
+
+window.updatePagos=async function(){
+  setSyncStatus('syncing','Actualizando pagos...');
+  try{
+    const snap=await getDocs(collection(db,'viajes'));
+    const b=writeBatch(db);
+    let count=0;
+    // Diagnóstico
+    const resumen={ef:0,tk:0,tr:0,otro:0};
+    snap.docs.forEach(d=>{
+      const p=d.data().pago;
+      if(p==='ef') resumen.ef++;
+      else if(p==='tk') resumen.tk++;
+      else if(p==='tr') resumen.tr++;
+      else resumen.otro++;
+    });
+    // Corregir: TK_IDS→tk, resto→ef (preservar tr solo si ya es tr)
+    snap.docs.forEach(d=>{
+      const data=d.data();
+      let correcto;
+      if(TK_IDS.has(d.id)) correcto='tk';
+      else if(data.pago==='tr') correcto='tr'; // preservar transferencias
+      else correcto='ef';
+      if(data.pago!==correcto){
+        b.update(doc(db,'viajes',d.id),{pago:correcto});
+        count++;
+      }
+    });
+    await b.commit();
+    toast('Corregidos: '+count+' viajes. Antes: ef='+resumen.ef+' tk='+resumen.tk+' tr='+resumen.tr+(resumen.otro?' otros='+resumen.otro:''));
+    setSyncStatus('online','Sincronizado');
+  }catch(e){
+    toast('Error: '+e.message);
+    setSyncStatus('error',e.message);
+  }
+};
+
+window.seedFirebase=async function(){
+  setSyncStatus('syncing','Cargando datos históricos...');
+  try{
+    const snap=await getDocs(collection(db,'viajes'));
+    if(snap.size>0){toast('Ya hay '+snap.size+' viajes. Carga cancelada para no duplicar.');setSyncStatus('online','Sincronizado');return;}
+    let b=writeBatch(db),count=0;
+    for(const v of SEED_VIAJES){const{id,...data}=v;b.set(doc(db,'viajes',id),data);count++;if(count===490){await b.commit();b=writeBatch(db);count=0;}}
+    for(const c of SEED_CIERRES){const{fecha,...data}=c;b.set(doc(db,'cierres',fecha),data);}
+    b.set(doc(db,'config','main'),CONFIG);
+    await b.commit();
+    const b2=writeBatch(db);
+    SEED_PDFS.forEach((p,i)=>b2.set(doc(db,'pdfs','pdf_seed_'+i),p));
+    await b2.commit();
+    toast(SEED_VIAJES.length+' viajes + '+SEED_CIERRES.length+' cierres cargados en Firebase');
+  }catch(e){toast('Error: '+e.message);setSyncStatus('error',e.message);}
+};
+
+window.saveConfig=async function(){
+  CONFIG.rend=parseFloat(document.getElementById('cfg-rend').value)||16;
+  CONFIG.bencina=parseFloat(document.getElementById('cfg-ben').value)||1200;
+  CONFIG.fondo=parseFloat(document.getElementById('cfg-fondo').value)||5;
+  CONFIG.meta=parseFloat(document.getElementById('cfg-meta').value)||50000;
+  CONFIG.comision=parseFloat(document.getElementById('cfg-com').value)||14.5;
+  try{await setDoc(doc(db,'config','main'),CONFIG);toast('Configuración guardada');}catch(e){toast('Error: '+e.message);}
+};
+
+window.showTab=function(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('ni-'+id).classList.add('on');
+  if(id==='inicio') renderInicio();
+  if(id==='viajes') renderVHoy();
+  if(id==='ganancias') renderGan();
+  if(id==='mapa'){renderMapNotes();setTimeout(()=>{initLeafletMap();if(leafletMap) leafletMap.invalidateSize();applyZoneColors();},200);}
+  if(id==='mas'){renderCal();renderTurnos();renderCierreInfo();renderCierres();}
+  const fbs=document.getElementById('fb-status');if(fbs) fbs.textContent=navigator.onLine?'Conectado a Firebase':'Offline';
+};
+
+window.stab=function(prefix,sub,btn){
+  const pm={v:'vsub',g:'gsub',m:'msub',x:'xsub'};
+  const tm={v:'vtabs',g:'gtabs',m:'mtabs',x:'xtabs'};
+  const pgm={v:'page-viajes',g:'page-ganancias',m:'page-mapa',x:'page-mas'};
+  const pref=pm[prefix];
+  const page=document.getElementById(pgm[prefix]);
+  if(page) page.querySelectorAll('[id^="'+pref+'-"]').forEach(el=>el.style.display='none');
+  const target=document.getElementById(pref+'-'+sub);if(target) target.style.display='block';
+  const tabs=document.getElementById(tm[prefix]);if(tabs) tabs.querySelectorAll('.stab').forEach(t=>t.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  if(prefix==='g'&&sub==='resumen') renderGan();
+  if(prefix==='g'&&sub==='historial') renderGHist();
+  if(prefix==='g'&&sub==='pagos') renderPagos();
+  if(prefix==='g'&&sub==='combustible') resetCombFiltro();
+  if(prefix==='g'&&sub==='uber') renderPdfs();
+  if(prefix==='v'&&sub==='hoy') renderVHoy();
+  if(prefix==='v'&&sub==='historial') renderVHist();
+  if(prefix==='m'&&sub==='mapa') setTimeout(()=>{initLeafletMap();if(leafletMap) leafletMap.invalidateSize();applyZoneColors();},200);
+  if(prefix==='m'&&sub==='notas') renderMapNotes();
+  if(prefix==='x'&&sub==='turnos'){renderCal();renderTurnos();}
+  if(prefix==='x'&&sub==='cierre') renderCierreInfo();
+  if(prefix==='x'&&sub==='cierres') renderCierres();
+};
+
+window.openM=function(id){
+  if(id==='modal-viaje'){
+    document.getElementById('mv-title').textContent='Agregar viaje';
+    document.getElementById('mv-id').value='';
+    document.getElementById('m-monto').value='';
+    document.getElementById('m-kv').value='';
+    document.getElementById('m-kj').value='';
+    document.getElementById('m-fecha').value=today();
+    document.getElementById('m-hora').value=nowTime();
+    document.getElementById('m-tipo').value='UberX';
+    document.getElementById('m-popts').querySelectorAll('.popt').forEach((b,i)=>{b.classList.toggle('on',i===0);});
+    payState.m='ef';
+  }
+  if(id==='modal-cierre'){
+    document.getElementById('mc-title').textContent='Cierre del día';
+    document.getElementById('mc-id').value='';
+    document.getElementById('mc-fecha').value=today();
+    document.getElementById('mc-km').value='';document.getElementById('mc-hrs').value='';
+    document.getElementById('mc-rend').value=CONFIG.rend;
+    document.getElementById('mc-lit').value='0';document.getElementById('mc-pli').value=CONFIG.bencina;
+  }
+  document.getElementById(id).classList.add('open');
+};
+window.closeM=function(id){document.getElementById(id).classList.remove('open');};
+window.closeMBg=function(e,id){if(e.target===document.getElementById(id)) closeM(id);};
+
+window.selPay=function(ctx,btn,val){
+  btn.closest('.popts').querySelectorAll('.popt').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');payState[ctx]=val;
+};
+window.toggleBen=function(val,btn){
+  benState=val;
+  btn.closest('.popts').querySelectorAll('.popt').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('ben-fields').style.display=val?'block':'none';
+};
+
+function tripCard(v){
+  const bc=v.pago==='ef'?'bc':v.pago==='tk'?'bk':'bt';
+  const bl=v.pago==='ef'?'Efectivo':v.pago==='tk'?'Tarjeta':'Transfer.';
+  const fid=v._fid||v.id||'';
+  const row=document.createElement('div');
+  row.className='trow';
+  row.innerHTML='<div class="tico"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>'
+    +'<div class="tinfo">'
+    +'<div class="tname">'+v.tipo+'<span class="bdg '+bc+'">'+bl+'</span></div>'
+    +'<div class="tmeta">'+fmtViajeFecha(v)+' · '+(v.kj||0)+' km · vacío '+(v.kv||0)+' km</div>'
+    +'</div>'
+    +'<div class="tamt g">'+CLP(v.monto)+'</div>'
+    +'<div class="tactions">'
+    +'<button class="tacbtn tacedit" title="Editar">✏️</button>'
+    +'<button class="tacbtn tacdel" title="Eliminar">🗑️</button>'
+    +'</div>';
+  row.querySelector('.tacedit').addEventListener('click',()=>editViaje(fid));
+  row.querySelector('.tacdel').addEventListener('click',()=>confirmDel('viaje',fid,v.tipo+' · '+CLP(v.monto)));
+  return row;
+}
+
+function renderList(container, viajes){
+  container.innerHTML='';
+  viajes.forEach(v=>container.appendChild(tripCard(v)));
+}
+
+window.addViajeSimple=async function(){
+  const monto=parseFloat(document.getElementById('v-monto').value)||0;
+  if(!monto){toast('Ingresa el monto');return;}
+  const v={fecha:today(),hora:nowTime(),monto,kv:parseFloat(document.getElementById('v-kv').value)||0,kj:parseFloat(document.getElementById('v-kj').value)||0,tipo:document.getElementById('v-tipo').value,pago:payState.v};
+  try{
+    await addDoc(collection(db,'viajes'),v);
+    ['v-monto','v-kv','v-kj'].forEach(id=>document.getElementById(id).value='');
+    toast('Viaje guardado: '+CLP(v.monto));
+  }catch(e){toast('Error: '+e.message);}
+};
+
+window.saveViajeModal=async function(){
+  const fid=document.getElementById('mv-id').value;
+  const v={
+    fecha:document.getElementById('m-fecha').value||today(),
+    hora:document.getElementById('m-hora').value||nowTime(),
+    monto:parseFloat(document.getElementById('m-monto').value)||0,
+    kv:parseFloat(document.getElementById('m-kv').value)||0,
+    kj:parseFloat(document.getElementById('m-kj').value)||0,
+    tipo:document.getElementById('m-tipo').value,
+    pago:payState.m
+  };
+  if(!v.monto){toast('Ingresa el monto');return;}
+  try{
+    if(fid){await updateDoc(doc(db,'viajes',fid),v);toast('Viaje actualizado');}
+    else{await addDoc(collection(db,'viajes'),v);toast('Viaje guardado: '+CLP(v.monto));}
+    closeM('modal-viaje');
+  }catch(e){toast('Error: '+e.message);}
+};
+
+window.editViaje=function(fid){
+  const v=VIAJES.find(x=>x._fid===fid);if(!v) return;
+  document.getElementById('mv-title').textContent='Editar viaje';
+  document.getElementById('mv-id').value=fid;
+  document.getElementById('m-monto').value=v.monto;
+  document.getElementById('m-kv').value=v.kv;
+  document.getElementById('m-kj').value=v.kj;
+  document.getElementById('m-fecha').value=v.fecha;
+  document.getElementById('m-hora').value=v.hora;
+  document.getElementById('m-tipo').value=v.tipo;
+  const popts=document.getElementById('m-popts').querySelectorAll('.popt');
+  const pgMap={'ef':0,'tk':1,'tr':2};
+  popts.forEach((b,i)=>b.classList.toggle('on',i===pgMap[v.pago]));
+  payState.m=v.pago;
+  document.getElementById('modal-viaje').classList.add('open');
+};
+
+window.saveCierreHoy=async function(){
+  const km=parseFloat(document.getElementById('c-km').value)||0;
+  const rend=parseFloat(document.getElementById('c-rend').value)||CONFIG.rend;
+  const pli=parseFloat(document.getElementById('c-pli').value)||CONFIG.bencina;
+  const data={km,hrs:parseFloat(document.getElementById('c-hrs').value)||0,rend,pli};
+  const hoy=vByDate(today());
+  const kmEstimado=kmDesdeViajes(hoy);
+  const combEstimado=combustibleEstimado(hoy);
+  const litsReal=rend>0?km/rend:0;
+  const combReal=litsReal*pli;
+  const diffKm=km-kmEstimado;
+  const diffStr=diffKm>=0?'+'+diffKm.toFixed(0)+'km':diffKm.toFixed(0)+'km';
+  const diffComb=combReal-combEstimado;
+  const diffCombStr=diffComb>=0?'+'+CLP(Math.abs(diffComb)):'-'+CLP(Math.abs(diffComb));
+  const netoFinal=calcNeto(hoy,false)-combReal;
+  try{
+    await setDoc(doc(db,'cierres',today()),data);
+    toast('Neto real: '+CLP(netoFinal)+' · Comb: '+CLP(combReal)+' · Dif km: '+diffStr);
+    const detEl=document.getElementById('cierre-diff');
+    if(detEl){
+      detEl.innerHTML=
+        '<div class="drow"><span class="dlbl">Km estimados (kv+kj)</span><span class="dval">'+kmEstimado.toFixed(0)+' km</span></div>'
+        +'<div class="drow"><span class="dlbl">Km reales (cierre)</span><span class="dval">'+km+' km</span></div>'
+        +'<div class="drow"><span class="dlbl">Diferencia</span><span class="dval" style="color:'+(diffKm>=0?'var(--red)':'var(--green)')+'">'+diffStr+'</span></div>'
+        +'<div class="drow"><span class="dlbl">Comb. estimado</span><span class="dval cr">-'+CLP(combEstimado)+'</span></div>'
+        +'<div class="drow"><span class="dlbl">Comb. real</span><span class="dval cr">-'+CLP(combReal)+' ('+litsReal.toFixed(1)+'L)</span></div>'
+        +'<div class="drow" style="font-weight:800"><span class="dlbl">Neto final del día</span><span class="dval cg">'+CLP(netoFinal)+'</span></div>';
+      detEl.style.display='block';
+    }
+    renderInicio();
+  }catch(e){toast('Error: '+e.message);}
+};
+
+window.saveCierreModal=async function(){
+  const fecha=document.getElementById('mc-fecha').value||today();
+  const data={km:parseFloat(document.getElementById('mc-km').value)||0,hrs:parseFloat(document.getElementById('mc-hrs').value)||0,rend:parseFloat(document.getElementById('mc-rend').value)||CONFIG.rend,lit:parseFloat(document.getElementById('mc-lit').value)||0,pli:parseFloat(document.getElementById('mc-pli').value)||CONFIG.bencina};
+  try{await setDoc(doc(db,'cierres',fecha),data);closeM('modal-cierre');toast('Cierre guardado');}catch(e){toast('Error: '+e.message);}
+};
+
+window.editCierre=function(fecha){
+  const c=CIERRES[fecha];if(!c) return;
+  document.getElementById('mc-title').textContent='Editar cierre — '+fmtD(fecha);
+  document.getElementById('mc-id').value=fecha;
+  document.getElementById('mc-fecha').value=fecha;
+  document.getElementById('mc-km').value=c.km||0;
+  document.getElementById('mc-hrs').value=c.hrs||0;
+  document.getElementById('mc-rend').value=c.rend||CONFIG.rend;
+  document.getElementById('mc-lit').value=c.lit||0;
+  document.getElementById('mc-pli').value=c.pli||CONFIG.bencina;
+  document.getElementById('modal-cierre').classList.add('open');
+};
+
+window.openTurnoModal=function(){
+  document.getElementById('mt-title').textContent='Planificar turno';
+  document.getElementById('mt-id').value='';
+  document.getElementById('t-fecha').value=today();
+  document.getElementById('t-ini').value='08:00';
+  document.getElementById('t-fin').value='18:00';
+  document.getElementById('t-col').value='';
+  document.getElementById('t-nota').value='';
+  document.getElementById('modal-turno').classList.add('open');
+};
+
+window.saveTurnoModal=async function(){
+  const fid=document.getElementById('mt-id').value;
+  const fecha=document.getElementById('t-fecha').value;
+  if(!fecha){toast('Selecciona una fecha');return;}
+  const data={fecha,ini:document.getElementById('t-ini').value,fin:document.getElementById('t-fin').value,col:document.getElementById('t-col').value,nota:document.getElementById('t-nota').value};
+  try{
+    if(fid){await updateDoc(doc(db,'turnos',fid),data);toast('Turno actualizado');}
+    else{await addDoc(collection(db,'turnos'),data);toast('Turno guardado');}
+    closeM('modal-turno');
+  }catch(e){toast('Error: '+e.message);}
+};
+
+window.editTurno=function(fid){
+  const t=TURNOS.find(x=>x._fid===fid);if(!t) return;
+  document.getElementById('mt-title').textContent='Editar turno';
+  document.getElementById('mt-id').value=fid;
+  document.getElementById('t-fecha').value=t.fecha;
+  document.getElementById('t-ini').value=t.ini;
+  document.getElementById('t-fin').value=t.fin;
+  document.getElementById('t-col').value=t.col||'';
+  document.getElementById('t-nota').value=t.nota||'';
+  document.getElementById('modal-turno').classList.add('open');
+};
+
+window.openPdfModal=function(){
+  document.getElementById('mpdf-title').textContent='Agregar resumen Uber';
+  document.getElementById('mpdf-id').value='';
+  ['mpdf-periodo','mpdf-bruto','mpdf-flex','mpdf-sii','mpdf-pagado','mpdf-ef','mpdf-tr','mpdf-prio','mpdf-din'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('modal-pdf').classList.add('open');
+};
+
+window.savePdfModal=async function(){
+  const fid=document.getElementById('mpdf-id').value;
+  const data={periodo:document.getElementById('mpdf-periodo').value,bruto:parseFloat(document.getElementById('mpdf-bruto').value)||0,flex:parseFloat(document.getElementById('mpdf-flex').value)||0,sii:parseFloat(document.getElementById('mpdf-sii').value)||0,pagado:parseFloat(document.getElementById('mpdf-pagado').value)||0,ef:parseFloat(document.getElementById('mpdf-ef').value)||0,tr:parseFloat(document.getElementById('mpdf-tr').value)||0,prio:parseFloat(document.getElementById('mpdf-prio').value)||0,din:parseFloat(document.getElementById('mpdf-din').value)||0};
+  if(!data.periodo){toast('Ingresa el período');return;}
+  try{
+    if(fid){await updateDoc(doc(db,'pdfs',fid),data);toast('Resumen actualizado');}
+    else{await addDoc(collection(db,'pdfs'),data);toast('Resumen guardado');}
+    closeM('modal-pdf');
+  }catch(e){toast('Error: '+e.message);}
+};
+
+window.editPdf=function(fid){
+  const p=PDFS.find(x=>x._fid===fid);if(!p) return;
+  document.getElementById('mpdf-title').textContent='Editar resumen Uber';
+  document.getElementById('mpdf-id').value=fid;
+  document.getElementById('mpdf-periodo').value=p.periodo||'';
+  document.getElementById('mpdf-bruto').value=p.bruto||0;
+  document.getElementById('mpdf-flex').value=p.flex||0;
+  document.getElementById('mpdf-sii').value=p.sii||0;
+  document.getElementById('mpdf-pagado').value=p.pagado||0;
+  document.getElementById('mpdf-ef').value=p.ef||0;
+  document.getElementById('mpdf-tr').value=p.tr||0;
+  document.getElementById('mpdf-prio').value=p.prio||0;
+  document.getElementById('mpdf-din').value=p.din||0;
+  document.getElementById('modal-pdf').classList.add('open');
+};
+
+window.confirmDel=function(tipo,fid,label){
+  document.getElementById('confirm-msg').textContent='Eliminar "'+label+'"? Esta acción no se puede deshacer.';
+  pendingDeleteFn=async()=>{
+    try{
+      if(tipo==='viaje') await deleteDoc(doc(db,'viajes',fid));
+      if(tipo==='turno') await deleteDoc(doc(db,'turnos',fid));
+      if(tipo==='pdf') await deleteDoc(doc(db,'pdfs',fid));
+      if(tipo==='cierre') await deleteDoc(doc(db,'cierres',fid));
+      closeM('modal-confirm');toast('Eliminado');
+    }catch(e){toast('Error: '+e.message);}
+  };
+  document.getElementById('confirm-btn').onclick=()=>{if(pendingDeleteFn) pendingDeleteFn();};
+  document.getElementById('modal-confirm').classList.add('open');
+};
+
+function litrosConsumidos(c){
+  const km=parseFloat(c.km)||0;
+  const rend=parseFloat(c.rend)||parseFloat(CONFIG.rend)||16;
+  if(km===0||rend===0) return 0;
+  return km/rend;
+}
+function costoBencina(c){
+  const lits=litrosConsumidos(c);
+  const precio=parseFloat(c.pli)||parseFloat(CONFIG.bencina)||1200;
+  return lits*precio;
+}
+function calcBencina(fechas){
+  if(!fechas||fechas.length===0) return 0;
+  return fechas.reduce((a,f)=>{const c=CIERRES[f]||{};return a+costoBencina(c);},0);
+}
+function kmDesdeViajes(viajes){
+  return viajes.reduce((a,v)=>a+(parseFloat(v.kv)||0)+(parseFloat(v.kj)||0),0);
+}
+function combustibleEstimado(viajes){
+  const km=kmDesdeViajes(viajes);
+  const rend=parseFloat(CONFIG.rend)||16;
+  const pli=parseFloat(CONFIG.bencina)||1200;
+  return km>0?(km/rend)*pli:0;
+}
+function combustibleReal(fecha){
+  const c=CIERRES[fecha]||{};
+  return c.km>0?costoBencina(c):0;
+}
+function calcNeto(viajes,descontarCombustible){
+  const b=viajes.reduce((a,v)=>a+v.monto,0);
+  let neto=b-b*(CONFIG.comision/100)-b*(CONFIG.fondo/100);
+  if(descontarCombustible){
+    const fechas=[...new Set(viajes.map(v=>v.fecha))];
+    const fechasConKm=fechas.filter(f=>(CIERRES[f]||{}).km>0);
+    neto-=calcBencina(fechasConKm);
+  }
+  return neto;
+}
+function vByDate(d){return sortViajes(VIAJES.filter(v=>v.fecha===d));}
+function vPeriod(){
+  if(period==='hoy') return vByDate(today());
+  const days=period==='semana'?6:29;
+  const d=new Date();d.setDate(d.getDate()-days);
+  return sortViajes(VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=d));
+}
+
+function renderInicio(){
+  const hoy=vByDate(today());
+  const bruto=hoy.reduce((a,v)=>a+v.monto,0);
+  const cierre=CIERRES[today()]||{};
+  const tieneCierreReal=cierre.km>0;
+  const combCosto=(hoy.length>0)?(tieneCierreReal?combustibleReal(today()):combustibleEstimado(hoy)):0;
+  const kmMostrar=tieneCierreReal?cierre.km:kmDesdeViajes(hoy);
+  const netoBase=calcNeto(hoy,false);
+  const neto=(hoy.length>0)?(netoBase-combCosto):0;
+  document.getElementById('h-total').textContent=CLP(bruto);
+  document.getElementById('h-viajes').textContent=hoy.length;
+  document.getElementById('h-km').textContent=kmMostrar.toFixed(0)+' km';
+  document.getElementById('h-neto').textContent=CLP(neto);
+  const combEl=document.getElementById('h-comb-est');
+  if(combEl){
+    if(hoy.length>0){
+      combEl.textContent=(tieneCierreReal?'Comb. real: ':'Comb. est.: ')+'-'+CLP(combCosto);
+      combEl.style.display='block';
+    } else {
+      combEl.style.display='none';
+    }
+  }
+  document.getElementById('h-ef').textContent=CLP(hoy.filter(v=>v.pago==='ef').reduce((a,v)=>a+v.monto,0));
+  document.getElementById('h-tk').textContent=CLP(hoy.filter(v=>v.pago==='tk').reduce((a,v)=>a+v.monto,0));
+  document.getElementById('h-tr').textContent=CLP(hoy.filter(v=>v.pago==='tr').reduce((a,v)=>a+v.monto,0));
+  const d7=new Date();d7.setDate(d7.getDate()-6);
+  const sem=VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=d7);
+  const semBruto=sem.reduce((a,v)=>a+v.monto,0);
+  const semFechas=[...new Set(sem.map(v=>v.fecha))];
+  const semFechasConCierre=semFechas.filter(f=>(CIERRES[f]||{}).km>0);
+  const semBen=semFechasConCierre.length>0?calcBencina(semFechasConCierre):0;
+  const semNeto=sem.length>0?semBruto-semBruto*(CONFIG.comision/100)-semBruto*(CONFIG.fondo/100)-semBen:0;
+  document.getElementById('h-sb').textContent=CLP(semBruto);
+  document.getElementById('h-sv').textContent=sem.length+' viajes';
+  document.getElementById('h-sn').textContent=CLP(semNeto);
+  const last10=VIAJES.slice(0,10);
+  const last10el=document.getElementById('h-last10');
+  if(last10.length){last10el.innerHTML='';last10.forEach(v=>last10el.appendChild(tripCard(v)));}
+  else{last10el.innerHTML='<div class="empty"><div class="etxt">Sin viajes aún</div><div class="esub">Toca + Agregar viaje para empezar</div></div>';}
+}
+
+function renderVHoy(){
+  const hoy=vByDate(today());
+  const el=document.getElementById('v-hoy-list');
+  if(hoy.length){el.innerHTML='';hoy.forEach(v=>el.appendChild(tripCard(v)));}
+  else{el.innerHTML='<div class="empty"><div class="etxt">Sin viajes hoy</div><div class="esub">Agrega tu primer viaje</div></div>';}
+}
+function renderVHist(){
+  const ds=selectedDates.hist||today();
+  const inp=document.getElementById('hist-date');
+  if(inp) inp.value=ds;
+  const viajes=vByDate(ds);
+  const el=document.getElementById('v-hist-list');
+  if(!viajes.length){el.innerHTML='<div class="empty"><div class="etxt">Sin viajes este día</div></div>';return;}
+  const bruto=viajes.reduce((a,v)=>a+v.monto,0);
+  el.innerHTML='<div style="padding:12px 20px;background:var(--g50);border-bottom:1px solid var(--g200)"><span style="font-size:13px;font-weight:700;color:var(--g600)">'+viajes.length+' viajes · </span><span style="font-size:15px;font-weight:900">'+CLP(bruto)+'</span></div>';
+  viajes.forEach(v=>el.appendChild(tripCard(v)));
+}
+window.pickDate=function(key,val){
+  selectedDates[key]=val||today();
+  const inp=document.getElementById(key+'-date');
+  if(inp) inp.value=selectedDates[key];
+  if(key==='hist') renderVHist();
+  if(key==='gan') renderGHist();
+};
+
+window.setPeriod=function(p,btn){
+  period=p;document.querySelectorAll('.pbtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderGan();
+};
+function renderGan(){
+  const viajes=vPeriod();
+  const bruto=viajes.reduce((a,v)=>a+v.monto,0);
+
+  // Total pagado Uber: del PDF más reciente (siempre fijo)
+  const uberPagadoEl=document.getElementById('g-uber-pagado');
+  if(uberPagadoEl) uberPagadoEl.textContent=PDFS.length>0?CLP(PDFS[0].pagado||0):'$—';
+
+  if(viajes.length===0){
+    document.getElementById('g-bruto').textContent=CLP(0);
+    document.getElementById('g-neto').textContent=CLP(0);
+    document.getElementById('g-viajes').textContent='0';
+    document.getElementById('g-hora').textContent='$—';
+    document.getElementById('g-comb').textContent=CLP(0);
+  } else {
+    const fechasConViajes=[...new Set(viajes.map(v=>v.fecha))];
+    const fechasConCierre=fechasConViajes.filter(f=>{const c=CIERRES[f];return c&&parseFloat(c.km)>0;});
+    const ben=fechasConCierre.reduce((a,f)=>a+costoBencina(CIERRES[f]),0);
+    const neto=Math.max(0,bruto-bruto*(CONFIG.comision/100)-bruto*(CONFIG.fondo/100)-ben);
+    const hrsTotal=fechasConViajes.reduce((a,f)=>{const c=CIERRES[f]||{};return a+(parseFloat(c.hrs)||0);},0);
+    document.getElementById('g-bruto').textContent=CLP(bruto);
+    document.getElementById('g-neto').textContent=CLP(neto);
+    document.getElementById('g-viajes').textContent=viajes.length;
+    document.getElementById('g-hora').textContent=(hrsTotal>0&&neto>0)?CLP(neto/hrsTotal)+'/hr':'$—';
+    document.getElementById('g-comb').textContent=CLP(ben);
+  }
+  const labels=[],data=[];
+  if(period==='hoy'){
+    for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10);labels.push(d.toLocaleDateString('es-CL',{weekday:'short'}));data.push(vByDate(ds).reduce((a,v)=>a+v.monto,0));}
+  } else if(period==='semana'){
+    for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10);labels.push(d.toLocaleDateString('es-CL',{day:'numeric',month:'short'}));data.push(vByDate(ds).reduce((a,v)=>a+v.monto,0));}
+  } else {
+    for(let w=3;w>=0;w--){
+      const wEnd=new Date();wEnd.setDate(wEnd.getDate()-w*7);
+      const wStart=new Date(wEnd);wStart.setDate(wStart.getDate()-6);
+      let sum=0;
+      for(let dd=new Date(wStart);dd<=wEnd;dd.setDate(dd.getDate()+1)){sum+=vByDate(dd.toISOString().slice(0,10)).reduce((a,v)=>a+v.monto,0);}
+      labels.push('Sem '+wStart.toLocaleDateString('es-CL',{day:'numeric',month:'short'}));
+      data.push(sum);
+    }
+  }
+  if(charts.gan) charts.gan.destroy();
+  const lastIdx=data.length-1;
+  charts.gan=new Chart(document.getElementById('ch-gan'),{type:'bar',data:{labels,datasets:[{data,backgroundColor:data.map((_,i)=>i===lastIdx?'#000':'#e0e0e0'),borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>CLP(ctx.raw)}}},scales:{x:{grid:{display:false},ticks:{color:'#9e9e9e',font:{size:11,weight:'700'}}},y:{display:false}}}});
+  const gLast10=document.getElementById('g-last10');
+  gLast10.innerHTML='';
+  const gl=viajes.slice(0,10);
+  if(gl.length){gl.forEach(v=>gLast10.appendChild(tripCard(v)));}
+  else{gLast10.innerHTML='<div class="empty"><div class="etxt">Sin viajes</div></div>';}
+}
+function renderGHist(){
+  const ds=selectedDates.gan||today();
+  const inp=document.getElementById('gan-date');
+  if(inp) inp.value=ds;
+  const viajes=vByDate(ds);
+  const cierre=CIERRES[ds]||{};
+  const el=document.getElementById('g-hist-list');
+  if(!viajes.length){el.innerHTML='<div class="empty"><div class="etxt">Sin viajes este día</div></div>';return;}
+  const bruto=viajes.reduce((a,v)=>a+v.monto,0);
+  el.innerHTML='<div class="mgrid" style="margin-top:12px">'
+    +'<div class="mbox"><div class="mlbl">Bruto</div><div class="mval">'+CLP(bruto)+'</div></div>'
+    +'<div class="mbox"><div class="mlbl">Neto est.</div><div class="mval cg">'+CLP(calcNeto(viajes,true))+'</div></div>'
+    +'<div class="mbox"><div class="mlbl">Viajes</div><div class="mval">'+viajes.length+'</div></div>'
+    +'<div class="mbox"><div class="mlbl">Km totales</div><div class="mval">'+(cierre.km||'—')+'</div></div>'
+    +'</div>';
+  viajes.forEach(v=>el.appendChild(tripCard(v)));
+}
+// ── PAGOS TABS ────────────────────────────────────────────────────────────
+window.setPagosTab=function(tab,btn){
+  document.getElementById('pagos-subtabs').querySelectorAll('.pbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  ['desglose','app','uber'].forEach(t=>{
+    const el=document.getElementById('pagos-sub-'+t);
+    if(el) el.style.display=t===tab?'block':'none';
+  });
+  if(tab==='desglose') renderPagosDesglose();
+  if(tab==='app') renderPagosApp();
+  if(tab==='uber') renderPagosUber();
+};
+
+// Helpers de período para pagos
+function vByPeriod(p){
+  if(p==='hoy') return VIAJES.filter(v=>v.fecha===today());
+  if(p==='semana'){const d=new Date();d.setDate(d.getDate()-6);return VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=d);}
+  if(p==='mes'){const d=new Date();d.setDate(d.getDate()-29);return VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=d);}
+  const inicio=new Date(new Date().getFullYear(),0,1);
+  return VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=inicio);
+}
+
+// DESGLOSE: ef/tk/tr filtrado por período con filas tipo PDF
+window.setPagosPeriod=function(p,btn){
+  pagosPeriod=p;
+  document.getElementById('pagos-psel').querySelectorAll('.pbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderPagosDesglose();
+};
+function renderPagosDesglose(){
+  const viajes=vByPeriod(pagosPeriod);
+  const ef=viajes.filter(v=>v.pago==='ef').reduce((a,v)=>a+v.monto,0);
+  const tk=viajes.filter(v=>v.pago==='tk').reduce((a,v)=>a+v.monto,0);
+  const tr=viajes.filter(v=>v.pago==='tr').reduce((a,v)=>a+v.monto,0);
+  const total=ef+tk+tr;
+  if(charts.pagDes) charts.pagDes.destroy();
+  const cvs=document.getElementById('ch-pag-des');
+  if(cvs&&total>0){
+    charts.pagDes=new Chart(cvs,{
+      type:'doughnut',
+      data:{labels:['Efectivo','Tarjeta','Transfer.'],datasets:[{data:[ef,tk,tr],backgroundColor:['#000','#276EF1','#FFC043'],borderWidth:0}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:12,weight:'700'},padding:12}}}}
+    });
+  }
+  const rows=document.getElementById('pagos-desglose-rows');
+  rows.innerHTML=
+    '<div class="drow"><span class="dlbl">Ganancias brutas</span><span class="dval">'+CLP(total)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">Efectivo cobrado</span><span class="dval">'+CLP(ef)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">Tarjeta</span><span class="dval">'+CLP(tk)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">Transferencia</span><span class="dval">'+CLP(tr)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">Viajes</span><span class="dval">'+viajes.length+'</span></div>';
+}
+
+// EN APP: pagos con gráfico y fondo
+window.setPagosAppPeriod=function(p,btn){
+  pagosAppPeriod=p;
+  document.getElementById('pagos-app-psel').querySelectorAll('.pbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderPagosApp();
+};
+function renderPagosApp(){
+  const viajes=vByPeriod(pagosAppPeriod);
+  const ef=viajes.filter(v=>v.pago==='ef').reduce((a,v)=>a+v.monto,0);
+  const tk=viajes.filter(v=>v.pago==='tk').reduce((a,v)=>a+v.monto,0);
+  const tr=viajes.filter(v=>v.pago==='tr').reduce((a,v)=>a+v.monto,0);
+  const total=ef+tk+tr;
+  document.getElementById('p-ef').textContent=CLP(ef);
+  document.getElementById('p-tk').textContent=CLP(tk);
+  document.getElementById('p-tr').textContent=CLP(tr);
+  if(charts.pag) charts.pag.destroy();
+  if(total>0){
+    charts.pag=new Chart(document.getElementById('ch-pag'),{
+      type:'doughnut',
+      data:{labels:['Efectivo','Tarjeta','Transfer.'],datasets:[{data:[ef,tk,tr],backgroundColor:['#000','#276EF1','#FFC043'],borderWidth:0}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:12,weight:'700'},padding:12}}}}
+    });
+  }
+  const fondoTotal=VIAJES.reduce((a,v)=>a+v.monto*(CONFIG.fondo/100),0);
+  document.getElementById('fondo-tot').textContent=CLP(fondoTotal);
+  const pct=Math.min(100,Math.round(fondoTotal/CONFIG.meta*100));
+  document.getElementById('fondo-bar').style.width=pct+'%';
+  document.getElementById('fondo-meta').textContent='Meta: '+CLP(CONFIG.meta)+' ('+pct+'%)';
+}
+
+// UBER: solo último PDF (más reciente)
+function renderPagosUber(){
+  const pdfEl=document.getElementById('pagos-uber-resumen');
+  if(!pdfEl) return;
+  if(!PDFS.length){
+    pdfEl.innerHTML='<div style="padding:12px 20px;font-size:13px;color:var(--g400)">Sin resúmenes Uber cargados aún.</div>';
+    return;
+  }
+  const last=PDFS[0]; // ya ordenados de más reciente a más antiguo
+  pdfEl.innerHTML=
+    '<div style="padding:8px 16px 4px;font-size:12px;font-weight:700;color:var(--g600)">'+last.periodo+'</div>'
+    +'<div class="drow"><span class="dlbl">Ganancias brutas</span><span class="dval">'+CLP(last.bruto||0)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">Retención SII</span><span class="dval cr">-'+CLP(last.sii||0)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">Tarifa pago flexible</span><span class="dval cr">-'+CLP(last.flex||0)+'</span></div>'
+    +'<div class="drow" style="font-weight:800"><span class="dlbl">Total pagado por Uber</span><span class="dval">'+CLP(last.pagado||0)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">Efectivo cobrado</span><span class="dval">'+CLP(last.ef||0)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">Transferido al banco</span><span class="dval">'+CLP(last.tr||0)+'</span></div>';
+}
+
+function renderPagos(){
+  renderPagosDesglose();
+}
+
+// ── COMBUSTIBLE ───────────────────────────────────────────────────────────
+window.setCombPeriod=function(p,btn){
+  combPeriod=p;combDayOffset=0;
+  document.getElementById('comb-psel').querySelectorAll('.pbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const nav=document.getElementById('comb-nav');
+  if(nav) nav.style.display=p==='hoy'?'flex':'none';
+  renderCombustible();
+};
+window.navComb=function(dir){
+  combDayOffset+=dir;
+  if(combDayOffset>0) combDayOffset=0;
+  renderCombustible();
+};
+function getCombFechas(){
+  const t=new Date();
+  if(combPeriod==='hoy'){
+    const d=new Date(t);d.setDate(d.getDate()+combDayOffset);
+    const ds=d.toISOString().slice(0,10);
+    const lbl=combDayOffset===0?'Hoy · '+fmtD(ds):fmtD(ds);
+    const navLbl=document.getElementById('comb-nav-lbl');
+    if(navLbl) navLbl.textContent=lbl;
+    return [ds,ds];
+  }
+  if(combPeriod==='7'){const d=new Date(t);d.setDate(d.getDate()-6);return [d.toISOString().slice(0,10),t.toISOString().slice(0,10)];}
+  if(combPeriod==='30'){const d=new Date(t);d.setDate(d.getDate()-29);return [d.toISOString().slice(0,10),t.toISOString().slice(0,10)];}
+  return ['',t.toISOString().slice(0,10)];
+}
+function resetCombFiltro(){
+  combPeriod='7';combDayOffset=0;
+  const nav=document.getElementById('comb-nav');
+  if(nav) nav.style.display='none';
+  renderCombustible();
+}
+function renderCombustible(){
+  const [desde,hasta]=getCombFechas();
+  const allCierresRaw=Object.entries(CIERRES).sort((a,b)=>b[0].localeCompare(a[0]));
+  const allCierres=desde?allCierresRaw.filter(([f])=>f>=desde&&f<=hasta):allCierresRaw;
+  let totalCosto=0,totalKm=0,totalLitros=0,rendSum=0,rendCount=0;
+  allCierres.forEach(([f,c])=>{
+    totalCosto+=costoBencina(c);
+    totalKm+=(parseFloat(c.km)||0);
+    totalLitros+=litrosConsumidos(c);
+    if(c.rend>0){rendSum+=c.rend;rendCount++;}
+  });
+  const rendProm=rendCount>0?(rendSum/rendCount):CONFIG.rend;
+  const costXkm=totalKm>0?totalCosto/totalKm:0;
+  document.getElementById('comb-total').textContent=CLP(totalCosto);
+  document.getElementById('comb-km').textContent=totalKm+' km';
+  document.getElementById('comb-rend').textContent=rendProm.toFixed(1)+' km/L';
+  document.getElementById('comb-xkm').textContent=costXkm>0?CLP(costXkm)+'/km':'$—';
+  document.getElementById('comb-litros').textContent=totalLitros.toFixed(1)+' L';
+  // Gráfico barras
+  if(charts.comb) charts.comb.destroy();
+  const cvs=document.getElementById('ch-comb');
+  if(cvs&&allCierres.length>0){
+    const labels=allCierres.map(([f])=>fmtD(f)).reverse();
+    const data=allCierres.map(([f,c])=>Math.round(costoBencina(c))).reverse();
+    charts.comb=new Chart(cvs,{
+      type:'bar',
+      data:{labels,datasets:[{data,backgroundColor:'#E11900',borderRadius:6,borderSkipped:false}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>CLP(ctx.raw)}}},scales:{x:{grid:{display:false},ticks:{color:'#9e9e9e',font:{size:10,weight:'700'}}},y:{display:false}}}
+    });
+  }
+  const el=document.getElementById('comb-list');
+  if(!allCierres.length){el.innerHTML='<div class="empty"><div class="etxt">Sin datos en este período</div></div>';return;}
+  el.innerHTML='';
+  allCierres.filter(([f,c])=>c.km||c.hrs).forEach(([f,c])=>{
+    const vs=vByDate(f);
+    const bruto=vs.reduce((a,v)=>a+v.monto,0);
+    const lits=litrosConsumidos(c);
+    const costo=costoBencina(c);
+    const row=document.createElement('div');
+    row.className='trow';
+    row.innerHTML='<div class="tico"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--g600);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div>'
+      +'<div class="tinfo"><div class="tname">'+fmtD(f)+'</div>'
+      +'<div class="tmeta">'+(c.km||0)+' km ÷ '+(c.rend||CONFIG.rend)+' km/L = '+lits.toFixed(2)+'L × '+CLP(c.pli||CONFIG.bencina)+'/L</div>'
+      +'<div class="tmeta" style="margin-top:2px">'+(c.hrs||0)+'h · '+CLP(bruto)+' bruto</div></div>'
+      +'<div style="text-align:right;flex-shrink:0;margin-left:8px">'
+      +'<div style="font-size:14px;font-weight:800;color:var(--red)">-'+CLP(costo)+'</div>'
+      +'<div style="font-size:11px;color:var(--g400)">'+lits.toFixed(2)+' L</div></div>';
+    el.appendChild(row);
+  });
+}
+window.setCombRange=function(d){setCombPeriod(d===7?'7':d===30?'30':'0',{classList:{add:()=>{},remove:()=>{}}});};
+
+
+
+function renderPdfs(){
+  const el=document.getElementById('uber-list');
+  const resEl=document.getElementById('uber-resumen-total');
+  if(resEl){
+    if(PDFS.length>0){
+      let ef=0,tr=0,bruto=0,sii=0,flex=0,pagado=0;
+      PDFS.forEach(p=>{ef+=p.ef||0;tr+=p.tr||0;bruto+=p.bruto||0;sii+=p.sii||0;flex+=p.flex||0;pagado+=p.pagado||0;});
+      resEl.innerHTML=
+        '<div class="drow"><span class="dlbl">Ganancias brutas</span><span class="dval">'+CLP(bruto)+'</span></div>'
+        +'<div class="drow"><span class="dlbl">Retención SII</span><span class="dval cr">-'+CLP(sii)+'</span></div>'
+        +'<div class="drow"><span class="dlbl">Tarifa pago flexible</span><span class="dval cr">-'+CLP(flex)+'</span></div>'
+        +'<div class="drow" style="font-weight:800"><span class="dlbl">Total pagado por Uber</span><span class="dval">'+CLP(pagado)+'</span></div>'
+        +'<div class="drow"><span class="dlbl">Efectivo cobrado</span><span class="dval">'+CLP(ef)+'</span></div>'
+        +'<div class="drow"><span class="dlbl">Transferido al banco</span><span class="dval">'+CLP(tr)+'</span></div>';
+    } else {
+      resEl.innerHTML='<div style="padding:12px 20px;font-size:13px;color:var(--g400)">Sin resúmenes cargados aún.</div>';
+    }
+  }
+  if(!el) return;
+  if(!PDFS.length){el.innerHTML='<div class="empty"><div class="etxt">Sin resúmenes Uber</div><div class="esub">Agrega los datos de tus PDFs semanales</div></div>';return;}
+  el.innerHTML='';
+  PDFS.forEach(p=>{
+    const card=document.createElement('div');
+    card.className='pdfcard';
+    card.innerHTML='<div class="pdfweek">'+(p.periodo||'')+'</div>'
+      +'<div class="pdfamt">'+CLP(p.bruto||0)+'</div>'
+      +'<div class="pdfrow"><span class="pdflbl">Ganancias brutas</span><span class="pdfval g">'+CLP(p.bruto||0)+'</span></div>'
+      +'<div class="pdfrow"><span class="pdflbl">Tarifa pago flexible</span><span class="pdfval r">-'+CLP(p.flex||0)+'</span></div>'
+      +'<div class="pdfrow"><span class="pdflbl">Retención SII</span><span class="pdfval r">-'+CLP(p.sii||0)+'</span></div>'
+      +'<div class="pdfrow"><span class="pdflbl">Pagado total</span><span class="pdfval">'+CLP(p.pagado||0)+'</span></div>'
+      +'<div class="pdfrow"><span class="pdflbl">Efectivo recibido</span><span class="pdfval">'+CLP(p.ef||0)+'</span></div>'
+      +'<div class="pdfrow"><span class="pdflbl">Transferido al banco</span><span class="pdfval">'+CLP(p.tr||0)+'</span></div>'
+      +'<div class="pdfrow"><span class="pdflbl">Prioridad UberX</span><span class="pdfval">'+CLP(p.prio||0)+'</span></div>'
+      +'<div class="pdfrow"><span class="pdflbl">Tarifa dinámica</span><span class="pdfval">'+CLP(p.din||0)+'</span></div>'
+      +'<div style="display:flex;gap:6px;margin-top:10px">'
+      +'<button class="bs pdf-edit-btn" style="padding:8px;font-size:12px">Editar</button>'
+      +'<button class="bs pdf-del-btn" style="padding:8px;font-size:12px;color:var(--red)">Eliminar</button>'
+      +'</div>';
+    card.querySelector('.pdf-edit-btn').addEventListener('click',function(){editPdf(p._fid);});
+    card.querySelector('.pdf-del-btn').addEventListener('click',function(){confirmDel('pdf',p._fid,p.periodo);});
+    el.appendChild(card);
+  });
+  // Actualizar pagos-uber tab si está visible
+  renderPagosUber();
+}
+
+function renderCierres(){
+  const el=document.getElementById('cierres-list');if(!el) return;
+  const sorted=Object.entries(CIERRES).sort((a,b)=>b[0].localeCompare(a[0]));
+  if(!sorted.length){el.innerHTML='<div class="empty"><div class="etxt">Sin cierres registrados</div></div>';return;}
+  el.innerHTML='';
+  sorted.forEach(([fecha,c])=>{
+    const vs=vByDate(fecha);const bruto=vs.reduce((a,v)=>a+v.monto,0);
+    const row=document.createElement('div');
+    row.className='trow';
+    row.innerHTML='<div class="tico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>'
+      +'<div class="tinfo">'
+      +'<div class="tname">'+fmtD(fecha)+'</div>'
+      +'<div class="tmeta">'+vs.length+' viajes · '+(c.km||0)+' km · '+(c.hrs||0)+'h · '+(c.lit||0)+'L bencina</div>'
+      +'</div>'
+      +'<div class="tamt g">'+CLP(bruto)+'</div>'
+      +'<div class="tactions">'
+      +'<button class="tacbtn tacedit" title="Editar">✏️</button>'
+      +'<button class="tacbtn tacdel" title="Eliminar">🗑️</button>'
+      +'</div>';
+    row.querySelectorAll('.tacedit')[0].addEventListener('click',function(){editCierre(fecha);});
+    row.querySelectorAll('.tacdel')[0].addEventListener('click',function(){confirmDel('cierre',fecha,'cierre '+fmtD(fecha));});
+    el.appendChild(row);
+  });
+}
+
+function renderCierreInfo(){
+  const hoy=vByDate(today());
+  const bruto=hoy.reduce((a,v)=>a+v.monto,0);
+  const now=new Date();
+  document.getElementById('cierre-fecha').textContent=now.toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('cierre-bruto').textContent=CLP(bruto)+' bruto';
+  document.getElementById('cierre-viajes').textContent=hoy.length+' viajes hoy';
+  const c=CIERRES[today()];
+  if(c){if(c.km) document.getElementById('c-km').value=c.km;if(c.hrs) document.getElementById('c-hrs').value=c.hrs;if(c.rend) document.getElementById('c-rend').value=c.rend;}
+}
+
+function calcMins(t){
+  const p1=t.ini.split(':'),p2=t.fin.split(':');
+  let tot=(parseInt(p2[0])*60+parseInt(p2[1]))-(parseInt(p1[0])*60+parseInt(p1[1]));
+  if(t.col){const p=t.col.split('-');if(p.length===2){const c1=p[0].split(':'),c2=p[1].split(':');tot-=(parseInt(c2[0])*60+parseInt(c2[1]))-(parseInt(c1[0])*60+parseInt(c1[1]));}}
+  return Math.max(0,tot);
+}
+function renderTurnos(){
+  const el=document.getElementById('turnos-list');
+  if(!TURNOS.length){el.innerHTML='<div class="empty"><div class="etxt">Sin turnos planificados</div></div>';return;}
+  el.innerHTML='';
+  TURNOS.slice(0,12).forEach(t=>{
+    const row=document.createElement('div');
+    row.className='trow';
+    row.innerHTML='<div class="tico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>'
+      +'<div class="tinfo">'
+      +'<div class="tname">'+fmtD(t.fecha)+(t.nota?' · '+t.nota:'')+'</div>'
+      +'<div class="tmeta">'+t.ini+'–'+t.fin+' · '+calcMins(t)+' min efectivos</div>'
+      +'</div>'
+      +'<div class="tactions">'
+      +'<button class="tacbtn tacedit">✏️</button>'
+      +'<button class="tacbtn tacdel">🗑️</button>'
+      +'</div>';
+    row.querySelectorAll('.tacedit')[0].addEventListener('click',function(){editTurno(t._fid);});
+    row.querySelectorAll('.tacdel')[0].addEventListener('click',function(){confirmDel('turno',t._fid,'turno '+fmtD(t.fecha));});
+    el.appendChild(row);
+  });
+}
+
+function renderCal(){
+  const d=new Date(calY,calM,1);
+  document.getElementById('cal-lbl').textContent=MONTHS[calM]+' '+calY;
+  const first=(d.getDay()+6)%7;
+  const days=new Date(calY,calM+1,0).getDate();
+  const tod=today();
+  let html='';
+  for(let i=0;i<first;i++) html+='<div class="cday empty"></div>';
+  for(let day=1;day<=days;day++){
+    const ds=calY+'-'+String(calM+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+    const hasTurno=TURNOS.some(t=>t.fecha===ds);
+    const hasV=VIAJES.some(v=>v.fecha===ds);
+    let cls='cday';
+    if(hasV) cls+=' worked';else if(hasTurno) cls+=' planned';
+    if(ds===tod) cls+=' today';
+    html+='<div class="'+cls+'" onclick="calClick(\''+ds+'\')">'+day+(hasTurno||hasV?'<div class="cdot"></div>':'')+'</div>';
+  }
+  document.getElementById('cal-days').innerHTML=html;
+}
+window.chCal=function(dir){calM+=dir;if(calM<0){calM=11;calY--;}if(calM>11){calM=0;calY++;}renderCal();};
+window.calClick=function(ds){
+  const v=vByDate(ds);
+  toast(fmtD(ds)+(v.length?': '+v.length+' viajes · '+CLP(v.reduce((a,vj)=>a+vj.monto,0)):': sin viajes'));
+};
+
+const ZONE_FILL={none:'rgba(150,150,150,0.15)',green:'rgba(0,166,81,0.35)',yellow:'rgba(255,192,67,0.45)',red:'rgba(225,25,0,0.35)'};
+const ZONE_STROKE={none:'rgba(200,200,200,0.4)',green:'rgba(0,166,81,0.8)',yellow:'rgba(255,192,67,0.9)',red:'rgba(225,25,0,0.8)'};
+const ZONE_IMGS={'El Monte':'IMG_4631.jpeg','Talagante':'IMG_4630.jpeg','Penaflor':'IMG_4632.jpeg','Isla de Maipo':'IMG_4629.jpeg','Lonquen':''};
+
+// Polígonos más precisos basados en límites comunales reales
+const ZONE_POLYGONS={
+  'El Monte':[
+    [-33.627,-71.085],[-33.618,-71.063],[-33.622,-71.042],[-33.638,-71.022],
+    [-33.658,-71.013],[-33.678,-71.018],[-33.695,-71.038],[-33.700,-71.065],
+    [-33.688,-71.087],[-33.665,-71.098],[-33.645,-71.095]
+  ],
+  'Talagante':[
+    [-33.622,-71.042],[-33.618,-71.063],[-33.627,-71.085],[-33.635,-71.092],
+    [-33.630,-71.068],[-33.628,-71.048],[-33.636,-71.030],[-33.652,-71.016],
+    [-33.658,-71.013],[-33.638,-71.022]
+  ],
+  'Penaflor':[
+    [-33.580,-70.935],[-33.572,-70.912],[-33.578,-70.888],[-33.598,-70.872],
+    [-33.620,-70.868],[-33.640,-70.878],[-33.652,-70.900],[-33.648,-70.925],
+    [-33.630,-70.942],[-33.608,-70.948],[-33.590,-70.942]
+  ],
+  'Isla de Maipo':[
+    [-33.695,-71.038],[-33.678,-71.018],[-33.658,-71.013],[-33.652,-71.016],
+    [-33.660,-71.000],[-33.670,-70.982],[-33.690,-70.970],[-33.715,-70.972],
+    [-33.738,-70.990],[-33.750,-71.018],[-33.742,-71.048],[-33.720,-71.062],
+    [-33.700,-71.065]
+  ],
+  'Lonquen':[
+    [-33.652,-70.900],[-33.648,-70.925],[-33.658,-70.948],[-33.672,-70.958],
+    [-33.690,-70.955],[-33.708,-70.948],[-33.720,-70.930],[-33.715,-70.908],
+    [-33.700,-70.888],[-33.680,-70.878],[-33.660,-70.880],[-33.648,-70.892]
+  ],
+};
+
+let leafletMap=null;
+let leafletLayers={};
+
+function initLeafletMap(){
+  if(leafletMap){
+    setTimeout(()=>leafletMap.invalidateSize(),100);
+    return;
+  }
+  leafletMap=L.map('leaflet-map',{
+    center:[-33.665,-71.0],
+    zoom:11,
+    zoomControl:true,
+    attributionControl:false,
+    scrollWheelZoom:true
+  });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+    maxZoom:19,subdomains:'abcd'
+  }).addTo(leafletMap);
+
+  Object.entries(ZONE_POLYGONS).forEach(([name,coords])=>{
+    const z=ZONAS[name]||{color:'none'};
+    const ckey=z.color||'none';
+    const poly=L.polygon(coords,{
+      color:ZONE_STROKE[ckey],
+      weight:1.5,
+      opacity:1,
+      fillColor:ZONE_FILL[ckey],
+      fillOpacity:1,
+      smoothFactor:1.5
+    }).addTo(leafletMap);
+
+    const center=poly.getBounds().getCenter();
+    const zoneHtml='<span style="color:#fff;font-size:11px;font-weight:800;font-family:Figtree,sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.9),0 0 6px rgba(0,0,0,.7);white-space:nowrap;display:block;text-align:center;">'+name+'</span>';
+    const icon=L.divIcon({
+      html:zoneHtml,
+      className:'',
+      iconSize:null,
+      iconAnchor:null
+    });
+    const marker=L.marker(center,{icon,interactive:false,zIndexOffset:100}).addTo(leafletMap);
+    // Centrar el label después de añadir al DOM
+    const markerEl=marker.getElement();
+    if(markerEl){
+      markerEl.style.transform+=' translate(-50%,-50%)';
+      markerEl.style.marginLeft='0';
+      markerEl.style.marginTop='0';
+    }
+
+    poly.on('click',()=>selectZone(name));
+    poly.on('mouseover',function(){
+      if(selCell&&selCell.name===name) return;
+      this.setStyle({weight:2.5,fillOpacity:Math.min(1,(parseFloat(this.options.fillOpacity)||0.15)+0.15)});
+    });
+    poly.on('mouseout',function(){
+      if(selCell&&selCell.name===name) return;
+      applyZoneColors();
+    });
+    leafletLayers[name]=poly;
+  });
+
+  // invalidateSize después de que el contenedor sea visible
+  setTimeout(()=>leafletMap.invalidateSize(),200);
+}
+
+function applyZoneColors(){
+  if(!leafletMap) return;
+  Object.entries(ZONE_POLYGONS).forEach(([name])=>{
+    const z=ZONAS[name]||{color:'none'};
+    const ckey=z.color||'none';
+    const poly=leafletLayers[name];
+    if(!poly) return;
+    const isSelected=selCell&&selCell.name===name;
+    poly.setStyle({
+      color:ZONE_STROKE[ckey],
+      fillColor:ZONE_FILL[ckey],
+      fillOpacity:1,
+      weight:isSelected?3:1.5,
+      opacity:isSelected?1:1
+    });
+  });
+}
+
+window.selectZone=function(zoneName){
+  selCell={name:zoneName};
+  const z=ZONAS[zoneName]||{};
+  Object.entries(leafletLayers).forEach(([n,p])=>{
+    p.setStyle({weight:n===zoneName?3:1.5,opacity:n===zoneName?1:0.6});
+  });
+  const panel=document.getElementById('zone-detail-panel');
+  panel.style.display='block';
+  document.getElementById('zone-detail-name').textContent=zoneName;
+  document.getElementById('zone-detail-desc').textContent=z.desc||'Sin descripción. Toca "Editar notas" para agregar.';
+  const imgEl=document.getElementById('zone-detail-img');
+  const imgSrc=ZONE_IMGS[zoneName];
+  if(imgSrc){imgEl.src=imgSrc;imgEl.parentElement.style.display='block';}
+  else{imgEl.parentElement.style.display='none';}
+  renderZoneDetailNotes(zoneName,z);
+  setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'nearest'}),150);
+};
+
+window.clearZoneSelection=function(){
+  Object.values(leafletLayers).forEach(p=>p.setStyle({weight:1.5,opacity:0.6}));
+  document.getElementById('zone-detail-panel').style.display='none';
+  selCell=null;
+};
+
+function renderZoneDetailNotes(zoneName,z){
+  const el=document.getElementById('zone-detail-notes');
+  if(!el) return;
+  const notes=z.notes||[];
+  if(!notes.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--g400)">Sin notas aún</div>';
+    return;
+  }
+  el.innerHTML=notes.map((n,i)=>'<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--g200)">'
+    +'<div>'
+    +'<div style="font-size:11px;color:var(--g400);font-weight:600">'+(n.fecha||'')+' '+(n.hora||'')+'</div>'
+    +'<div style="font-size:13px;margin-top:2px">'+(n.texto||'')+'</div>'
+    +'</div>'
+    +'<button onclick="deleteNoteDetail(\''+zoneName+'\','+i+')" style="background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;padding:0 4px;flex-shrink:0">×</button>'
+    +'</div>').join('');
+}
+
+window.deleteNoteDetail=async function(zoneName,idx){
+  const z=ZONAS[zoneName]||{notes:[]};
+  if(!z.notes) return;
+  z.notes.splice(idx,1);
+  ZONAS[zoneName]=z;
+  try{
+    await setDoc(doc(db,'zonas',zoneName),z);
+    renderZoneDetailNotes(zoneName,z);
+    toast('Nota eliminada');
+  }catch(e){toast('Error: '+e.message);}
+};
+
+window.openZoneModal=function(){
+  if(!selCell) return;
+  const zoneName=selCell.name;
+  const z=ZONAS[zoneName]||{color:'none',desc:'',notes:[]};
+  document.getElementById('zona-title').textContent=zoneName;
+  document.getElementById('zona-desc').value=z.desc||'';
+  document.getElementById('zona-nota').value='';
+  selZC=z.color||'none';
+  document.querySelectorAll('.copt').forEach(el=>el.classList.toggle('on',el.dataset.c===selZC));
+  renderZNotes();
+  document.getElementById('modal-zona').classList.add('open');
+};
+function renderZNotes(){
+  const el=document.getElementById('zona-notes');if(!selCell) return;
+  const z=ZONAS[selCell.name]||{notes:[]};
+  if(!z.notes||!z.notes.length){el.innerHTML='<div style="font-size:13px;color:var(--g400);padding:8px 0">Sin notas aún</div>';return;}
+  el.innerHTML=z.notes.map((n,i)=>'<div class="noteitem">'
+    +'<div><div class="notedt">'+(n.fecha||'')+' '+(n.hora||'')+'</div><div>'+(n.texto||'')+'</div></div>'
+    +'<button class="notedel" onclick="deleteNote('+i+')">×</button>'
+    +'</div>').join('');
+}
+window.deleteNote=function(idx){
+  if(!selCell) return;
+  const z=ZONAS[selCell.name]||{notes:[]};
+  if(!z.notes) return;
+  z.notes.splice(idx,1);
+  ZONAS[selCell.name]=z;
+  renderZNotes();
+};
+window.selZColor=function(el,color){
+  document.querySelectorAll('.copt').forEach(e=>e.classList.remove('on'));
+  el.classList.add('on');selZC=color;
+};
+window.saveZone=async function(){
+  if(!selCell) return;
+  const zoneName=selCell.name;
+  const existing=ZONAS[zoneName]||{color:'none',desc:'',notes:[]};
+  const nota=document.getElementById('zona-nota').value.trim();
+  const notes=[...(existing.notes||[])];
+  if(nota){const now=new Date();notes.unshift({texto:nota,fecha:now.toLocaleDateString('es-CL',{day:'numeric',month:'short'}),hora:now.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'})});}
+  const data={color:selZC,desc:document.getElementById('zona-desc').value,notes};
+  try{
+    await setDoc(doc(db,'zonas',zoneName),data);
+    closeM('modal-zona');
+    if(selCell&&selCell.name===zoneName){
+      document.getElementById('zone-detail-desc').textContent=data.desc||'Sin descripción';
+      renderZoneDetailNotes(zoneName,data);
+    }
+    renderMapNotes();
+    toast('Zona guardada');
+  }catch(e){toast('Error: '+e.message);}
+};
+function renderMapNotes(){
+  const all=ZONE_NAMES.filter(z=>ZONAS[z]&&(ZONAS[z].notes&&ZONAS[z].notes.length||ZONAS[z].desc));
+  const el=document.getElementById('map-notes-list');
+  if(!all.length){el.innerHTML='<div class="empty"><div class="etxt">Sin notas de zonas</div><div class="esub">Toca una zona en el mapa para agregar</div></div>';return;}
+  const cm={none:'rgba(0,0,0,0.1)',green:'rgba(0,166,81,0.4)',yellow:'rgba(255,192,67,0.6)',red:'rgba(225,25,0,0.35)'};
+  el.innerHTML=all.map(z=>{const d=ZONAS[z];return '<div class="trow"><div class="tico" style="background:'+(cm[d.color]||cm.none)+'"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--g600);fill:none;stroke-width:1.8"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/></svg></div><div class="tinfo"><div class="tname">'+z+'</div><div class="tmeta">'+(d.desc||'Sin descripción')+' · '+(d.notes||[]).length+' nota(s)</div></div></div>';}).join('');
+}
+window.searchAddr=function(){
+  const q=document.getElementById('map-q').value.trim();if(!q) return;
+  const match=ZONE_NAMES.filter(c=>q.toLowerCase().includes(c.toLowerCase()));
+  document.getElementById('map-result').innerHTML=match.length
+    ?'<div class="cflat" style="margin:0"><div style="font-weight:800;margin-bottom:4px">Resultado</div><div style="font-size:14px">'+q+'</div><div style="font-size:13px;color:var(--g600);margin-top:4px">Zona detectada: <strong>'+match[0]+'</strong></div><div style="font-size:12px;color:var(--g400);margin-top:6px">Vuelve al mapa y toca esa zona</div></div>'
+    :'<div class="cflat" style="margin:0"><div style="font-size:14px;font-weight:700">'+q+'</div><div style="font-size:13px;color:var(--g400);margin-top:4px">No está en tus zonas registradas.</div></div>';
+};
+
+window.exportData=function(){
+  const data={viajes:VIAJES,cierres:CIERRES,turnos:TURNOS,zonas:ZONAS,pdfs:PDFS,config:CONFIG,exportado:new Date().toLocaleString('es-CL')};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='driver_pro_'+today()+'.json';a.click();URL.revokeObjectURL(url);
+  toast('Exportado correctamente');
+};
+window.importData=function(input){
+  const f=input.files[0];if(!f) return;
+  const reader=new FileReader();
+  reader.onload=async function(e){
+    try{
+      const d=JSON.parse(e.target.result);
+      const b=writeBatch(db);
+      (d.viajes||[]).forEach(v=>{const{_fid,...data}=v;b.set(doc(db,'viajes',v._fid||String(v.id||Date.now())),data);});
+      Object.entries(d.cierres||{}).forEach(([k,c])=>{const{_fid,...data}=c;b.set(doc(db,'cierres',k),data);});
+      await b.commit();
+      toast('Importado: '+(d.viajes||[]).length+' viajes');
+    }catch(e){toast('Error al importar: '+e.message);}
+  };
+  reader.readAsText(f);
+};
+
+window.addEventListener('online',()=>setSyncStatus('online','Sincronizado'));
+window.addEventListener('offline',()=>setSyncStatus('error','Sin conexión — offline'));
+startListeners();
+setTimeout(hideSplash,5000);
+initDatePickers();
+</script>
+</body>
+</html>
