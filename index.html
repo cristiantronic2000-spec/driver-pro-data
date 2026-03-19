@@ -145,6 +145,12 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 .noteitem:last-child{border:none}
 .notedt{font-size:11px;color:var(--g400);margin-bottom:2px;font-weight:600}
 .notedel{background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;line-height:1}
+[id^="zbox-"]{transition:background .2s,border-color .2s,outline .15s}
+[id^="zbox-"]:active{opacity:.7}
+.date-picker-wrap{display:flex;align-items:center;justify-content:center;padding:10px 20px 4px;gap:10px}
+.date-pick-btn{flex:1;padding:10px 14px;background:var(--g50);border:1.5px solid var(--g200);border-radius:12px;font-size:15px;font-weight:700;font-family:var(--font);color:var(--black);text-align:center;cursor:pointer;outline:none;-webkit-appearance:none}
+.date-pick-btn:focus{border-color:var(--black)}
+.date-today-btn{padding:10px 14px;background:var(--black);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;white-space:nowrap}
 .sync-bar{display:flex;align-items:center;gap:6px;padding:4px 20px 2px;font-size:11px;font-weight:600;color:var(--g400)}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--g400);flex-shrink:0}
 .sync-dot.online{background:var(--green)}
@@ -182,6 +188,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     </div>
     <div class="hamt" id="h-total">$0</div>
     <div class="hlbl">ganado hoy</div>
+    <div id="h-comb-est" style="display:none;font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;font-weight:600"></div>
     <div class="hstats">
       <div class="hstat"><div class="hsval" id="h-viajes">0</div><div class="hslbl">Viajes</div></div>
       <div class="hstat"><div class="hsval" id="h-km">0 km</div><div class="hslbl">Km hoy</div></div>
@@ -235,10 +242,9 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <div style="padding:16px"><button class="bs" onclick="openM('modal-cierre')">Cerrar día</button></div>
   </div>
   <div id="vsub-historial" style="display:none">
-    <div class="snav">
-      <button class="sbtn" onclick="chDay('hist',-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-      <div class="snlbl" id="hist-lbl">Hoy</div>
-      <button class="sbtn" onclick="chDay('hist',1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="date-picker-wrap">
+      <input type="date" class="date-pick-btn" id="hist-date" onchange="pickDate('hist',this.value)" max="">
+      <button class="date-today-btn" onclick="pickDate('hist','')">Hoy</button>
     </div>
     <div id="v-hist-list"></div>
   </div>
@@ -275,10 +281,9 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <div id="g-last10"></div>
   </div>
   <div id="gsub-historial" style="display:none">
-    <div class="snav">
-      <button class="sbtn" onclick="chDay('gan',-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-      <div class="snlbl" id="gan-lbl">Hoy</div>
-      <button class="sbtn" onclick="chDay('gan',1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="date-picker-wrap">
+      <input type="date" class="date-pick-btn" id="gan-date" onchange="pickDate('gan',this.value)" max="">
+      <button class="date-today-btn" onclick="pickDate('gan','')">Hoy</button>
     </div>
     <div id="g-hist-list"></div>
   </div>
@@ -290,6 +295,11 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
   <div id="gsub-pagos" style="display:none">
     <div style="height:12px"></div>
     <div class="card"><div class="chwrap"><canvas id="ch-pag"></canvas></div></div>
+    <!-- Sección A: Resumen Uber desde PDFs -->
+    <div class="slbl">Resumen Uber (PDFs cargados)</div>
+    <div id="pagos-uber-resumen" style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden"></div>
+    <!-- Sección B: Pagos manuales desde viajes registrados -->
+    <div class="slbl">Pagos registrados en app</div>
     <div class="pbreak">
       <div class="pbox"><div class="pbval" id="p-ef">$0</div><div class="pblbl">Efectivo</div></div>
       <div class="pbox"><div class="pbval" id="p-tk">$0</div><div class="pblbl">Tarjeta</div></div>
@@ -307,6 +317,11 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
   </div>
   <div id="gsub-combustible" style="display:none">
     <div style="height:12px"></div>
+    <div class="date-picker-wrap" style="justify-content:space-between">
+      <input type="date" class="date-pick-btn" id="comb-desde" style="flex:1;margin-right:6px" onchange="renderCombustible()">
+      <input type="date" class="date-pick-btn" id="comb-hasta" style="flex:1;margin-right:6px" onchange="renderCombustible()">
+      <button class="date-today-btn" onclick="resetCombFiltro()">7 días</button>
+    </div>
     <div class="mgrid">
       <div class="mbox"><div class="mlbl">Gastado total</div><div class="mval cr" id="comb-total">$0</div><div class="msub">en bencina</div></div>
       <div class="mbox"><div class="mlbl">Km recorridos</div><div class="mval" id="comb-km">0 km</div><div class="msub">días con cierre</div></div>
@@ -334,55 +349,77 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <button class="stab" onclick="stab('m','notas',this)">Mis notas</button>
   </div>
   <div id="msub-mapa">
-    <div style="padding:12px 16px 8px">
-      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;font-size:11px;font-weight:600;color:var(--g600)">
-        <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;background:rgba(0,166,81,.5);border-radius:2px;display:inline-block"></span>Tranquila</span>
-        <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;background:rgba(255,192,67,.6);border-radius:2px;display:inline-block"></span>Precaución</span>
-        <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;background:rgba(225,25,0,.4);border-radius:2px;display:inline-block"></span>Evitar</span>
-      </div>
-      <div style="position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--g200);">
-        <img id="map-img" src="https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=800&height=500&center=lonlat:-71.0,-33.77&zoom=11&marker=lonlat:-71.018,-33.687;color:%23000;size:small;label:ElMonte&marker=lonlat:-70.933,-33.655;color:%23000;size:small;label:Talagante&marker=lonlat:-70.895,-33.752;color:%23000;size:small;label:Peñaflor&marker=lonlat:-71.013,-33.772;color:%23000;size:small;label:Lonquén&marker=lonlat:-71.087,-33.803;color:%23000;size:small;label:IsladeMaipo&apiKey=a44e2e7a4f1f4dbbba5c9e8a8f9f9d0a" onerror="this.onerror=null;showMapFallback()" style="width:100%;display:block;min-height:240px;background:var(--g100)" alt="Mapa zona de trabajo">
-        <svg id="map-overlay" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet" style="position:absolute;inset:0;width:100%;height:100%;cursor:pointer" onclick="mapZoneClick(event)">
-          <rect id="zone-elMonte" data-zone="El Monte" x="60" y="80" width="140" height="120" rx="10" fill="rgba(0,0,0,0)" stroke="rgba(0,0,0,0.15)" stroke-width="1.5" style="transition:fill .2s"/>
-          <text x="130" y="155" text-anchor="middle" font-size="13" font-weight="700" fill="rgba(0,0,0,0.7)" pointer-events="none">El Monte</text>
-          <rect id="zone-talagante" data-zone="Talagante" x="280" y="50" width="150" height="130" rx="10" fill="rgba(0,0,0,0)" stroke="rgba(0,0,0,0.15)" stroke-width="1.5" style="transition:fill .2s"/>
-          <text x="355" y="130" text-anchor="middle" font-size="13" font-weight="700" fill="rgba(0,0,0,0.7)" pointer-events="none">Talagante</text>
-          <rect id="zone-penaflor" data-zone="Peñaflor" x="500" y="280" width="150" height="120" rx="10" fill="rgba(0,0,0,0)" stroke="rgba(0,0,0,0.15)" stroke-width="1.5" style="transition:fill .2s"/>
-          <text x="575" y="350" text-anchor="middle" font-size="13" font-weight="700" fill="rgba(0,0,0,0.7)" pointer-events="none">Peñaflor</text>
-          <rect id="zone-lonquen" data-zone="Lonquén" x="420" y="120" width="160" height="110" rx="10" fill="rgba(0,0,0,0)" stroke="rgba(0,0,0,0.15)" stroke-width="1.5" style="transition:fill .2s"/>
-          <text x="500" y="185" text-anchor="middle" font-size="13" font-weight="700" fill="rgba(0,0,0,0.7)" pointer-events="none">Lonquén</text>
-          <rect id="zone-islaMaipo" data-zone="Isla de Maipo" x="100" y="280" width="170" height="120" rx="10" fill="rgba(0,0,0,0)" stroke="rgba(0,0,0,0.15)" stroke-width="1.5" style="transition:fill .2s"/>
-          <text x="185" y="350" text-anchor="middle" font-size="13" font-weight="700" fill="rgba(0,0,0,0.7)" pointer-events="none">Isla de Maipo</text>
-        </svg>
-      </div>
-      <div id="map-fallback" style="display:none;border-radius:14px;overflow:hidden;border:1px solid var(--g200)">
-        <svg viewBox="0 0 400 280" style="width:100%;display:block;background:#e8e4dc">
-          <rect width="400" height="280" fill="#e8e4dc"/>
-          <line x1="0" y1="140" x2="400" y2="140" stroke="#fff" stroke-width="8"/>
-          <line x1="200" y1="0" x2="200" y2="280" stroke="#fff" stroke-width="5"/>
-          <path d="M0 160 Q100 155 200 165 Q300 175 400 170" stroke="#a8d4f0" stroke-width="8" fill="none"/>
-          <rect data-zone="El Monte" x="10" y="30" width="110" height="90" rx="8" fill="rgba(0,0,0,0.04)" stroke="#ccc" stroke-width="1" style="cursor:pointer" onclick="mapZoneClick(event)"/>
-          <text x="65" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#444" pointer-events="none">El Monte</text>
-          <rect data-zone="Talagante" x="140" y="20" width="120" height="100" rx="8" fill="rgba(0,0,0,0.04)" stroke="#ccc" stroke-width="1" style="cursor:pointer" onclick="mapZoneClick(event)"/>
-          <text x="200" y="78" text-anchor="middle" font-size="11" font-weight="700" fill="#444" pointer-events="none">Talagante</text>
-          <rect data-zone="Lonquén" x="275" y="40" width="115" height="90" rx="8" fill="rgba(0,0,0,0.04)" stroke="#ccc" stroke-width="1" style="cursor:pointer" onclick="mapZoneClick(event)"/>
-          <text x="332" y="93" text-anchor="middle" font-size="11" font-weight="700" fill="#444" pointer-events="none">Lonquén</text>
-          <rect data-zone="Isla de Maipo" x="10" y="165" width="130" height="100" rx="8" fill="rgba(0,0,0,0.04)" stroke="#ccc" stroke-width="1" style="cursor:pointer" onclick="mapZoneClick(event)"/>
-          <text x="75" y="222" text-anchor="middle" font-size="11" font-weight="700" fill="#444" pointer-events="none">Isla de Maipo</text>
-          <rect data-zone="Peñaflor" x="275" y="175" width="115" height="90" rx="8" fill="rgba(0,0,0,0.04)" stroke="#ccc" stroke-width="1" style="cursor:pointer" onclick="mapZoneClick(event)"/>
-          <text x="332" y="225" text-anchor="middle" font-size="11" font-weight="700" fill="#444" pointer-events="none">Peñaflor</text>
-        </svg>
-      </div>
-      <div style="margin-top:6px;font-size:11px;color:var(--g400);text-align:center">Toca una zona para ver y agregar notas</div>
+    <!-- Leyenda -->
+    <div style="display:flex;gap:12px;flex-wrap:wrap;padding:10px 16px 6px;font-size:11px;font-weight:600;color:var(--g600)">
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:rgba(0,166,81,.6);border-radius:2px;display:inline-block"></span>Tranquila</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:rgba(255,192,67,.7);border-radius:2px;display:inline-block"></span>Precaución</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:rgba(225,25,0,.5);border-radius:2px;display:inline-block"></span>Evitar</span>
     </div>
-    <div id="map-info" style="display:none;padding:0 16px 8px">
-      <div class="cflat" style="margin:0">
-        <div style="font-weight:800;font-size:15px;margin-bottom:4px" id="map-cell-name">—</div>
-        <div style="font-size:13px;color:var(--g600)" id="map-cell-desc">Sin descripción</div>
-        <div style="margin-top:10px"><button class="bs" style="padding:10px;font-size:13px" onclick="openZoneModal()">Editar notas</button></div>
-      </div>
-    </div>
+
+```
+<!-- MAPA GENERAL con zonas clicables posicionadas sobre los nombres -->
+<div style="margin:0 16px;border-radius:14px;overflow:hidden;border:1px solid var(--g200);position:relative;" id="map-general-wrap">
+  <img src="IMG_4628.jpeg"
+       onerror="this.src='';this.parentElement.style.background='#2d3748'"
+       style="width:100%;display:block;"
+       alt="Mapa zona de trabajo">
+
+  <!-- Zonas SVG posicionadas con % sobre la imagen real -->
+  <!-- El Monte: arriba izquierda ~18%x, 8%y -->
+  <div data-zone="El Monte"   id="zbox-El Monte"
+       onclick="selectZone('El Monte')"
+       style="position:absolute;left:6%;top:5%;width:24%;height:22%;cursor:pointer;border-radius:8px;border:2px solid transparent;transition:all .2s;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px">
   </div>
+  <!-- Talagante: centro ~38%x, 22%y -->
+  <div data-zone="Talagante"  id="zbox-Talagante"
+       onclick="selectZone('Talagante')"
+       style="position:absolute;left:28%;top:15%;width:32%;height:26%;cursor:pointer;border-radius:8px;border:2px solid transparent;transition:all .2s">
+  </div>
+  <!-- Peñaflor: arriba derecha ~72%x, 12%y -->
+  <div data-zone="Peñaflor"   id="zbox-Peñaflor"
+       onclick="selectZone('Peñaflor')"
+       style="position:absolute;left:68%;top:8%;width:28%;height:26%;cursor:pointer;border-radius:8px;border:2px solid transparent;transition:all .2s">
+  </div>
+  <!-- Isla de Maipo: abajo izquierda ~8%x, 62%y -->
+  <div data-zone="Isla de Maipo" id="zbox-Isla de Maipo"
+       onclick="selectZone('Isla de Maipo')"
+       style="position:absolute;left:2%;top:58%;width:34%;height:28%;cursor:pointer;border-radius:8px;border:2px solid transparent;transition:all .2s">
+  </div>
+  <!-- Lonquén: centro-bajo ~40%x, 48%y -->
+  <div data-zone="Lonquén"    id="zbox-Lonquén"
+       onclick="selectZone('Lonquén')"
+       style="position:absolute;left:30%;top:44%;width:36%;height:28%;cursor:pointer;border-radius:8px;border:2px solid transparent;transition:all .2s">
+  </div>
+</div>
+<div style="text-align:center;font-size:11px;color:var(--g400);padding:5px 0 2px">Toca una zona para ver detalle y notas</div>
+
+<!-- Panel zona seleccionada: mapa detalle + notas -->
+<div id="zone-detail-panel" style="display:none;margin-top:4px">
+
+  <!-- Header zona -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 6px">
+    <div style="font-size:17px;font-weight:900" id="zone-detail-name">—</div>
+    <button onclick="clearZoneSelection()"
+            style="background:var(--g100);border:none;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer">✕ Cerrar</button>
+  </div>
+
+  <!-- Mapa detallado de la comuna -->
+  <div style="margin:0 16px 10px;border-radius:12px;overflow:hidden;border:1px solid var(--g200)">
+    <img id="zone-detail-img" src="" style="width:100%;display:block;" alt="">
+  </div>
+
+  <!-- Info zona + notas -->
+  <div style="margin:0 16px;background:var(--g50);border-radius:14px;padding:14px;margin-bottom:10px">
+    <div style="font-size:13px;color:var(--g600);margin-bottom:8px" id="zone-detail-desc">Sin descripción</div>
+    <div id="zone-detail-notes" style="margin-bottom:10px"></div>
+    <button class="bs" style="padding:10px;font-size:13px" onclick="openZoneModal()">✏️ Editar notas</button>
+  </div>
+
+</div>
+```
+
+  </div>
+
   <div id="msub-buscar" style="display:none">
     <div style="padding:16px">
       <div class="fg"><label class="fl">Buscar dirección</label><input class="fi" type="text" id="map-q" placeholder="Ej: Calle Samuel Santana 235, Talagante"></div>
@@ -442,6 +479,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
         </div>
       </div>
       <button class="bp bgreen" onclick="saveCierreHoy()" style="margin-top:8px">Guardar cierre del día</button>
+      <div id="cierre-diff" style="display:none;background:var(--g50);border-radius:14px;margin-top:12px;overflow:hidden"></div>
     </div>
   </div>
   <div id="xsub-sync" style="display:none">
@@ -645,6 +683,7 @@ let CONFIG={rend:16,bencina:1200,fondo:5,meta:50000,comision:14.5};
 let payState={v:'ef',m:'ef'};
 let benState=false,period='hoy';
 let offsets={hist:0,gan:0};
+let selectedDates={hist:'',gan:''};  // '' = hoy
 let calY=new Date().getFullYear(),calM=new Date().getMonth();
 let selCell=null,selZC='none';
 let charts={};
@@ -668,6 +707,22 @@ function setSyncStatus(state,msg){
 function hideSplash(){const s=document.getElementById('splash');if(s){s.classList.add('hide');setTimeout(()=>s.style.display='none',400);}}
 
 // ── FIRESTORE LISTENERS ───────────────────────────────────────────────────
+function initDatePickers(){
+  const t=today();
+  // Historial y ganancias
+  ['hist','gan'].forEach(k=>{
+    selectedDates[k]=t;
+    const el=document.getElementById(k+'-date');
+    if(el){el.value=t;el.max=t;}
+  });
+  // Combustible: últimos 7 días por defecto
+  const d7=new Date();d7.setDate(d7.getDate()-6);
+  const desdeEl=document.getElementById('comb-desde');
+  const hastaEl=document.getElementById('comb-hasta');
+  if(desdeEl) desdeEl.value=d7.toISOString().slice(0,10);
+  if(hastaEl){hastaEl.value=t;hastaEl.max=t;}
+}
+
 function startListeners(){
   setSyncStatus('syncing','Conectando...');
   onSnapshot(collection(db,'viajes'),(snap)=>{
@@ -767,7 +822,7 @@ window.stab=function(prefix,sub,btn){
   if(prefix==='g'&&sub==='historial') renderGHist();
   if(prefix==='g'&&sub==='desglose') renderDesglose();
   if(prefix==='g'&&sub==='pagos') renderPagos();
-  if(prefix==='g'&&sub==='combustible') renderCombustible();
+  if(prefix==='g'&&sub==='combustible'){resetCombFiltro();}
   if(prefix==='v'&&sub==='hoy') renderVHoy();
   if(prefix==='v'&&sub==='historial') renderVHist();
   if(prefix==='m'&&sub==='mapa') setTimeout(applyZoneColors,80);
@@ -892,8 +947,43 @@ window.editViaje=function(fid){
 
 // ── CIERRES CRUD ─────────────────────────────────────────────────────────
 window.saveCierreHoy=async function(){
-  const data={km:parseFloat(document.getElementById('c-km').value)||0,hrs:parseFloat(document.getElementById('c-hrs').value)||0,rend:parseFloat(document.getElementById('c-rend').value)||CONFIG.rend,lit:benState?(parseFloat(document.getElementById('c-lit').value)||0):0,pli:benState?(parseFloat(document.getElementById('c-pli').value)||CONFIG.bencina):CONFIG.bencina};
-  try{await setDoc(doc(db,'cierres',today()),data);toast('Cierre guardado');}catch(e){toast('Error: '+e.message);}
+  const km=parseFloat(document.getElementById('c-km').value)||0;
+  const rend=parseFloat(document.getElementById('c-rend').value)||CONFIG.rend;
+  const pli=parseFloat(document.getElementById('c-pli').value)||CONFIG.bencina;
+  const data={km, hrs:parseFloat(document.getElementById('c-hrs').value)||0, rend, pli};
+  const hoy=vByDate(today());
+  // Estimado ANTES del cierre (usando kv+kj de los viajes)
+  const kmEstimado=kmDesdeViajes(hoy);
+  const combEstimado=combustibleEstimado(hoy);
+  // Real CON el cierre
+  const litsReal=rend>0?km/rend:0;
+  const combReal=litsReal*pli;
+  // Diferencia km
+  const diffKm=km-kmEstimado;
+  const diffComb=combReal-combEstimado;
+  const diffStr=diffKm>=0?\`+${diffKm.toFixed(0)}km\`:\`${diffKm.toFixed(0)}km\`;
+  const diffCombStr=diffComb>=0?\`+${CLP(Math.abs(diffComb))}\`:\`-${CLP(Math.abs(diffComb))}\`;
+  const bruto=hoy.reduce((a,v)=>a+v.monto,0);
+  const netoFinal=calcNeto(hoy,false)-combReal;
+  const msg=\`✅ Cierre guardado\nKm: \${kmEstimado.toFixed(0)} est. → \${km} real (\${diffStr})\nComb: \${CLP(combEstimado)} est. → \${CLP(combReal)} real (\${diffCombStr})\nNeto final: \${CLP(netoFinal)}\`;
+  try{
+    await setDoc(doc(db,'cierres',today()),data);
+    // Toast con resumen
+    toast(\`✅ Neto real: \${CLP(netoFinal)} · Comb: \${CLP(combReal)} · Dif km: \${diffStr}\`);
+    // Mostrar detalle en el panel cierre
+    const detEl=document.getElementById('cierre-diff');
+    if(detEl){
+      detEl.innerHTML=\`
+        <div class="drow"><span class="dlbl">Km estimados (kv+kj)</span><span class="dval">\${kmEstimado.toFixed(0)} km</span></div>
+        <div class="drow"><span class="dlbl">Km reales (cierre)</span><span class="dval">\${km} km</span></div>
+        <div class="drow"><span class="dlbl">Diferencia</span><span class="dval" style="color:\${diffKm>=0?'var(--red)':'var(--green)'">\${diffStr}</span></div>
+        <div class="drow"><span class="dlbl">Comb. estimado</span><span class="dval cr">-\${CLP(combEstimado)}</span></div>
+        <div class="drow"><span class="dlbl">Comb. real</span><span class="dval cr">-\${CLP(combReal)} (\${litsReal.toFixed(1)}L)</span></div>
+        <div class="drow" style="font-weight:800"><span class="dlbl">Neto final del día</span><span class="dval cg">\${CLP(netoFinal)}</span></div>\`;
+      detEl.style.display='block';
+    }
+    renderInicio();
+  }catch(e){toast('Error: '+e.message);}
 };
 
 window.saveCierreModal=async function(){
@@ -1021,11 +1111,36 @@ function calcBencina(fechas){
   if(!fechas||fechas.length===0) return Object.values(CIERRES).reduce((a,c)=>a+costoBencina(c),0);
   return fechas.reduce((a,f)=>{const c=CIERRES[f]||{};return a+costoBencina(c);},0);
 }
-function calcNeto(viajes){
+function kmDesdeViajes(viajes){
+  // Suma km vacío + km viaje de cada viaje del día
+  return viajes.reduce((a,v)=>a+(parseFloat(v.kv)||0)+(parseFloat(v.kj)||0),0);
+}
+function combustibleEstimado(viajes){
+  // Estimado usando km de los viajes del día + config rendimiento/precio
+  const km=kmDesdeViajes(viajes);
+  const rend=parseFloat(CONFIG.rend)||16;
+  const pli=parseFloat(CONFIG.bencina)||1200;
+  return km>0 ? (km/rend)*pli : 0;
+}
+function combustibleReal(fecha){
+  // Usa el cierre registrado si existe (km reales del día)
+  const c=CIERRES[fecha]||{};
+  return c.km>0 ? costoBencina(c) : 0;
+}
+
+function calcNeto(viajes, descontarCombustible=false){
+  // bruto
   const b=viajes.reduce((a,v)=>a+v.monto,0);
-  const fechas=[...new Set(viajes.map(v=>v.fecha))];
-  const ben=calcBencina(fechas);
-  return b-b*(CONFIG.comision/100)-b*(CONFIG.fondo/100)-ben;
+  // comisión + fondo siempre
+  let neto=b-b*(CONFIG.comision/100)-b*(CONFIG.fondo/100);
+  // combustible: SOLO si se pide explícitamente (cuando hay cierre registrado con km)
+  if(descontarCombustible){
+    const fechas=[...new Set(viajes.map(v=>v.fecha))];
+    // solo descontar fechas que tienen cierre CON km real
+    const fechasConKm=fechas.filter(f=>(CIERRES[f]||{}).km>0);
+    neto-=calcBencina(fechasConKm);
+  }
+  return neto;
 }
 function vByDate(d){return sortViajes(VIAJES.filter(v=>v.fecha===d));}
 function vPeriod(){
@@ -1039,12 +1154,32 @@ function vPeriod(){
 function renderInicio(){
   const hoy=vByDate(today());
   const bruto=hoy.reduce((a,v)=>a+v.monto,0);
-  const neto=calcNeto(hoy);
   const cierre=CIERRES[today()]||{};
+  // Combustible: si hay cierre real usar ese, si no estimar desde kv+kj
+  const tieneCierreReal=cierre.km>0;
+  const combCosto=tieneCierreReal ? combustibleReal(today()) : combustibleEstimado(hoy);
+  const kmMostrar=tieneCierreReal ? cierre.km : kmDesdeViajes(hoy);
+  // Neto = bruto - comisión - fondo - combustible (estimado o real)
+  const netoBase=calcNeto(hoy, false);
+  const neto=netoBase-combCosto;
+  const netoLabel=tieneCierreReal ? 'Neto real' : 'Neto est.';
   document.getElementById('h-total').textContent=CLP(bruto);
   document.getElementById('h-viajes').textContent=hoy.length;
-  document.getElementById('h-km').textContent=(cierre.km||0)+' km';
+  document.getElementById('h-km').textContent=kmMostrar.toFixed(0)+' km';
   document.getElementById('h-neto').textContent=CLP(neto);
+  // Actualizar label neto
+  const netoLblEl=document.querySelector('.hslbl:last-child');
+  if(netoLblEl&&netoLblEl.previousElementSibling&&netoLblEl.previousElementSibling.id==='h-neto') netoLblEl.textContent=netoLabel;
+  // Mostrar combustible estimado en hero si hay viajes
+  const combEl=document.getElementById('h-comb-est');
+  if(combEl){
+    if(hoy.length>0){
+      combEl.textContent=(tieneCierreReal?'Comb. real: ':'Comb. est.: ')+'-'+CLP(combCosto);
+      combEl.style.display='block';
+    } else {
+      combEl.style.display='none';
+    }
+  }
   document.getElementById('h-ef').textContent=CLP(hoy.filter(v=>v.pago==='ef').reduce((a,v)=>a+v.monto,0));
   document.getElementById('h-tk').textContent=CLP(hoy.filter(v=>v.pago==='tk').reduce((a,v)=>a+v.monto,0));
   document.getElementById('h-tr').textContent=CLP(hoy.filter(v=>v.pago==='tr').reduce((a,v)=>a+v.monto,0));
@@ -1052,7 +1187,7 @@ function renderInicio(){
   const sem=VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=d7);
   document.getElementById('h-sb').textContent=CLP(sem.reduce((a,v)=>a+v.monto,0));
   document.getElementById('h-sv').textContent=sem.length+' viajes';
-  document.getElementById('h-sn').textContent=CLP(calcNeto(sem));
+  document.getElementById('h-sn').textContent=CLP(calcNeto(sem, true));
   const last10=VIAJES.slice(0,10);
   document.getElementById('h-last10').innerHTML=last10.length?last10.map(tripCard).join(''): '<div class="empty"><div class="etxt">Sin viajes aún</div><div class="esub">Toca + Agregar viaje para empezar</div></div>';
 }
@@ -1064,9 +1199,10 @@ function renderVHoy(){
   el.innerHTML=hoy.length?hoy.map(tripCard).join(''):'<div class="empty"><div class="etxt">Sin viajes hoy</div><div class="esub">Agrega tu primer viaje</div></div>';
 }
 function renderVHist(){
-  const d=new Date();d.setDate(d.getDate()+offsets.hist);
-  const ds=d.toISOString().slice(0,10);
-  document.getElementById('hist-lbl').textContent=offsets.hist===0?'Hoy':fmtD(ds);
+  const ds=selectedDates.hist||today();
+  // sync input
+  const inp=document.getElementById('hist-date');
+  if(inp) inp.value=ds;
   const viajes=vByDate(ds);
   const el=document.getElementById('v-hist-list');
   if(!viajes.length){el.innerHTML='<div class="empty"><div class="etxt">Sin viajes este día</div></div>';return;}
@@ -1074,7 +1210,16 @@ function renderVHist(){
   el.innerHTML=`<div style="padding:12px 20px;background:var(--g50);border-bottom:1px solid var(--g200)"><span style="font-size:13px;font-weight:700;color:var(--g600)">${viajes.length} viajes · </span><span style="font-size:15px;font-weight:900">${CLP(bruto)}</span></div>`+viajes.map(tripCard).join('');
 }
 window.chDay=function(key,dir){
+  // legacy - mantener por si acaso
   offsets[key]+=dir;if(offsets[key]>0) offsets[key]=0;
+  if(key==='hist') renderVHist();
+  if(key==='gan') renderGHist();
+};
+window.pickDate=function(key,val){
+  selectedDates[key]=val||today();
+  // Actualizar el input
+  const inp=document.getElementById(key+'-date');
+  if(inp) inp.value=selectedDates[key];
   if(key==='hist') renderVHist();
   if(key==='gan') renderGHist();
 };
@@ -1087,8 +1232,10 @@ function renderGan(){
   const viajes=vPeriod();
   const bruto=viajes.reduce((a,v)=>a+v.monto,0);
   const fechas=[...new Set(viajes.map(v=>v.fecha))];
-  const ben=calcBencina(fechas);
-  const neto=calcNeto(viajes);
+  // solo fechas con cierre que tiene km real
+  const fechasConKm=fechas.filter(f=>(CIERRES[f]||{}).km>0);
+  const ben=calcBencina(fechasConKm);
+  const neto=calcNeto(viajes, true);
   // Horas: sumar hrs de todos los cierres del período
   const hrsTotal=fechas.reduce((a,f)=>{const c=CIERRES[f]||{};return a+(c.hrs||0);},0);
   document.getElementById('g-bruto').textContent=CLP(bruto);
@@ -1121,9 +1268,9 @@ function renderGan(){
   document.getElementById('g-last10').innerHTML=viajes.slice(0,10).map(tripCard).join('')||'<div class="empty"><div class="etxt">Sin viajes</div></div>';
 }
 function renderGHist(){
-  const d=new Date();d.setDate(d.getDate()+offsets.gan);
-  const ds=d.toISOString().slice(0,10);
-  document.getElementById('gan-lbl').textContent=offsets.gan===0?'Hoy':fmtD(ds);
+  const ds=selectedDates.gan||today();
+  const inp=document.getElementById('gan-date');
+  if(inp) inp.value=ds;
   const viajes=vByDate(ds);
   const cierre=CIERRES[ds]||{};
   const el=document.getElementById('g-hist-list');
@@ -1131,7 +1278,7 @@ function renderGHist(){
   const bruto=viajes.reduce((a,v)=>a+v.monto,0);
   el.innerHTML=`<div class="mgrid" style="margin-top:12px">
     <div class="mbox"><div class="mlbl">Bruto</div><div class="mval">${CLP(bruto)}</div></div>
-    <div class="mbox"><div class="mlbl">Neto est.</div><div class="mval cg">${CLP(calcNeto(viajes))}</div></div>
+    <div class="mbox"><div class="mlbl">Neto est.</div><div class="mval cg">${CLP(calcNeto(viajes, true))}</div></div>
     <div class="mbox"><div class="mlbl">Viajes</div><div class="mval">${viajes.length}</div></div>
     <div class="mbox"><div class="mlbl">Km totales</div><div class="mval">${cierre.km||'—'}</div></div>
   </div>`+viajes.map(tripCard).join('');
@@ -1150,14 +1297,42 @@ function renderDesglose(){
   document.getElementById('des-rows').innerHTML=rows.map(r=>`<div class="drow" style="${r.bold?'font-weight:800':''}" ><span class="dlbl" style="${r.bold?'color:var(--black)':''}">${r.l}</span><span class="dval" style="color:${r.c}">${r.v<0?'-'+CLP(Math.abs(r.v)):CLP(r.v)}</span></div>`).join('');
 }
 function renderPagos(){
+  // ── SECCIÓN A: Resumen Uber desde PDFs cargados ──────────────
+  const pdfEl=document.getElementById('pagos-uber-resumen');
+  if(pdfEl){
+    if(PDFS.length>0){
+      let efUber=0,trUber=0,brutoUber=0,siiT=0,flexT=0,pagadoT=0;
+      PDFS.forEach(p=>{efUber+=p.ef||0;trUber+=p.tr||0;brutoUber+=p.bruto||0;siiT+=p.sii||0;flexT+=p.flex||0;pagadoT+=p.pagado||0;});
+      pdfEl.innerHTML=
+        '<div class="drow"><span class="dlbl">Ganancias brutas</span><span class="dval">'+CLP(brutoUber)+'</span></div>'+
+        '<div class="drow"><span class="dlbl">Retención SII</span><span class="dval cr">-'+CLP(siiT)+'</span></div>'+
+        '<div class="drow"><span class="dlbl">Tarifa pago flexible</span><span class="dval cr">-'+CLP(flexT)+'</span></div>'+
+        '<div class="drow" style="font-weight:800"><span class="dlbl">Total pagado por Uber</span><span class="dval">'+CLP(pagadoT)+'</span></div>'+
+        '<div class="drow"><span class="dlbl">Efectivo cobrado</span><span class="dval">'+CLP(efUber)+'</span></div>'+
+        '<div class="drow"><span class="dlbl">Transferido al banco</span><span class="dval">'+CLP(trUber)+'</span></div>';
+      pdfEl.style.display='block';
+    } else {
+      pdfEl.innerHTML='<div style="padding:12px 20px;font-size:13px;color:var(--g400)">Sin resúmenes Uber cargados aún. Agrégalos en la pestaña Uber Info.</div>';
+      pdfEl.style.display='block';
+    }
+  }
+  // ── SECCIÓN B: Pagos manuales desde viajes registrados ───────
   const ef=VIAJES.filter(v=>v.pago==='ef').reduce((a,v)=>a+v.monto,0);
   const tk=VIAJES.filter(v=>v.pago==='tk').reduce((a,v)=>a+v.monto,0);
   const tr=VIAJES.filter(v=>v.pago==='tr').reduce((a,v)=>a+v.monto,0);
+  const total=ef+tk+tr;
   document.getElementById('p-ef').textContent=CLP(ef);
   document.getElementById('p-tk').textContent=CLP(tk);
   document.getElementById('p-tr').textContent=CLP(tr);
   if(charts.pag) charts.pag.destroy();
-  charts.pag=new Chart(document.getElementById('ch-pag'),{type:'doughnut',data:{labels:['Efectivo','Tarjeta','Transfer.'],datasets:[{data:[ef,tk,tr],backgroundColor:['#000','#276EF1','#FFC043'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:12,weight:'700'},padding:12}}}}});
+  if(total>0){
+    charts.pag=new Chart(document.getElementById('ch-pag'),{
+      type:'doughnut',
+      data:{labels:['Efectivo','Tarjeta','Transfer.'],datasets:[{data:[ef,tk,tr],backgroundColor:['#000','#276EF1','#FFC043'],borderWidth:0}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:12,weight:'700'},padding:12}}}}
+    });
+  }
+  // ── Fondo mantención ─────────────────────────────────────────
   const fondo=VIAJES.reduce((a,v)=>a+v.monto*(CONFIG.fondo/100),0);
   document.getElementById('fondo-tot').textContent=CLP(fondo);
   const pct=Math.min(100,Math.round(fondo/CONFIG.meta*100));
@@ -1166,8 +1341,28 @@ function renderPagos(){
 }
 
 // ── PDFs RENDER ───────────────────────────────────────────────────────────
+function resetCombFiltro(){
+  const t=today();
+  const d7=new Date();d7.setDate(d7.getDate()-6);
+  const desde=d7.toISOString().slice(0,10);
+  const desdeEl=document.getElementById('comb-desde');
+  const hastaEl=document.getElementById('comb-hasta');
+  if(desdeEl) desdeEl.value=desde;
+  if(hastaEl) hastaEl.value=t;
+  renderCombustible();
+}
+
 function renderCombustible(){
-  const allCierres=Object.entries(CIERRES).sort((a,b)=>b[0].localeCompare(a[0]));
+  // Obtener rango de fechas del filtro
+  const desdeEl=document.getElementById('comb-desde');
+  const hastaEl=document.getElementById('comb-hasta');
+  const desde=desdeEl?desdeEl.value:'';
+  const hasta=hastaEl?hastaEl.value:today();
+  // Filtrar cierres por rango
+  const allCierresRaw=Object.entries(CIERRES).sort((a,b)=>b[0].localeCompare(a[0]));
+  const allCierres=desde
+    ? allCierresRaw.filter(([f])=>f>=desde && f<=hasta)
+    : allCierresRaw;
   let totalCosto=0,totalKm=0,totalLitros=0,rendSum=0,rendCount=0;
   allCierres.forEach(([f,c])=>{
     const lits=litrosConsumidos(c);
@@ -1326,28 +1521,91 @@ window.calClick=function(ds){
 
 // ── MAPA / ZONAS ──────────────────────────────────────────────────────────
 const ZONE_COLOR_MAP={none:'rgba(0,0,0,0)',green:'rgba(0,166,81,0.35)',yellow:'rgba(255,192,67,0.5)',red:'rgba(225,25,0,0.3)'};
-const ZONE_SVG_MAP={'El Monte':'zone-elMonte','Talagante':'zone-talagante','Lonquén':'zone-lonquen','Isla de Maipo':'zone-islaMaipo','Peñaflor':'zone-penaflor'};
+const ZONE_BORDER_MAP={none:'rgba(255,255,255,0.15)',green:'rgba(0,166,81,0.9)',yellow:'rgba(255,192,67,1)',red:'rgba(225,25,0,0.9)'};
+const ZONE_IMGS={'El Monte':'IMG_4631.jpeg','Talagante':'IMG_4630.jpeg','Peñaflor':'IMG_4632.jpeg','Isla de Maipo':'IMG_4629.jpeg','Lonquén':''};
 
 function applyZoneColors(){
   ZONE_NAMES.forEach(zn=>{
     const z=ZONAS[zn]||{color:'none'};
-    const el=document.getElementById(ZONE_SVG_MAP[zn]);
-    if(el) el.style.fill=ZONE_COLOR_MAP[z.color]||ZONE_COLOR_MAP.none;
+    const el=document.getElementById('zbox-'+zn);
+    if(!el) return;
+    el.style.background=ZONE_COLOR_MAP[z.color]||ZONE_COLOR_MAP.none;
+    el.style.borderColor=z.color!=='none'?ZONE_BORDER_MAP[z.color]:'rgba(255,255,255,0.15)';
   });
 }
-window.showMapFallback=function(){
-  document.getElementById('map-img').style.display='none';
-  document.getElementById('map-overlay').style.display='none';
-  document.getElementById('map-fallback').style.display='block';
-  applyZoneColors();
-};
-window.mapZoneClick=function(e){
-  const zoneName=e.target.getAttribute('data-zone');if(!zoneName) return;
+
+window.selectZone=function(zoneName){
   selCell={name:zoneName};
   const z=ZONAS[zoneName]||{};
-  document.getElementById('map-info').style.display='block';
-  document.getElementById('map-cell-name').textContent=zoneName;
-  document.getElementById('map-cell-desc').textContent=z.desc||'Sin descripción. Toca "Editar notas" para agregar.';
+  // Highlight zona seleccionada
+  ZONE_NAMES.forEach(zn=>{
+    const el=document.getElementById('zbox-'+zn);
+    if(el) el.style.outline=zn===zoneName?'3px solid #fff':'none';
+  });
+  // Mostrar panel detalle
+  const panel=document.getElementById('zone-detail-panel');
+  panel.style.display='block';
+  document.getElementById('zone-detail-name').textContent=zoneName;
+  document.getElementById('zone-detail-desc').textContent=z.desc||'Sin descripción. Toca "Editar notas" para agregar.';
+  // Imagen detallada
+  const imgEl=document.getElementById('zone-detail-img');
+  const imgSrc=ZONE_IMGS[zoneName];
+  if(imgSrc){
+    imgEl.src=imgSrc;
+    imgEl.parentElement.style.display='block';
+  } else {
+    imgEl.parentElement.style.display='none';
+  }
+  // Notas
+  renderZoneDetailNotes(zoneName, z);
+  // Scroll al panel
+  setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+};
+
+window.clearZoneSelection=function(){
+  ZONE_NAMES.forEach(zn=>{
+    const el=document.getElementById('zbox-'+zn);
+    if(el) el.style.outline='none';
+  });
+  document.getElementById('zone-detail-panel').style.display='none';
+  selCell=null;
+};
+
+function renderZoneDetailNotes(zoneName, z){
+  const el=document.getElementById('zone-detail-notes');
+  if(!el) return;
+  const notes=z.notes||[];
+  if(!notes.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--g400)">Sin notas aún</div>';
+    return;
+  }
+  el.innerHTML=notes.map((n,i)=>`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--g200)">
+      <div>
+        <div style="font-size:11px;color:var(--g400);font-weight:600">${n.fecha||''} ${n.hora||''}</div>
+        <div style="font-size:13px;margin-top:2px">${n.texto||''}</div>
+      </div>
+      <button onclick="deleteNoteDetail('${zoneName}',${i})"
+              style="background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;padding:0 4px;flex-shrink:0">×</button>
+    </div>`).join('');
+}
+
+window.deleteNoteDetail=async function(zoneName, idx){
+  const z=ZONAS[zoneName]||{notes:[]};
+  if(!z.notes) return;
+  z.notes.splice(idx,1);
+  ZONAS[zoneName]=z;
+  try{
+    await setDoc(doc(db,'zonas',zoneName),z);
+    renderZoneDetailNotes(zoneName,z);
+    toast('Nota eliminada');
+  }catch(e){toast('Error: '+e.message);}
+};
+
+// openZoneModal ahora usa selCell que se setea en selectZone
+window.mapZoneClick=function(e){
+  const zoneName=e.target.getAttribute('data-zone');
+  if(zoneName) selectZone(zoneName);
 };
 window.openZoneModal=function(){
   if(!selCell) return;
@@ -1393,7 +1651,12 @@ window.saveZone=async function(){
   try{
     await setDoc(doc(db,'zonas',zoneName),data);
     closeM('modal-zona');
-    document.getElementById('map-cell-desc').textContent=data.desc||'Sin descripción';
+    // Refrescar panel detalle si está abierto para esta zona
+    if(selCell&&selCell.name===zoneName){
+      document.getElementById('zone-detail-desc').textContent=data.desc||'Sin descripción';
+      renderZoneDetailNotes(zoneName,data);
+    }
+    renderMapNotes();
     toast('Zona guardada');
   }catch(e){toast('Error: '+e.message);}
 };
@@ -1443,6 +1706,7 @@ startListeners();
 
 // Fallback: si Firebase tarda más de 5s en cargar, ocultar splash igual
 setTimeout(hideSplash, 5000);
+initDatePickers();
 </script>
 
 </body>
