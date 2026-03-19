@@ -452,6 +452,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
         <div style="font-size:12px;color:var(--g400);margin-top:4px" id="fb-counts"></div>
       </div>
       <button class="bp" onclick="seedFirebase()" style="margin-bottom:10px">📥 Cargar datos históricos a Firebase</button>
+      <button class="bs" onclick="updateCierres()" style="margin-bottom:10px">🔄 Actualizar cierres (km reales)</button>
       <button class="bs" onclick="exportData()" style="margin-bottom:10px">⬇ Exportar JSON de respaldo</button>
       <button class="bs" onclick="document.getElementById('imp-file').click()" style="margin-bottom:10px">⬆ Importar JSON de respaldo</button>
       <input type="file" id="imp-file" accept=".json" style="display:none" onchange="importData(this)">
@@ -690,6 +691,23 @@ function refreshAll(){
 }
 
 // ── SEED ──────────────────────────────────────────────────────────────────
+window.updateCierres=async function(){
+  setSyncStatus('syncing','Actualizando cierres...');
+  try{
+    const b=writeBatch(db);
+    for(const c of SEED_CIERRES){
+      const{fecha,...data}=c;
+      b.set(doc(db,'cierres',fecha),data);
+    }
+    await b.commit();
+    toast('✅ Cierres actualizados con km reales');
+    setSyncStatus('online','Sincronizado');
+  }catch(e){
+    toast('Error: '+e.message);
+    setSyncStatus('error',e.message);
+  }
+};
+
 window.seedFirebase=async function(){
   setSyncStatus('syncing','Cargando datos históricos...');
   try{
