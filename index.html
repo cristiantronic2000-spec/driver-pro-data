@@ -272,8 +272,9 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     </div>
     <div class="card"><div class="chwrap"><canvas id="ch-gan"></canvas></div></div>
     <div class="mgrid">
-      <div class="mbox"><div class="mlbl">Bruto</div><div class="mval" id="g-bruto">$0</div></div>
-      <div class="mbox"><div class="mlbl">Neto real</div><div class="mval cg" id="g-neto">$0</div></div>
+      <div class="mbox"><div class="mlbl">Bruto generado</div><div class="mval" id="g-bruto">$0</div><div class="msub">total cobrado viajes</div></div>
+      <div class="mbox"><div class="mlbl">Total pagado Uber</div><div class="mval" id="g-uber-pagado">$—</div><div class="msub">último PDF cargado</div></div>
+      <div class="mbox" style="background:var(--black);border-radius:14px;padding:14px"><div class="mlbl" style="color:rgba(255,255,255,.6)">Total con descuentos</div><div class="mval" style="color:#fff" id="g-neto">$0</div><div class="msub" style="color:rgba(255,255,255,.5)">neto real estimado</div></div>
       <div class="mbox"><div class="mlbl">Viajes</div><div class="mval" id="g-viajes">0</div></div>
       <div class="mbox"><div class="mlbl">Por hora</div><div class="mval" id="g-hora">$—</div></div>
       <div class="mbox"><div class="mlbl">Combustible</div><div class="mval cr" id="g-comb">$0</div><div class="msub">descontado del neto</div></div>
@@ -1227,7 +1228,10 @@ function renderGan(){
   const viajes=vPeriod();
   const bruto=viajes.reduce((a,v)=>a+v.monto,0);
 
-  // Sin viajes → todo cero, nunca negativo
+  // Total pagado Uber: del PDF más reciente (siempre fijo)
+  const uberPagadoEl=document.getElementById('g-uber-pagado');
+  if(uberPagadoEl) uberPagadoEl.textContent=PDFS.length>0?CLP(PDFS[0].pagado||0):'$—';
+
   if(viajes.length===0){
     document.getElementById('g-bruto').textContent=CLP(0);
     document.getElementById('g-neto').textContent=CLP(0);
@@ -1235,14 +1239,10 @@ function renderGan(){
     document.getElementById('g-hora').textContent='$—';
     document.getElementById('g-comb').textContent=CLP(0);
   } else {
-    // Solo fechas con viajes EN este período Y con cierre real
     const fechasConViajes=[...new Set(viajes.map(v=>v.fecha))];
-    const fechasConCierre=fechasConViajes.filter(f=>{
-      const c=CIERRES[f];
-      return c&&parseFloat(c.km)>0;
-    });
+    const fechasConCierre=fechasConViajes.filter(f=>{const c=CIERRES[f];return c&&parseFloat(c.km)>0;});
     const ben=fechasConCierre.reduce((a,f)=>a+costoBencina(CIERRES[f]),0);
-    const neto=Math.max(0, bruto - bruto*(CONFIG.comision/100) - bruto*(CONFIG.fondo/100) - ben);
+    const neto=Math.max(0,bruto-bruto*(CONFIG.comision/100)-bruto*(CONFIG.fondo/100)-ben);
     const hrsTotal=fechasConViajes.reduce((a,f)=>{const c=CIERRES[f]||{};return a+(parseFloat(c.hrs)||0);},0);
     document.getElementById('g-bruto').textContent=CLP(bruto);
     document.getElementById('g-neto').textContent=CLP(neto);
@@ -1260,9 +1260,7 @@ function renderGan(){
       const wEnd=new Date();wEnd.setDate(wEnd.getDate()-w*7);
       const wStart=new Date(wEnd);wStart.setDate(wStart.getDate()-6);
       let sum=0;
-      for(let dd=new Date(wStart);dd<=wEnd;dd.setDate(dd.getDate()+1)){
-        sum+=vByDate(dd.toISOString().slice(0,10)).reduce((a,v)=>a+v.monto,0);
-      }
+      for(let dd=new Date(wStart);dd<=wEnd;dd.setDate(dd.getDate()+1)){sum+=vByDate(dd.toISOString().slice(0,10)).reduce((a,v)=>a+v.monto,0);}
       labels.push('Sem '+wStart.toLocaleDateString('es-CL',{day:'numeric',month:'short'}));
       data.push(sum);
     }
