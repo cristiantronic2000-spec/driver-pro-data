@@ -185,13 +185,13 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       <img class="hlogo" src="favicon.png" alt="" onerror="this.style.display='none'">
       Driver Pro · Cristian
     </div>
-    <div class="hamt" id="h-recibo">$0</div>
-    <div class="hlbl">total pagado hoy</div>
+    <div class="hamt" id="h-quedo">$0</div>
+    <div class="hlbl">total generado hoy</div>
     <div id="h-comb-est" style="display:none;font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;font-weight:600"></div>
     <div class="hstats">
-      <div class="hstat"><div class="hsval" id="h-viajes">0</div><div class="hslbl">Viajes</div></div>
       <div class="hstat"><div class="hsval" id="h-bruto">$0</div><div class="hslbl">Bruto</div></div>
-      <div class="hstat"><div class="hsval" id="h-quedo">$0</div><div class="hslbl">Me quedo</div></div>
+      <div class="hstat"><div class="hsval" id="h-recibo">$0</div><div class="hslbl">Total pagado</div></div>
+      <div class="hstat"><div class="hsval" id="h-viajes">0</div><div class="hslbl">Viajes</div></div>
     </div>
   </div>
   <div class="pbreak">
@@ -201,7 +201,8 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
   </div>
   <div class="mgrid">
     <div class="mbox"><div class="mlbl">Bruto semana</div><div class="mval" id="h-sb">$0</div><div class="msub" id="h-sv">0 viajes</div></div>
-    <div class="mbox"><div class="mlbl">Neto semana</div><div class="mval cg" id="h-sn">$0</div><div class="msub">est. después costos</div></div>
+    <div class="mbox"><div class="mlbl">Total pagado semana</div><div class="mval" id="h-sp">$0</div><div class="msub">menos Uber y SII</div></div>
+    <div class="mbox"><div class="mlbl">Me quedo semana</div><div class="mval cg" id="h-sn">$0</div><div class="msub">menos combustible</div></div>
   </div>
   <div style="padding:0 16px 4px"><button class="bp" onclick="openM('modal-viaje')">+ Agregar viaje</button></div>
   <div class="slbl">Últimos 10 viajes</div>
@@ -1185,10 +1186,10 @@ function renderInicio(){
   const recibo=hoy.length>0?Math.max(0,bruto-descUber-descSII):0;
   // Me quedo = total pagado - fondo - combustible
   const quedo=hoy.length>0?Math.max(0,recibo-bruto*(CONFIG.fondo/100)-combCosto):0;
-  document.getElementById('h-recibo').textContent=CLP(recibo);
-  document.getElementById('h-bruto').textContent=CLP(bruto);
-  document.getElementById('h-viajes').textContent=hoy.length;
   document.getElementById('h-quedo').textContent=CLP(quedo);
+  document.getElementById('h-bruto').textContent=CLP(bruto);
+  document.getElementById('h-recibo').textContent=CLP(recibo);
+  document.getElementById('h-viajes').textContent=hoy.length;
   const combEl=document.getElementById('h-comb-est');
   if(combEl){
     if(hoy.length>0){combEl.textContent=(tieneCierreReal?'Comb. real: ':'Comb. est.: ')+'-'+CLP(combCosto);combEl.style.display='block';}
@@ -1202,6 +1203,7 @@ function renderInicio(){
   const mSem=calcMetrics(sem);
   document.getElementById('h-sb').textContent=CLP(mSem.bruto);
   document.getElementById('h-sv').textContent=mSem.viajes+' viajes';
+  document.getElementById('h-sp').textContent=CLP(mSem.recibo);
   document.getElementById('h-sn').textContent=CLP(mSem.quedo);
   const last10=VIAJES.slice(0,10);
   const last10el=document.getElementById('h-last10');
