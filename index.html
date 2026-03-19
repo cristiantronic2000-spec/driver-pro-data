@@ -722,16 +722,29 @@ window.updatePagos=async function(){
     const snap=await getDocs(collection(db,'viajes'));
     const b=writeBatch(db);
     let count=0;
+    // Diagnóstico
+    const resumen={ef:0,tk:0,tr:0,otro:0};
+    snap.docs.forEach(d=>{
+      const p=d.data().pago;
+      if(p==='ef') resumen.ef++;
+      else if(p==='tk') resumen.tk++;
+      else if(p==='tr') resumen.tr++;
+      else resumen.otro++;
+    });
+    // Corregir: TK_IDS→tk, resto→ef (preservar tr solo si ya es tr)
     snap.docs.forEach(d=>{
       const data=d.data();
-      const correcto=TK_IDS.has(d.id)?'tk':'ef';
+      let correcto;
+      if(TK_IDS.has(d.id)) correcto='tk';
+      else if(data.pago==='tr') correcto='tr'; // preservar transferencias
+      else correcto='ef';
       if(data.pago!==correcto){
         b.update(doc(db,'viajes',d.id),{pago:correcto});
         count++;
       }
     });
     await b.commit();
-    toast('Pagos actualizados: '+count+' viajes corregidos');
+    toast('Corregidos: '+count+' viajes. Antes: ef='+resumen.ef+' tk='+resumen.tk+' tr='+resumen.tr+(resumen.otro?' otros='+resumen.otro:''));
     setSyncStatus('online','Sincronizado');
   }catch(e){
     toast('Error: '+e.message);
