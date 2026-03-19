@@ -240,10 +240,14 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <div style="padding:16px"><button class="bs" onclick="openM('modal-cierre')">Cerrar día</button></div>
   </div>
   <div id="vsub-historial" style="display:none">
-    <div class="date-picker-wrap">
-      <input type="date" class="date-pick-btn" id="hist-date" onchange="pickDate('hist',this.value)" max="">
-      <button class="date-today-btn" onclick="pickDate('hist','')">Hoy</button>
+    <div class="snav">
+      <button class="sbtn" onclick="navDate('hist',-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div style="flex:1;text-align:center">
+        <input type="date" class="date-pick-btn" id="hist-date" onchange="pickDate('hist',this.value)" max="" style="border:none;background:none;font-size:16px;font-weight:800;text-align:center;padding:0;width:auto">
+      </div>
+      <button class="sbtn" onclick="navDate('hist',1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
+    <div style="text-align:center;padding-bottom:8px"><button class="date-today-btn" style="font-size:12px;padding:6px 16px" onclick="pickDate('hist','')">Hoy</button></div>
     <div id="v-hist-list"></div>
   </div>
 </div>
@@ -278,51 +282,86 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <div id="g-last10"></div>
   </div>
   <div id="gsub-historial" style="display:none">
-    <div class="date-picker-wrap">
-      <input type="date" class="date-pick-btn" id="gan-date" onchange="pickDate('gan',this.value)" max="">
-      <button class="date-today-btn" onclick="pickDate('gan','')">Hoy</button>
+    <div class="snav">
+      <button class="sbtn" onclick="navDate('gan',-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div style="flex:1;text-align:center">
+        <input type="date" class="date-pick-btn" id="gan-date" onchange="pickDate('gan',this.value)" max="" style="border:none;background:none;font-size:16px;font-weight:800;text-align:center;padding:0;width:auto">
+      </div>
+      <button class="sbtn" onclick="navDate('gan',1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
+    <div style="text-align:center;padding-bottom:8px"><button class="date-today-btn" style="font-size:12px;padding:6px 16px" onclick="pickDate('gan','')">Hoy</button></div>
     <div id="g-hist-list"></div>
   </div>
 
   <div id="gsub-pagos" style="display:none">
     <div style="height:12px"></div>
-    <div class="psel" id="pagos-psel">
-      <button class="pbtn on" onclick="setPagosPeriod('hoy',this)">Hoy</button>
-      <button class="pbtn" onclick="setPagosPeriod('semana',this)">Semana</button>
-      <button class="pbtn" onclick="setPagosPeriod('mes',this)">Mes</button>
-      <button class="pbtn" onclick="setPagosPeriod('anio',this)">Año</button>
+    <!-- Sub-tabs dentro de Pagos -->
+    <div class="psel" id="pagos-subtabs">
+      <button class="pbtn on" onclick="setPagosTab('desglose',this)">Desglose</button>
+      <button class="pbtn" onclick="setPagosTab('app',this)">En app</button>
+      <button class="pbtn" onclick="setPagosTab('uber',this)">Uber PDF</button>
     </div>
-    <div class="card"><div class="chwrap"><canvas id="ch-pag"></canvas></div></div>
-    <div class="slbl">Pagos registrados en app</div>
-    <div class="pbreak">
-      <div class="pbox"><div class="pbval" id="p-ef">$0</div><div class="pblbl">Efectivo</div></div>
-      <div class="pbox"><div class="pbval" id="p-tk">$0</div><div class="pblbl">Tarjeta</div></div>
-      <div class="pbox"><div class="pbval" id="p-tr">$0</div><div class="pblbl">Transfer.</div></div>
-    </div>
-    <div class="slbl">Resumen Uber (PDFs cargados)</div>
-    <div id="pagos-uber-resumen" style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden"></div>
-    <div class="slbl">Fondo mantención</div>
-    <div class="cflat">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <span style="font-size:14px;font-weight:600">Acumulado</span>
-        <span style="font-size:18px;font-weight:900" id="fondo-tot">$0</span>
+
+    <!-- DESGLOSE: viajes filtrados por período -->
+    <div id="pagos-sub-desglose">
+      <div class="psel" id="pagos-psel">
+        <button class="pbtn on" onclick="setPagosPeriod('hoy',this)">Hoy</button>
+        <button class="pbtn" onclick="setPagosPeriod('semana',this)">Semana</button>
+        <button class="pbtn" onclick="setPagosPeriod('mes',this)">Mes</button>
+        <button class="pbtn" onclick="setPagosPeriod('anio',this)">Año</button>
       </div>
-      <div class="pbar"><div class="pfill" id="fondo-bar" style="width:0%"></div></div>
-      <div style="font-size:11px;color:var(--g400);margin-top:4px" id="fondo-meta">Meta: $50.000</div>
+      <div class="card"><div class="chwrap"><canvas id="ch-pag-des"></canvas></div></div>
+      <div id="pagos-desglose-rows" style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden"></div>
+    </div>
+
+    <!-- EN APP: pagos registrados con selector período -->
+    <div id="pagos-sub-app" style="display:none">
+      <div class="psel" id="pagos-app-psel">
+        <button class="pbtn on" onclick="setPagosAppPeriod('hoy',this)">Hoy</button>
+        <button class="pbtn" onclick="setPagosAppPeriod('semana',this)">Semana</button>
+        <button class="pbtn" onclick="setPagosAppPeriod('mes',this)">Mes</button>
+        <button class="pbtn" onclick="setPagosAppPeriod('anio',this)">Año</button>
+      </div>
+      <div class="card"><div class="chwrap"><canvas id="ch-pag"></canvas></div></div>
+      <div class="pbreak">
+        <div class="pbox"><div class="pbval" id="p-ef">$0</div><div class="pblbl">Efectivo</div></div>
+        <div class="pbox"><div class="pbval" id="p-tk">$0</div><div class="pblbl">Tarjeta</div></div>
+        <div class="pbox"><div class="pbval" id="p-tr">$0</div><div class="pblbl">Transfer.</div></div>
+      </div>
+      <div class="slbl">Fondo mantención</div>
+      <div class="cflat">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:14px;font-weight:600">Acumulado</span>
+          <span style="font-size:18px;font-weight:900" id="fondo-tot">$0</span>
+        </div>
+        <div class="pbar"><div class="pfill" id="fondo-bar" style="width:0%"></div></div>
+        <div style="font-size:11px;color:var(--g400);margin-top:4px" id="fondo-meta">Meta: $50.000</div>
+      </div>
+    </div>
+
+    <!-- UBER PDF: solo último período -->
+    <div id="pagos-sub-uber" style="display:none">
+      <div class="slbl">Última semana Uber</div>
+      <div id="pagos-uber-resumen" style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden"></div>
     </div>
   </div>
+
   <div id="gsub-combustible" style="display:none">
     <div style="height:12px"></div>
-    <div class="date-picker-wrap">
-      <input type="date" class="date-pick-btn" id="comb-desde" onchange="renderCombustible()" style="flex:1;margin-right:6px">
-      <input type="date" class="date-pick-btn" id="comb-hasta" onchange="renderCombustible()" style="flex:1;margin-right:6px">
+    <!-- Selector período combustible -->
+    <div class="psel" id="comb-psel">
+      <button class="pbtn on" onclick="setCombPeriod('hoy',this)">Hoy</button>
+      <button class="pbtn" onclick="setCombPeriod('7',this)">7 días</button>
+      <button class="pbtn" onclick="setCombPeriod('30',this)">30 días</button>
+      <button class="pbtn" onclick="setCombPeriod('0',this)">Todo</button>
     </div>
-    <div style="display:flex;gap:6px;padding:0 16px 8px">
-      <button class="date-today-btn" style="flex:1;background:var(--g100);color:var(--black)" onclick="setCombRange(7)">7 días</button>
-      <button class="date-today-btn" style="flex:1;background:var(--g100);color:var(--black)" onclick="setCombRange(30)">30 días</button>
-      <button class="date-today-btn" style="flex:1;background:var(--g100);color:var(--black)" onclick="setCombRange(0)">Todo</button>
+    <!-- Navegación con flechas -->
+    <div class="snav" id="comb-nav" style="display:none">
+      <button class="sbtn" onclick="navComb(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <span class="snlbl" id="comb-nav-lbl"></span>
+      <button class="sbtn" onclick="navComb(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
+    <div class="card"><div class="chwrap"><canvas id="ch-comb"></canvas></div></div>
     <div class="mgrid">
       <div class="mbox"><div class="mlbl">Gastado total</div><div class="mval cr" id="comb-total">$0</div><div class="msub">en bencina</div></div>
       <div class="mbox"><div class="mlbl">Km recorridos</div><div class="mval" id="comb-km">0 km</div><div class="msub">días con cierre</div></div>
@@ -336,6 +375,9 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
   <div id="gsub-uber" style="display:none">
     <div style="height:16px"></div>
     <div style="padding:0 16px;margin-bottom:16px"><button class="bp" onclick="openPdfModal()">+ Agregar resumen Uber</button></div>
+    <div class="slbl">Resumen total acumulado</div>
+    <div id="uber-resumen-total" style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden"></div>
+    <div class="slbl">Historial por período</div>
     <div id="uber-list"></div>
   </div>
 </div>
@@ -638,6 +680,7 @@ let calY=new Date().getFullYear(),calM=new Date().getMonth();
 let selCell=null,selZC='none';
 let charts={};
 let pendingDeleteFn=null;
+let pagosPeriod='hoy',pagosAppPeriod='hoy',combPeriod='7',combDayOffset=0;
 const MONTHS=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const ZONE_NAMES=['El Monte','Talagante','Isla de Maipo','Lonquen','Penaflor'];
 
@@ -655,6 +698,15 @@ function setSyncStatus(state,msg){
 }
 function hideSplash(){const s=document.getElementById('splash');if(s){s.classList.add('hide');setTimeout(()=>s.style.display='none',400);}}
 
+// Navegación de fechas con flechas
+window.navDate=function(key,dir){
+  const d=new Date(selectedDates[key]+'T12:00:00');
+  d.setDate(d.getDate()+dir);
+  const max=new Date();
+  if(d>max) return;
+  pickDate(key,d.toISOString().slice(0,10));
+};
+
 function initDatePickers(){
   const t=today();
   ['hist','gan'].forEach(k=>{
@@ -662,11 +714,6 @@ function initDatePickers(){
     const el=document.getElementById(k+'-date');
     if(el){el.value=t;el.max=t;}
   });
-  const d7c=new Date();d7c.setDate(d7c.getDate()-6);
-  const desdeElC=document.getElementById('comb-desde');
-  const hastaElC=document.getElementById('comb-hasta');
-  if(desdeElC){desdeElC.value=d7c.toISOString().slice(0,10);desdeElC.max=t;}
-  if(hastaElC){hastaElC.value=t;hastaElC.max=t;}
 }
 
 function startListeners(){
@@ -803,9 +850,9 @@ window.stab=function(prefix,sub,btn){
   if(btn) btn.classList.add('on');
   if(prefix==='g'&&sub==='resumen') renderGan();
   if(prefix==='g'&&sub==='historial') renderGHist();
-
   if(prefix==='g'&&sub==='pagos') renderPagos();
-  if(prefix==='g'&&sub==='combustible'){resetCombFiltro();}
+  if(prefix==='g'&&sub==='combustible') resetCombFiltro();
+  if(prefix==='g'&&sub==='uber') renderPdfs();
   if(prefix==='v'&&sub==='hoy') renderVHoy();
   if(prefix==='v'&&sub==='historial') renderVHist();
   if(prefix==='m'&&sub==='mapa') setTimeout(()=>{initLeafletMap();if(leafletMap) leafletMap.invalidateSize();applyZoneColors();},200);
@@ -1246,32 +1293,68 @@ function renderGHist(){
     +'</div>';
   viajes.forEach(v=>el.appendChild(tripCard(v)));
 }
-let pagosPeriod='hoy';
+// ── PAGOS TABS ────────────────────────────────────────────────────────────
+window.setPagosTab=function(tab,btn){
+  document.getElementById('pagos-subtabs').querySelectorAll('.pbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  ['desglose','app','uber'].forEach(t=>{
+    const el=document.getElementById('pagos-sub-'+t);
+    if(el) el.style.display=t===tab?'block':'none';
+  });
+  if(tab==='desglose') renderPagosDesglose();
+  if(tab==='app') renderPagosApp();
+  if(tab==='uber') renderPagosUber();
+};
+
+// Helpers de período para pagos
+function vByPeriod(p){
+  if(p==='hoy') return VIAJES.filter(v=>v.fecha===today());
+  if(p==='semana'){const d=new Date();d.setDate(d.getDate()-6);return VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=d);}
+  if(p==='mes'){const d=new Date();d.setDate(d.getDate()-29);return VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=d);}
+  const inicio=new Date(new Date().getFullYear(),0,1);
+  return VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=inicio);
+}
+
+// DESGLOSE: ef/tk/tr filtrado por período con filas tipo PDF
 window.setPagosPeriod=function(p,btn){
   pagosPeriod=p;
   document.getElementById('pagos-psel').querySelectorAll('.pbtn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
-  renderPagos();
+  renderPagosDesglose();
 };
-
-function vPagosPeriod(){
-  if(pagosPeriod==='hoy') return VIAJES.filter(v=>v.fecha===today());
-  const ahora=new Date();
-  if(pagosPeriod==='semana'){
-    const d=new Date();d.setDate(d.getDate()-6);
-    return VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=d);
+function renderPagosDesglose(){
+  const viajes=vByPeriod(pagosPeriod);
+  const ef=viajes.filter(v=>v.pago==='ef').reduce((a,v)=>a+v.monto,0);
+  const tk=viajes.filter(v=>v.pago==='tk').reduce((a,v)=>a+v.monto,0);
+  const tr=viajes.filter(v=>v.pago==='tr').reduce((a,v)=>a+v.monto,0);
+  const total=ef+tk+tr;
+  if(charts.pagDes) charts.pagDes.destroy();
+  const cvs=document.getElementById('ch-pag-des');
+  if(cvs&&total>0){
+    charts.pagDes=new Chart(cvs,{
+      type:'doughnut',
+      data:{labels:['Efectivo','Tarjeta','Transfer.'],datasets:[{data:[ef,tk,tr],backgroundColor:['#000','#276EF1','#FFC043'],borderWidth:0}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:12,weight:'700'},padding:12}}}}
+    });
   }
-  if(pagosPeriod==='mes'){
-    const d=new Date();d.setDate(d.getDate()-29);
-    return VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=d);
-  }
-  // año
-  const inicio=new Date(ahora.getFullYear(),0,1);
-  return VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=inicio);
+  const rows=document.getElementById('pagos-desglose-rows');
+  rows.innerHTML=
+    '<div class="drow"><span class="dlbl">Ganancias brutas</span><span class="dval">'+CLP(total)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">Efectivo cobrado</span><span class="dval">'+CLP(ef)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">Tarjeta</span><span class="dval">'+CLP(tk)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">Transferencia</span><span class="dval">'+CLP(tr)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">Viajes</span><span class="dval">'+viajes.length+'</span></div>';
 }
 
-function renderPagos(){
-  const viajes=vPagosPeriod();
+// EN APP: pagos con gráfico y fondo
+window.setPagosAppPeriod=function(p,btn){
+  pagosAppPeriod=p;
+  document.getElementById('pagos-app-psel').querySelectorAll('.pbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderPagosApp();
+};
+function renderPagosApp(){
+  const viajes=vByPeriod(pagosAppPeriod);
   const ef=viajes.filter(v=>v.pago==='ef').reduce((a,v)=>a+v.monto,0);
   const tk=viajes.filter(v=>v.pago==='tk').reduce((a,v)=>a+v.monto,0);
   const tr=viajes.filter(v=>v.pago==='tr').reduce((a,v)=>a+v.monto,0);
@@ -1287,24 +1370,6 @@ function renderPagos(){
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:12,weight:'700'},padding:12}}}}
     });
   }
-  // PDFs Uber
-  const pdfEl=document.getElementById('pagos-uber-resumen');
-  if(pdfEl){
-    if(PDFS.length>0){
-      let efUber=0,trUber=0,brutoUber=0,siiT=0,flexT=0,pagadoT=0;
-      PDFS.forEach(p=>{efUber+=p.ef||0;trUber+=p.tr||0;brutoUber+=p.bruto||0;siiT+=p.sii||0;flexT+=p.flex||0;pagadoT+=p.pagado||0;});
-      pdfEl.innerHTML=
-        '<div class="drow"><span class="dlbl">Ganancias brutas</span><span class="dval">'+CLP(brutoUber)+'</span></div>'
-        +'<div class="drow"><span class="dlbl">Retención SII</span><span class="dval cr">-'+CLP(siiT)+'</span></div>'
-        +'<div class="drow"><span class="dlbl">Tarifa pago flexible</span><span class="dval cr">-'+CLP(flexT)+'</span></div>'
-        +'<div class="drow" style="font-weight:800"><span class="dlbl">Total pagado por Uber</span><span class="dval">'+CLP(pagadoT)+'</span></div>'
-        +'<div class="drow"><span class="dlbl">Efectivo cobrado</span><span class="dval">'+CLP(efUber)+'</span></div>'
-        +'<div class="drow"><span class="dlbl">Transferido al banco</span><span class="dval">'+CLP(trUber)+'</span></div>';
-    } else {
-      pdfEl.innerHTML='<div style="padding:12px 20px;font-size:13px;color:var(--g400)">Sin resúmenes Uber cargados aún.</div>';
-    }
-  }
-  // Fondo (siempre total histórico)
   const fondoTotal=VIAJES.reduce((a,v)=>a+v.monto*(CONFIG.fondo/100),0);
   document.getElementById('fondo-tot').textContent=CLP(fondoTotal);
   const pct=Math.min(100,Math.round(fondoTotal/CONFIG.meta*100));
@@ -1312,37 +1377,73 @@ function renderPagos(){
   document.getElementById('fondo-meta').textContent='Meta: '+CLP(CONFIG.meta)+' ('+pct+'%)';
 }
 
-function setCombRange(dias){
-  const t=today();
-  const desdeEl=document.getElementById('comb-desde');
-  const hastaEl=document.getElementById('comb-hasta');
-  if(hastaEl) hastaEl.value=t;
-  if(dias===0){
-    if(desdeEl) desdeEl.value='';
-  } else {
-    const d=new Date();d.setDate(d.getDate()-(dias-1));
-    if(desdeEl) desdeEl.value=d.toISOString().slice(0,10);
+// UBER: solo último PDF (más reciente)
+function renderPagosUber(){
+  const pdfEl=document.getElementById('pagos-uber-resumen');
+  if(!pdfEl) return;
+  if(!PDFS.length){
+    pdfEl.innerHTML='<div style="padding:12px 20px;font-size:13px;color:var(--g400)">Sin resúmenes Uber cargados aún.</div>';
+    return;
   }
+  const last=PDFS[0]; // ya ordenados de más reciente a más antiguo
+  pdfEl.innerHTML=
+    '<div style="padding:8px 16px 4px;font-size:12px;font-weight:700;color:var(--g600)">'+last.periodo+'</div>'
+    +'<div class="drow"><span class="dlbl">Ganancias brutas</span><span class="dval">'+CLP(last.bruto||0)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">Retención SII</span><span class="dval cr">-'+CLP(last.sii||0)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">Tarifa pago flexible</span><span class="dval cr">-'+CLP(last.flex||0)+'</span></div>'
+    +'<div class="drow" style="font-weight:800"><span class="dlbl">Total pagado por Uber</span><span class="dval">'+CLP(last.pagado||0)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">Efectivo cobrado</span><span class="dval">'+CLP(last.ef||0)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">Transferido al banco</span><span class="dval">'+CLP(last.tr||0)+'</span></div>';
+}
+
+function renderPagos(){
+  renderPagosDesglose();
+}
+
+// ── COMBUSTIBLE ───────────────────────────────────────────────────────────
+window.setCombPeriod=function(p,btn){
+  combPeriod=p;combDayOffset=0;
+  document.getElementById('comb-psel').querySelectorAll('.pbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const nav=document.getElementById('comb-nav');
+  if(nav) nav.style.display=p==='hoy'?'flex':'none';
+  renderCombustible();
+};
+window.navComb=function(dir){
+  combDayOffset+=dir;
+  if(combDayOffset>0) combDayOffset=0;
+  renderCombustible();
+};
+function getCombFechas(){
+  const t=new Date();
+  if(combPeriod==='hoy'){
+    const d=new Date(t);d.setDate(d.getDate()+combDayOffset);
+    const ds=d.toISOString().slice(0,10);
+    const lbl=combDayOffset===0?'Hoy · '+fmtD(ds):fmtD(ds);
+    const navLbl=document.getElementById('comb-nav-lbl');
+    if(navLbl) navLbl.textContent=lbl;
+    return [ds,ds];
+  }
+  if(combPeriod==='7'){const d=new Date(t);d.setDate(d.getDate()-6);return [d.toISOString().slice(0,10),t.toISOString().slice(0,10)];}
+  if(combPeriod==='30'){const d=new Date(t);d.setDate(d.getDate()-29);return [d.toISOString().slice(0,10),t.toISOString().slice(0,10)];}
+  return ['',t.toISOString().slice(0,10)];
+}
+function resetCombFiltro(){
+  combPeriod='7';combDayOffset=0;
+  const nav=document.getElementById('comb-nav');
+  if(nav) nav.style.display='none';
   renderCombustible();
 }
-window.setCombRange=setCombRange;
-function resetCombFiltro(){setCombRange(7);}
-
 function renderCombustible(){
-  const desdeEl=document.getElementById('comb-desde');
-  const hastaEl=document.getElementById('comb-hasta');
-  const desde=desdeEl?desdeEl.value:'';
-  const hasta=hastaEl?hastaEl.value:today();
+  const [desde,hasta]=getCombFechas();
   const allCierresRaw=Object.entries(CIERRES).sort((a,b)=>b[0].localeCompare(a[0]));
   const allCierres=desde?allCierresRaw.filter(([f])=>f>=desde&&f<=hasta):allCierresRaw;
   let totalCosto=0,totalKm=0,totalLitros=0,rendSum=0,rendCount=0;
   allCierres.forEach(([f,c])=>{
-    const lits=litrosConsumidos(c);
-    const costo=costoBencina(c);
-    totalCosto+=costo;
-    totalKm+=(c.km||0);
-    totalLitros+=lits;
-    if(c.rend&&c.rend>0){rendSum+=c.rend;rendCount++;}
+    totalCosto+=costoBencina(c);
+    totalKm+=(parseFloat(c.km)||0);
+    totalLitros+=litrosConsumidos(c);
+    if(c.rend>0){rendSum+=c.rend;rendCount++;}
   });
   const rendProm=rendCount>0?(rendSum/rendCount):CONFIG.rend;
   const costXkm=totalKm>0?totalCosto/totalKm:0;
@@ -1351,36 +1452,61 @@ function renderCombustible(){
   document.getElementById('comb-rend').textContent=rendProm.toFixed(1)+' km/L';
   document.getElementById('comb-xkm').textContent=costXkm>0?CLP(costXkm)+'/km':'$—';
   document.getElementById('comb-litros').textContent=totalLitros.toFixed(1)+' L';
-  const el=document.getElementById('comb-list');
-  if(!allCierres.length){
-    el.innerHTML='<div class="empty"><div class="etxt">Sin datos en este período</div></div>';
-    return;
+  // Gráfico barras
+  if(charts.comb) charts.comb.destroy();
+  const cvs=document.getElementById('ch-comb');
+  if(cvs&&allCierres.length>0){
+    const labels=allCierres.map(([f])=>fmtD(f)).reverse();
+    const data=allCierres.map(([f,c])=>Math.round(costoBencina(c))).reverse();
+    charts.comb=new Chart(cvs,{
+      type:'bar',
+      data:{labels,datasets:[{data,backgroundColor:'#E11900',borderRadius:6,borderSkipped:false}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>CLP(ctx.raw)}}},scales:{x:{grid:{display:false},ticks:{color:'#9e9e9e',font:{size:10,weight:'700'}}},y:{display:false}}}
+    });
   }
-  el.innerHTML=allCierres.filter(([f,c])=>c.km||c.hrs).map(([f,c])=>{
+  const el=document.getElementById('comb-list');
+  if(!allCierres.length){el.innerHTML='<div class="empty"><div class="etxt">Sin datos en este período</div></div>';return;}
+  el.innerHTML='';
+  allCierres.filter(([f,c])=>c.km||c.hrs).forEach(([f,c])=>{
     const vs=vByDate(f);
     const bruto=vs.reduce((a,v)=>a+v.monto,0);
     const lits=litrosConsumidos(c);
     const costo=costoBencina(c);
-    const km=c.km||0;
-    const rend=c.rend||CONFIG.rend;
-    const pli=c.pli||CONFIG.bencina;
-    return '<div class="trow">'
-      +'<div class="tico"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--g600);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div>'
-      +'<div class="tinfo">'
-      +'<div class="tname">'+fmtD(f)+'</div>'
-      +'<div class="tmeta">'+km+' km ÷ '+rend+' km/L = '+lits.toFixed(2)+'L × '+CLP(pli)+'/L</div>'
-      +'<div class="tmeta" style="margin-top:2px">'+(c.hrs||0)+'h trabajadas · '+CLP(bruto)+' bruto</div>'
-      +'</div>'
+    const row=document.createElement('div');
+    row.className='trow';
+    row.innerHTML='<div class="tico"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--g600);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div>'
+      +'<div class="tinfo"><div class="tname">'+fmtD(f)+'</div>'
+      +'<div class="tmeta">'+(c.km||0)+' km ÷ '+(c.rend||CONFIG.rend)+' km/L = '+lits.toFixed(2)+'L × '+CLP(c.pli||CONFIG.bencina)+'/L</div>'
+      +'<div class="tmeta" style="margin-top:2px">'+(c.hrs||0)+'h · '+CLP(bruto)+' bruto</div></div>'
       +'<div style="text-align:right;flex-shrink:0;margin-left:8px">'
       +'<div style="font-size:14px;font-weight:800;color:var(--red)">-'+CLP(costo)+'</div>'
-      +'<div style="font-size:11px;color:var(--g400)">'+lits.toFixed(2)+' litros</div>'
-      +'</div>'
-      +'</div>';
-  }).join('');
+      +'<div style="font-size:11px;color:var(--g400)">'+lits.toFixed(2)+' L</div></div>';
+    el.appendChild(row);
+  });
 }
+window.setCombRange=function(d){setCombPeriod(d===7?'7':d===30?'30':'0',{classList:{add:()=>{},remove:()=>{}}});};
+
+
 
 function renderPdfs(){
   const el=document.getElementById('uber-list');
+  const resEl=document.getElementById('uber-resumen-total');
+  if(resEl){
+    if(PDFS.length>0){
+      let ef=0,tr=0,bruto=0,sii=0,flex=0,pagado=0;
+      PDFS.forEach(p=>{ef+=p.ef||0;tr+=p.tr||0;bruto+=p.bruto||0;sii+=p.sii||0;flex+=p.flex||0;pagado+=p.pagado||0;});
+      resEl.innerHTML=
+        '<div class="drow"><span class="dlbl">Ganancias brutas</span><span class="dval">'+CLP(bruto)+'</span></div>'
+        +'<div class="drow"><span class="dlbl">Retención SII</span><span class="dval cr">-'+CLP(sii)+'</span></div>'
+        +'<div class="drow"><span class="dlbl">Tarifa pago flexible</span><span class="dval cr">-'+CLP(flex)+'</span></div>'
+        +'<div class="drow" style="font-weight:800"><span class="dlbl">Total pagado por Uber</span><span class="dval">'+CLP(pagado)+'</span></div>'
+        +'<div class="drow"><span class="dlbl">Efectivo cobrado</span><span class="dval">'+CLP(ef)+'</span></div>'
+        +'<div class="drow"><span class="dlbl">Transferido al banco</span><span class="dval">'+CLP(tr)+'</span></div>';
+    } else {
+      resEl.innerHTML='<div style="padding:12px 20px;font-size:13px;color:var(--g400)">Sin resúmenes cargados aún.</div>';
+    }
+  }
+  if(!el) return;
   if(!PDFS.length){el.innerHTML='<div class="empty"><div class="etxt">Sin resúmenes Uber</div><div class="esub">Agrega los datos de tus PDFs semanales</div></div>';return;}
   el.innerHTML='';
   PDFS.forEach(p=>{
@@ -1390,7 +1516,7 @@ function renderPdfs(){
       +'<div class="pdfamt">'+CLP(p.bruto||0)+'</div>'
       +'<div class="pdfrow"><span class="pdflbl">Ganancias brutas</span><span class="pdfval g">'+CLP(p.bruto||0)+'</span></div>'
       +'<div class="pdfrow"><span class="pdflbl">Tarifa pago flexible</span><span class="pdfval r">-'+CLP(p.flex||0)+'</span></div>'
-      +'<div class="pdfrow"><span class="pdflbl">Retención SII (Res.132)</span><span class="pdfval r">-'+CLP(p.sii||0)+'</span></div>'
+      +'<div class="pdfrow"><span class="pdflbl">Retención SII</span><span class="pdfval r">-'+CLP(p.sii||0)+'</span></div>'
       +'<div class="pdfrow"><span class="pdflbl">Pagado total</span><span class="pdfval">'+CLP(p.pagado||0)+'</span></div>'
       +'<div class="pdfrow"><span class="pdflbl">Efectivo recibido</span><span class="pdfval">'+CLP(p.ef||0)+'</span></div>'
       +'<div class="pdfrow"><span class="pdflbl">Transferido al banco</span><span class="pdfval">'+CLP(p.tr||0)+'</span></div>'
@@ -1404,6 +1530,8 @@ function renderPdfs(){
     card.querySelector('.pdf-del-btn').addEventListener('click',function(){confirmDel('pdf',p._fid,p.periodo);});
     el.appendChild(card);
   });
+  // Actualizar pagos-uber tab si está visible
+  renderPagosUber();
 }
 
 function renderCierres(){
