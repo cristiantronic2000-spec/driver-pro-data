@@ -1,3 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Driver Pro">
+<meta name="theme-color" content="#000000">
+<title>Driver Pro — Cristian</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--black:#000;--white:#fff;--g50:#f7f7f7;--g100:#f0f0f0;--g200:#e0e0e0;--g400:#9e9e9e;--g600:#616161;--blue:#276EF1;--green:#00A651;--red:#E11900;--amber:#FFC043;--font:'Figtree',sans-serif;--nav-h:64px;--safe:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);color:var(--black)}
+#app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;background:#fff;position:relative;overflow:hidden}
+.pages{flex:1;overflow:hidden;position:relative}
+.page{position:absolute;inset:0;overflow-y:auto;padding-bottom:calc(var(--nav-h) + var(--safe) + 20px);display:none;-webkit-overflow-scrolling:touch}
+.page.active{display:block}
+.nav{position:absolute;bottom:0;left:0;right:0;height:calc(var(--nav-h) + var(--safe));background:#fff;border-top:1px solid var(--g200);display:flex;align-items:flex-start;padding-top:8px;z-index:100}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;border:none;background:none;font-family:var(--font)}
+.ni svg{width:22px;height:22px;stroke:var(--g400);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:stroke .15s}
+.ni span{font-size:10px;color:var(--g400);font-weight:500;transition:color .15s}
+.ni.on svg{stroke:var(--black)}
+.ni.on span{color:var(--black);font-weight:700}
+.ph{padding:16px 20px 8px;background:#fff;position:sticky;top:0;z-index:10}
+.pt{font-size:28px;font-weight:900;letter-spacing:-.5px}
+.stabs{display:flex;border-bottom:1px solid var(--g200);background:#fff;position:sticky;top:0;z-index:9;overflow-x:auto;scrollbar-width:none}
+.stabs::-webkit-scrollbar{display:none}
+.stab{flex-shrink:0;padding:12px 16px;font-size:13px;font-weight:600;color:var(--g400);border:none;background:none;font-family:var(--font);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.stab.on{color:var(--black);border-bottom-color:var(--black)}
+.card{background:#fff;border:1px solid var(--g200);border-radius:16px;padding:16px;margin:0 16px 12px}
+.cflat{background:var(--g50);border-radius:16px;padding:16px;margin:0 16px 12px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;margin-bottom:12px}
+.mbox{background:var(--g50);border-radius:14px;padding:14px}
+.mlbl{font-size:11px;color:var(--g600);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.mval{font-size:22px;font-weight:900;letter-spacing:-.5px}
+.msub{font-size:11px;color:var(--g400);margin-top:2px}
+.cg{color:var(--green)}
+.cr{color:var(--red)}
+.slbl{font-size:13px;font-weight:700;color:var(--g600);text-transform:uppercase;letter-spacing:.05em;padding:0 20px;margin:16px 0 8px}
+.trow{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--g100)}
+.trow:last-child{border:none}
+.tico{width:38px;height:38px;background:var(--g100);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-right:12px;flex-shrink:0}
+.tico svg{width:18px;height:18px;stroke:var(--g600);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tinfo{flex:1;min-width:0}
+.tname{font-size:14px;font-weight:700}
+.tmeta{font-size:12px;color:var(--g400);margin-top:1px}
+.tamt{font-size:15px;font-weight:800;flex-shrink:0;margin-left:6px}
+.tamt.g{color:var(--green)}
+.tactions{display:flex;gap:4px;margin-left:6px;flex-shrink:0}
+.tacbtn{width:28px;height:28px;border-radius:8px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:opacity .15s;flex-shrink:0}
+.tacbtn:active{opacity:.6}
+.tacedit{background:var(--g100)}
+.tacdel{background:#FEE2E2}
+.bdg{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:6px}
+.bc{background:#E6F4EA;color:#1B5E20}
+.bk{background:#E3F2FD;color:#0D47A1}
+.bt{background:#FFF8E1;color:#E65100}
 .bp{width:100%;padding:16px;background:var(--black);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:800;font-family:var(--font);cursor:pointer;transition:opacity .15s}
 .bp:active{opacity:.8}
 .bs{width:100%;padding:14px;background:var(--g100);color:var(--black);border:none;border-radius:14px;font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;transition:opacity .15s}
@@ -329,39 +393,47 @@
   <div class="ph"><div class="pt">Zonas</div></div>
   <div class="stabs" id="mtabs">
     <button class="stab on" onclick="stab('m','mapa',this)">Mapa</button>
-    <button class="stab" onclick="stab('m','buscar',this)">Buscar</button>
     <button class="stab" onclick="stab('m','notas',this)">Mis notas</button>
   </div>
   <div id="msub-mapa">
-    <div style="display:flex;gap:12px;flex-wrap:wrap;padding:10px 16px 6px;font-size:11px;font-weight:600;color:var(--g600)">
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:rgba(0,166,81,.6);border-radius:2px;display:inline-block"></span>Tranquila</span>
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:rgba(255,192,67,.7);border-radius:2px;display:inline-block"></span>Precaución</span>
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:rgba(225,25,0,.5);border-radius:2px;display:inline-block"></span>Evitar</span>
+    <!-- Leyenda + modo edición -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px 4px">
+      <div style="display:flex;gap:10px;font-size:11px;font-weight:600;color:var(--g600)">
+        <span style="display:flex;align-items:center;gap:3px"><span style="width:9px;height:9px;background:rgba(0,166,81,.7);border-radius:2px;display:inline-block"></span>Tranquila</span>
+        <span style="display:flex;align-items:center;gap:3px"><span style="width:9px;height:9px;background:rgba(255,192,67,.8);border-radius:2px;display:inline-block"></span>Precaución</span>
+        <span style="display:flex;align-items:center;gap:3px"><span style="width:9px;height:9px;background:rgba(225,25,0,.6);border-radius:2px;display:inline-block"></span>Evitar</span>
+      </div>
+      <button id="btn-edit-zone" onclick="toggleZoneEdit()" style="background:var(--g100);border:none;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer">✏️ Editar zonas</button>
     </div>
+
+    <!-- Panel modo edición -->
+    <div id="zone-edit-panel" style="display:none;margin:0 16px 8px;background:var(--g50);border-radius:14px;padding:12px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px">Modo edición activo</div>
+      <div style="font-size:12px;color:var(--g600);margin-bottom:10px">1. Selecciona una zona abajo<br>2. Toca puntos en el mapa para dibujar el polígono<br>3. Toca "Guardar zona" cuando termines</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px" id="zone-select-btns"></div>
+      <div id="zone-edit-status" style="font-size:12px;color:var(--g400);margin-bottom:8px">Selecciona una zona para comenzar</div>
+      <div style="display:flex;gap:6px">
+        <button class="bs" style="flex:1;padding:8px;font-size:12px" onclick="undoLastPoint()">↩ Deshacer punto</button>
+        <button class="bs" style="flex:1;padding:8px;font-size:12px" onclick="clearDrawing()">🗑 Limpiar</button>
+        <button class="bp" style="flex:1;padding:8px;font-size:12px" onclick="saveDrawnZone()">💾 Guardar zona</button>
+      </div>
+    </div>
+
     <div style="margin:0 16px;border-radius:14px;overflow:hidden;border:1px solid var(--g200);">
-      <div id="leaflet-map" style="height:280px;width:100%;"></div>
+      <div id="leaflet-map" style="height:340px;width:100%;"></div>
     </div>
-    <div style="text-align:center;font-size:11px;color:var(--g400);padding:5px 0 2px">Toca una zona para ver detalle y notas</div>
+    <div style="text-align:center;font-size:11px;color:var(--g400);padding:5px 0 2px" id="map-hint">Toca una zona para ver detalle y notas</div>
+
     <div id="zone-detail-panel" style="display:none;margin-top:4px">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 6px">
         <div style="font-size:17px;font-weight:900" id="zone-detail-name">—</div>
         <button onclick="clearZoneSelection()" style="background:var(--g100);border:none;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer">✕ Cerrar</button>
-      </div>
-      <div style="margin:0 16px 10px;border-radius:12px;overflow:hidden;border:1px solid var(--g200)">
-        <img id="zone-detail-img" src="" style="width:100%;display:block;" alt="">
       </div>
       <div style="margin:0 16px;background:var(--g50);border-radius:14px;padding:14px;margin-bottom:10px">
         <div style="font-size:13px;color:var(--g600);margin-bottom:8px" id="zone-detail-desc">Sin descripción</div>
         <div id="zone-detail-notes" style="margin-bottom:10px"></div>
         <button class="bs" style="padding:10px;font-size:13px" onclick="openZoneModal()">✏️ Editar notas</button>
       </div>
-    </div>
-  </div>
-  <div id="msub-buscar" style="display:none">
-    <div style="padding:16px">
-      <div class="fg"><label class="fl">Buscar dirección</label><input class="fi" type="text" id="map-q" placeholder="Ej: Calle Samuel Santana 235, Talagante"></div>
-      <button class="bp" onclick="searchAddr()">Buscar</button>
-      <div id="map-result" style="margin-top:16px"></div>
     </div>
   </div>
   <div id="msub-notas" style="display:none"><div id="map-notes-list" style="padding:8px 0"></div></div>
@@ -455,7 +527,7 @@
 
 <nav class="nav">
   <button class="ni on" onclick="showTab('inicio')" id="ni-inicio"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Inicio</span></button>
-  <button class="ni" onclick="showTab('viajes')" id="ni-viajes"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg><span>Viajes</span></button>
+  <button class="ni" onclick="showTab('viajes')" id="ni-viajes"><svg viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l4 4v8a2 2 0 0 1-2 2h-1"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M5 9h14M9 3v6"/></svg><span>Viajes</span></button>
   <button class="ni" onclick="showTab('ganancias')" id="ni-ganancias"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Ganancias</span></button>
   <button class="ni" onclick="showTab('mapa')" id="ni-mapa"><svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg><span>Mapa</span></button>
   <button class="ni" onclick="showTab('mas')" id="ni-mas"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Más</span></button>
@@ -789,7 +861,7 @@ window.stab=function(prefix,sub,btn){
   const target=document.getElementById(pref+'-'+sub);if(target) target.style.display='block';
   const tabs=document.getElementById(tm[prefix]);if(tabs) tabs.querySelectorAll('.stab').forEach(t=>t.classList.remove('on'));
   if(btn) btn.classList.add('on');
-  if(prefix==='g'&&sub==='resumen') renderGan();
+  if(prefix==='g'&&sub==='resumen'){period='hoy';document.getElementById('resumen-psel').querySelectorAll('.pbtn').forEach((b,i)=>{b.classList.toggle('on',i===0);});document.getElementById('resumen-dia-nav').style.display='none';renderGan();}
   if(prefix==='g'&&sub==='historial') renderGHist();
   if(prefix==='g'&&sub==='pagos') renderPagos();
   if(prefix==='g'&&sub==='combustible') resetCombFiltro();
@@ -846,7 +918,7 @@ function tripCard(v){
   const fid=v._fid||v.id||'';
   const row=document.createElement('div');
   row.className='trow';
-  row.innerHTML='<div class="tico"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>'
+  row.innerHTML='<div class="tico"><svg viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l4 4v8a2 2 0 0 1-2 2h-1"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M5 9h14M9 3v6"/></svg></div>'
     +'<div class="tinfo">'
     +'<div class="tname">'+v.tipo+'<span class="bdg '+bc+'">'+bl+'</span></div>'
     +'<div class="tmeta">'+fmtViajeFecha(v)+' · '+(v.kj||0)+' km · vacío '+(v.kv||0)+' km</div>'
@@ -1370,9 +1442,12 @@ function getCombFechas(){
   return ['',t.toISOString().slice(0,10)];
 }
 function resetCombFiltro(){
-  combPeriod='7';combDayOffset=0;
+  combPeriod='hoy';combDayOffset=0;
   const nav=document.getElementById('comb-nav');
-  if(nav) nav.style.display='none';
+  if(nav) nav.style.display='flex';
+  // Activar botón Hoy
+  const psel=document.getElementById('comb-psel');
+  if(psel) psel.querySelectorAll('.pbtn').forEach((b,i)=>{b.classList.toggle('on',i===0);});
   renderCombustible();
 }
 function renderCombustible(){
@@ -1542,7 +1617,9 @@ function renderTurnos(){
 function renderCal(){
   const d=new Date(calY,calM,1);
   document.getElementById('cal-lbl').textContent=MONTHS[calM]+' '+calY;
-  const first=(d.getDay()+6)%7;
+  // getDay() returns 0=Sun,1=Mon,...,6=Sat → convert to Mon=0
+  const rawDay=d.getDay(); // 0=Dom
+  const first=rawDay===0?6:rawDay-1; // Dom→6, Lun→0, Mar→1...
   const days=new Date(calY,calM+1,0).getDate();
   const tod=today();
   let html='';
@@ -1564,142 +1641,163 @@ window.calClick=function(ds){
   toast(fmtD(ds)+(v.length?': '+v.length+' viajes · '+CLP(v.reduce((a,vj)=>a+vj.monto,0)):': sin viajes'));
 };
 
-const ZONE_FILL={none:'rgba(150,150,150,0.15)',green:'rgba(0,166,81,0.35)',yellow:'rgba(255,192,67,0.45)',red:'rgba(225,25,0,0.35)'};
-const ZONE_STROKE={none:'rgba(200,200,200,0.4)',green:'rgba(0,166,81,0.8)',yellow:'rgba(255,192,67,0.9)',red:'rgba(225,25,0,0.8)'};
-const ZONE_IMGS={'El Monte':'IMG_4631.jpeg','Talagante':'IMG_4630.jpeg','Penaflor':'IMG_4632.jpeg','Isla de Maipo':'IMG_4629.jpeg','Lonquen':''};
-
-// Polígonos más precisos basados en límites comunales reales
-const ZONE_POLYGONS={
-  'El Monte':[
-    [-33.627,-71.085],[-33.618,-71.063],[-33.622,-71.042],[-33.638,-71.022],
-    [-33.658,-71.013],[-33.678,-71.018],[-33.695,-71.038],[-33.700,-71.065],
-    [-33.688,-71.087],[-33.665,-71.098],[-33.645,-71.095]
-  ],
-  'Talagante':[
-    [-33.622,-71.042],[-33.618,-71.063],[-33.627,-71.085],[-33.635,-71.092],
-    [-33.630,-71.068],[-33.628,-71.048],[-33.636,-71.030],[-33.652,-71.016],
-    [-33.658,-71.013],[-33.638,-71.022]
-  ],
-  'Penaflor':[
-    [-33.580,-70.935],[-33.572,-70.912],[-33.578,-70.888],[-33.598,-70.872],
-    [-33.620,-70.868],[-33.640,-70.878],[-33.652,-70.900],[-33.648,-70.925],
-    [-33.630,-70.942],[-33.608,-70.948],[-33.590,-70.942]
-  ],
-  'Isla de Maipo':[
-    [-33.695,-71.038],[-33.678,-71.018],[-33.658,-71.013],[-33.652,-71.016],
-    [-33.660,-71.000],[-33.670,-70.982],[-33.690,-70.970],[-33.715,-70.972],
-    [-33.738,-70.990],[-33.750,-71.018],[-33.742,-71.048],[-33.720,-71.062],
-    [-33.700,-71.065]
-  ],
-  'Lonquen':[
-    [-33.652,-70.900],[-33.648,-70.925],[-33.658,-70.948],[-33.672,-70.958],
-    [-33.690,-70.955],[-33.708,-70.948],[-33.720,-70.930],[-33.715,-70.908],
-    [-33.700,-70.888],[-33.680,-70.878],[-33.660,-70.880],[-33.648,-70.892]
-  ],
-};
+const ZONE_FILL={none:'rgba(150,150,150,0.2)',green:'rgba(0,166,81,0.4)',yellow:'rgba(255,192,67,0.5)',red:'rgba(225,25,0,0.4)'};
+const ZONE_STROKE={none:'rgba(255,255,255,0.4)',green:'rgba(0,166,81,0.9)',yellow:'rgba(255,192,67,1)',red:'rgba(225,25,0,0.9)'};
 
 let leafletMap=null;
 let leafletLayers={};
+let leafletLabels={};
+let zoneEditMode=false;
+let editingZone=null;
+let drawPoints=[];
+let drawPolyline=null;
+let drawMarkers=[];
 
 function initLeafletMap(){
-  if(leafletMap){
-    setTimeout(()=>leafletMap.invalidateSize(),100);
-    return;
-  }
-  leafletMap=L.map('leaflet-map',{
-    center:[-33.665,-71.0],
-    zoom:11,
-    zoomControl:true,
-    attributionControl:false,
-    scrollWheelZoom:true
+  if(leafletMap){setTimeout(()=>leafletMap.invalidateSize(),100);return;}
+  leafletMap=L.map('leaflet-map',{center:[-33.660,-70.930],zoom:12,zoomControl:true,attributionControl:false,scrollWheelZoom:true});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd'}).addTo(leafletMap);
+  leafletMap.on('click',function(e){
+    if(!zoneEditMode||!editingZone) return;
+    const pt=[e.latlng.lat,e.latlng.lng];
+    drawPoints.push(pt);
+    const m=L.circleMarker(pt,{radius:5,color:'#fff',fillColor:'#FFC043',fillOpacity:1,weight:2}).addTo(leafletMap);
+    drawMarkers.push(m);
+    if(drawPolyline) leafletMap.removeLayer(drawPolyline);
+    if(drawPoints.length>1) drawPolyline=L.polygon(drawPoints,{color:'#FFC043',weight:2,fillOpacity:0.15,dashArray:'6 4'}).addTo(leafletMap);
+    const s=document.getElementById('zone-edit-status');
+    if(s) s.textContent=editingZone+': '+drawPoints.length+' punto(s)';
   });
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
-    maxZoom:19,subdomains:'abcd'
-  }).addTo(leafletMap);
-
-  Object.entries(ZONE_POLYGONS).forEach(([name,coords])=>{
-    const z=ZONAS[name]||{color:'none'};
-    const ckey=z.color||'none';
-    const poly=L.polygon(coords,{
-      color:ZONE_STROKE[ckey],
-      weight:1.5,
-      opacity:1,
-      fillColor:ZONE_FILL[ckey],
-      fillOpacity:1,
-      smoothFactor:1.5
-    }).addTo(leafletMap);
-
-    const center=poly.getBounds().getCenter();
-    const zoneHtml='<span style="color:#fff;font-size:11px;font-weight:800;font-family:Figtree,sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.9),0 0 6px rgba(0,0,0,.7);white-space:nowrap;display:block;text-align:center;">'+name+'</span>';
-    const icon=L.divIcon({
-      html:zoneHtml,
-      className:'',
-      iconSize:null,
-      iconAnchor:null
-    });
-    const marker=L.marker(center,{icon,interactive:false,zIndexOffset:100}).addTo(leafletMap);
-    // Centrar el label después de añadir al DOM
-    const markerEl=marker.getElement();
-    if(markerEl){
-      markerEl.style.transform+=' translate(-50%,-50%)';
-      markerEl.style.marginLeft='0';
-      markerEl.style.marginTop='0';
-    }
-
-    poly.on('click',()=>selectZone(name));
-    poly.on('mouseover',function(){
-      if(selCell&&selCell.name===name) return;
-      this.setStyle({weight:2.5,fillOpacity:Math.min(1,(parseFloat(this.options.fillOpacity)||0.15)+0.15)});
-    });
-    poly.on('mouseout',function(){
-      if(selCell&&selCell.name===name) return;
-      applyZoneColors();
-    });
-    leafletLayers[name]=poly;
-  });
-
-  // invalidateSize después de que el contenedor sea visible
+  ZONE_NAMES.forEach(name=>loadZonePolygon(name));
+  initZoneEditButtons();
   setTimeout(()=>leafletMap.invalidateSize(),200);
 }
 
+function loadZonePolygon(name){
+  const z=ZONAS[name]||{};
+  if(leafletLayers[name]) leafletMap.removeLayer(leafletLayers[name]);
+  if(leafletLabels[name]) leafletMap.removeLayer(leafletLabels[name]);
+  const coords=z.polygon||null;
+  if(!coords||coords.length<3) return;
+  const ckey=z.color||'none';
+  const poly=L.polygon(coords,{color:ZONE_STROKE[ckey],weight:2,opacity:1,fillColor:ZONE_FILL[ckey],fillOpacity:1,smoothFactor:1.5}).addTo(leafletMap);
+  poly.on('click',()=>{if(!zoneEditMode) selectZone(name);});
+  leafletLayers[name]=poly;
+  const center=poly.getBounds().getCenter();
+  const zoneHtml='<span style="color:#fff;font-size:11px;font-weight:800;font-family:Figtree,sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.9);white-space:nowrap;display:block;text-align:center;">'+name+'</span>';
+  const icon=L.divIcon({html:zoneHtml,className:'',iconSize:null,iconAnchor:null});
+  const mk=L.marker(center,{icon,interactive:false,zIndexOffset:100}).addTo(leafletMap);
+  const el=mk.getElement();if(el) el.style.transform+=' translate(-50%,-50%)';
+  leafletLabels[name]=mk;
+}
+
+function initZoneEditButtons(){
+  const cont=document.getElementById('zone-select-btns');
+  if(!cont) return;
+  cont.innerHTML='';
+  ZONE_NAMES.forEach(name=>{
+    const btn=document.createElement('button');
+    btn.textContent=name;
+    btn.style.cssText='padding:6px 12px;border-radius:20px;border:1.5px solid var(--g200);background:#fff;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;';
+    btn.addEventListener('click',function(){
+      editingZone=name;
+      drawPoints=[];
+      const z=ZONAS[name]||{};
+      if(drawPolyline) leafletMap.removeLayer(drawPolyline);
+      drawMarkers.forEach(m=>leafletMap.removeLayer(m));
+      drawMarkers=[];
+      if(z.polygon&&z.polygon.length>0){
+        drawPoints=[...z.polygon];
+        drawPoints.forEach(pt=>{const m=L.circleMarker(pt,{radius:5,color:'#fff',fillColor:'#276EF1',fillOpacity:1,weight:2}).addTo(leafletMap);drawMarkers.push(m);});
+        drawPolyline=L.polygon(drawPoints,{color:'#276EF1',weight:2,fillOpacity:0.2,dashArray:'6 4'}).addTo(leafletMap);
+        leafletMap.fitBounds(L.polygon(drawPoints).getBounds(),{padding:[20,20]});
+      }
+      cont.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.color='var(--black)';});
+      btn.style.background='var(--black)';btn.style.color='#fff';
+      const s=document.getElementById('zone-edit-status');
+      if(s) s.textContent=(drawPoints.length>0?'Editando: ':'Dibujando: ')+name+' — toca el mapa';
+    });
+    cont.appendChild(btn);
+  });
+}
+
+window.toggleZoneEdit=function(){
+  zoneEditMode=!zoneEditMode;
+  const panel=document.getElementById('zone-edit-panel');
+  const btn=document.getElementById('btn-edit-zone');
+  const hint=document.getElementById('map-hint');
+  panel.style.display=zoneEditMode?'block':'none';
+  btn.textContent=zoneEditMode?'✕ Salir edición':'✏️ Editar zonas';
+  btn.style.background=zoneEditMode?'var(--black)':'var(--g100)';
+  btn.style.color=zoneEditMode?'#fff':'var(--black)';
+  if(hint) hint.textContent=zoneEditMode?'Selecciona una zona y toca el mapa para dibujar':'Toca una zona para ver detalle y notas';
+  if(!zoneEditMode){clearDrawing();editingZone=null;document.getElementById('zone-detail-panel').style.display='none';}
+};
+
+window.undoLastPoint=function(){
+  if(!drawPoints.length) return;
+  drawPoints.pop();
+  const last=drawMarkers.pop();
+  if(last) leafletMap.removeLayer(last);
+  if(drawPolyline) leafletMap.removeLayer(drawPolyline);
+  drawPolyline=drawPoints.length>1?L.polygon(drawPoints,{color:'#FFC043',weight:2,fillOpacity:0.15,dashArray:'6 4'}).addTo(leafletMap):null;
+  const s=document.getElementById('zone-edit-status');
+  if(s) s.textContent=(editingZone||'Zona')+': '+drawPoints.length+' punto(s)';
+};
+
+window.clearDrawing=function(){
+  drawPoints=[];
+  drawMarkers.forEach(m=>leafletMap&&leafletMap.removeLayer(m));
+  drawMarkers=[];
+  if(drawPolyline&&leafletMap){leafletMap.removeLayer(drawPolyline);drawPolyline=null;}
+  const s=document.getElementById('zone-edit-status');
+  if(s) s.textContent='Selecciona una zona para comenzar';
+  const cont=document.getElementById('zone-select-btns');
+  if(cont) cont.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.color='var(--black)';});
+  editingZone=null;
+};
+
+window.saveDrawnZone=async function(){
+  if(!editingZone){toast('Selecciona una zona primero');return;}
+  if(drawPoints.length<3){toast('Necesitas al menos 3 puntos');return;}
+  const z=ZONAS[editingZone]||{color:'none',desc:'',notes:[]};
+  z.polygon=drawPoints.slice();
+  try{
+    await setDoc(doc(db,'zonas',editingZone),z);
+    ZONAS[editingZone]=z;
+    loadZonePolygon(editingZone);
+    toast(editingZone+' guardada con '+drawPoints.length+' puntos');
+    clearDrawing();
+  }catch(e){toast('Error: '+e.message);}
+};
+
 function applyZoneColors(){
   if(!leafletMap) return;
-  Object.entries(ZONE_POLYGONS).forEach(([name])=>{
+  ZONE_NAMES.forEach(name=>{
     const z=ZONAS[name]||{color:'none'};
-    const ckey=z.color||'none';
     const poly=leafletLayers[name];
     if(!poly) return;
+    const ckey=z.color||'none';
     const isSelected=selCell&&selCell.name===name;
-    poly.setStyle({
-      color:ZONE_STROKE[ckey],
-      fillColor:ZONE_FILL[ckey],
-      fillOpacity:1,
-      weight:isSelected?3:1.5,
-      opacity:isSelected?1:1
-    });
+    poly.setStyle({color:ZONE_STROKE[ckey],fillColor:ZONE_FILL[ckey],fillOpacity:1,weight:isSelected?3:2});
   });
 }
 
 window.selectZone=function(zoneName){
+  if(zoneEditMode) return;
   selCell={name:zoneName};
+  Object.entries(leafletLayers).forEach(([n,p])=>{p.setStyle({weight:n===zoneName?3:2});});
   const z=ZONAS[zoneName]||{};
-  Object.entries(leafletLayers).forEach(([n,p])=>{
-    p.setStyle({weight:n===zoneName?3:1.5,opacity:n===zoneName?1:0.6});
-  });
   const panel=document.getElementById('zone-detail-panel');
   panel.style.display='block';
   document.getElementById('zone-detail-name').textContent=zoneName;
   document.getElementById('zone-detail-desc').textContent=z.desc||'Sin descripción. Toca "Editar notas" para agregar.';
-  const imgEl=document.getElementById('zone-detail-img');
-  const imgSrc=ZONE_IMGS[zoneName];
-  if(imgSrc){imgEl.src=imgSrc;imgEl.parentElement.style.display='block';}
-  else{imgEl.parentElement.style.display='none';}
   renderZoneDetailNotes(zoneName,z);
   setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'nearest'}),150);
 };
 
 window.clearZoneSelection=function(){
-  Object.values(leafletLayers).forEach(p=>p.setStyle({weight:1.5,opacity:0.6}));
+  Object.values(leafletLayers).forEach(p=>p.setStyle({weight:2}));
   document.getElementById('zone-detail-panel').style.display='none';
   selCell=null;
 };
@@ -1708,29 +1806,16 @@ function renderZoneDetailNotes(zoneName,z){
   const el=document.getElementById('zone-detail-notes');
   if(!el) return;
   const notes=z.notes||[];
-  if(!notes.length){
-    el.innerHTML='<div style="font-size:12px;color:var(--g400)">Sin notas aún</div>';
-    return;
-  }
-  el.innerHTML=notes.map((n,i)=>'<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--g200)">'
-    +'<div>'
-    +'<div style="font-size:11px;color:var(--g400);font-weight:600">'+(n.fecha||'')+' '+(n.hora||'')+'</div>'
-    +'<div style="font-size:13px;margin-top:2px">'+(n.texto||'')+'</div>'
-    +'</div>'
-    +'<button onclick="deleteNoteDetail(\''+zoneName+'\','+i+')" style="background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;padding:0 4px;flex-shrink:0">×</button>'
-    +'</div>').join('');
+  if(!notes.length){el.innerHTML='<div style="font-size:12px;color:var(--g400)">Sin notas aún</div>';return;}
+  el.innerHTML=notes.map((n,i)=>'<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--g200)"><div><div style="font-size:11px;color:var(--g400);font-weight:600">'+(n.fecha||'')+' '+(n.hora||'')+'</div><div style="font-size:13px;margin-top:2px">'+(n.texto||'')+'</div></div><button onclick="deleteNoteDetail(\''+zoneName+'\','+i+')" style="background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;padding:0 4px;flex-shrink:0">×</button></div>').join('');
 }
 
 window.deleteNoteDetail=async function(zoneName,idx){
   const z=ZONAS[zoneName]||{notes:[]};
   if(!z.notes) return;
-  z.notes.splice(idx,1);
-  ZONAS[zoneName]=z;
-  try{
-    await setDoc(doc(db,'zonas',zoneName),z);
-    renderZoneDetailNotes(zoneName,z);
-    toast('Nota eliminada');
-  }catch(e){toast('Error: '+e.message);}
+  z.notes.splice(idx,1);ZONAS[zoneName]=z;
+  try{await setDoc(doc(db,'zonas',zoneName),z);renderZoneDetailNotes(zoneName,z);toast('Nota eliminada');}
+  catch(e){toast('Error: '+e.message);}
 };
 
 window.openZoneModal=function(){
@@ -1749,18 +1834,13 @@ function renderZNotes(){
   const el=document.getElementById('zona-notes');if(!selCell) return;
   const z=ZONAS[selCell.name]||{notes:[]};
   if(!z.notes||!z.notes.length){el.innerHTML='<div style="font-size:13px;color:var(--g400);padding:8px 0">Sin notas aún</div>';return;}
-  el.innerHTML=z.notes.map((n,i)=>'<div class="noteitem">'
-    +'<div><div class="notedt">'+(n.fecha||'')+' '+(n.hora||'')+'</div><div>'+(n.texto||'')+'</div></div>'
-    +'<button class="notedel" onclick="deleteNote('+i+')">×</button>'
-    +'</div>').join('');
+  el.innerHTML=z.notes.map((n,i)=>'<div class="noteitem"><div><div class="notedt">'+(n.fecha||'')+' '+(n.hora||'')+'</div><div>'+(n.texto||'')+'</div></div><button class="notedel" onclick="deleteNote('+i+')">×</button></div>').join('');
 }
 window.deleteNote=function(idx){
   if(!selCell) return;
   const z=ZONAS[selCell.name]||{notes:[]};
   if(!z.notes) return;
-  z.notes.splice(idx,1);
-  ZONAS[selCell.name]=z;
-  renderZNotes();
+  z.notes.splice(idx,1);ZONAS[selCell.name]=z;renderZNotes();
 };
 window.selZColor=function(el,color){
   document.querySelectorAll('.copt').forEach(e=>e.classList.remove('on'));
@@ -1773,16 +1853,12 @@ window.saveZone=async function(){
   const nota=document.getElementById('zona-nota').value.trim();
   const notes=[...(existing.notes||[])];
   if(nota){const now=new Date();notes.unshift({texto:nota,fecha:now.toLocaleDateString('es-CL',{day:'numeric',month:'short'}),hora:now.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'})});}
-  const data={color:selZC,desc:document.getElementById('zona-desc').value,notes};
+  const data={...existing,color:selZC,desc:document.getElementById('zona-desc').value,notes};
   try{
     await setDoc(doc(db,'zonas',zoneName),data);
     closeM('modal-zona');
-    if(selCell&&selCell.name===zoneName){
-      document.getElementById('zone-detail-desc').textContent=data.desc||'Sin descripción';
-      renderZoneDetailNotes(zoneName,data);
-    }
-    renderMapNotes();
-    toast('Zona guardada');
+    if(selCell&&selCell.name===zoneName){document.getElementById('zone-detail-desc').textContent=data.desc||'Sin descripción';renderZoneDetailNotes(zoneName,data);}
+    applyZoneColors();renderMapNotes();toast('Zona guardada');
   }catch(e){toast('Error: '+e.message);}
 };
 function renderMapNotes(){
@@ -1792,13 +1868,6 @@ function renderMapNotes(){
   const cm={none:'rgba(0,0,0,0.1)',green:'rgba(0,166,81,0.4)',yellow:'rgba(255,192,67,0.6)',red:'rgba(225,25,0,0.35)'};
   el.innerHTML=all.map(z=>{const d=ZONAS[z];return '<div class="trow"><div class="tico" style="background:'+(cm[d.color]||cm.none)+'"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--g600);fill:none;stroke-width:1.8"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/></svg></div><div class="tinfo"><div class="tname">'+z+'</div><div class="tmeta">'+(d.desc||'Sin descripción')+' · '+(d.notes||[]).length+' nota(s)</div></div></div>';}).join('');
 }
-window.searchAddr=function(){
-  const q=document.getElementById('map-q').value.trim();if(!q) return;
-  const match=ZONE_NAMES.filter(c=>q.toLowerCase().includes(c.toLowerCase()));
-  document.getElementById('map-result').innerHTML=match.length
-    ?'<div class="cflat" style="margin:0"><div style="font-weight:800;margin-bottom:4px">Resultado</div><div style="font-size:14px">'+q+'</div><div style="font-size:13px;color:var(--g600);margin-top:4px">Zona detectada: <strong>'+match[0]+'</strong></div><div style="font-size:12px;color:var(--g400);margin-top:6px">Vuelve al mapa y toca esa zona</div></div>'
-    :'<div class="cflat" style="margin:0"><div style="font-size:14px;font-weight:700">'+q+'</div><div style="font-size:13px;color:var(--g400);margin-top:4px">No está en tus zonas registradas.</div></div>';
-};
 
 window.exportData=function(){
   const data={viajes:VIAJES,cierres:CIERRES,turnos:TURNOS,zonas:ZONAS,pdfs:PDFS,config:CONFIG,exportado:new Date().toLocaleString('es-CL')};
