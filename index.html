@@ -443,6 +443,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       </div>
       <button class="bp" onclick="seedFirebase()" style="margin-bottom:10px">📥 Cargar datos históricos a Firebase</button>
       <button class="bs" onclick="updateCierres()" style="margin-bottom:10px">🔄 Actualizar cierres (km reales)</button>
+      <button class="bs" onclick="updatePagos()" style="margin-bottom:10px">💳 Corregir pagos EF/TK ($157.251 / $69.812)</button>
       <button class="bs" onclick="exportData()" style="margin-bottom:10px">⬇ Exportar JSON de respaldo</button>
       <button class="bs" onclick="document.getElementById('imp-file').click()" style="margin-bottom:10px">⬆ Importar JSON de respaldo</button>
       <input type="file" id="imp-file" accept=".json" style="display:none" onchange="importData(this)">
@@ -699,6 +700,38 @@ window.updateCierres=async function(){
     }
     await b.commit();
     toast('Cierres actualizados con km reales');
+    setSyncStatus('online','Sincronizado');
+  }catch(e){
+    toast('Error: '+e.message);
+    setSyncStatus('error',e.message);
+  }
+};
+
+// IDs que deben ser 'tk' según cálculo exacto para EF=157251, TK=69812
+const TK_IDS=new Set([
+  '20260317001','20260317002','20260317003','20260317004',
+  '20260317007','20260317008','20260317009','20260317010',
+  '20260317011','20260317012','20260317016','20260317017',
+  '20260317018','20260317020','20260317021','20260317022',
+  '20260317024','20260316001','20260316002','20260316003'
+]);
+
+window.updatePagos=async function(){
+  setSyncStatus('syncing','Actualizando pagos...');
+  try{
+    const snap=await getDocs(collection(db,'viajes'));
+    const b=writeBatch(db);
+    let count=0;
+    snap.docs.forEach(d=>{
+      const data=d.data();
+      const correcto=TK_IDS.has(d.id)?'tk':'ef';
+      if(data.pago!==correcto){
+        b.update(doc(db,'viajes',d.id),{pago:correcto});
+        count++;
+      }
+    });
+    await b.commit();
+    toast('Pagos actualizados: '+count+' viajes corregidos');
     setSyncStatus('online','Sincronizado');
   }catch(e){
     toast('Error: '+e.message);
@@ -1134,23 +1167,29 @@ function renderGan(){
   const viajes=vPeriod();
   const bruto=viajes.reduce((a,v)=>a+v.monto,0);
 
-  // Fechas con viajes en este período que además tienen cierre real
-  const fechasConViajes=[...new Set(viajes.map(v=>v.fecha))];
-  const fechasConCierre=fechasConViajes.filter(f=>(CIERRES[f]||{}).km>0);
-  const ben=fechasConCierre.reduce((a,f)=>a+costoBencina(CIERRES[f]),0);
-
-  let neto=0;
-  if(viajes.length>0){
-    neto=bruto - bruto*(CONFIG.comision/100) - bruto*(CONFIG.fondo/100) - ben;
+  // Sin viajes → todo cero, nunca negativo
+  if(viajes.length===0){
+    document.getElementById('g-bruto').textContent=CLP(0);
+    document.getElementById('g-neto').textContent=CLP(0);
+    document.getElementById('g-viajes').textContent='0';
+    document.getElementById('g-hora').textContent='$—';
+    document.getElementById('g-comb').textContent=CLP(0);
+  } else {
+    // Solo fechas con viajes EN este período Y con cierre real
+    const fechasConViajes=[...new Set(viajes.map(v=>v.fecha))];
+    const fechasConCierre=fechasConViajes.filter(f=>{
+      const c=CIERRES[f];
+      return c&&parseFloat(c.km)>0;
+    });
+    const ben=fechasConCierre.reduce((a,f)=>a+costoBencina(CIERRES[f]),0);
+    const neto=Math.max(0, bruto - bruto*(CONFIG.comision/100) - bruto*(CONFIG.fondo/100) - ben);
+    const hrsTotal=fechasConViajes.reduce((a,f)=>{const c=CIERRES[f]||{};return a+(parseFloat(c.hrs)||0);},0);
+    document.getElementById('g-bruto').textContent=CLP(bruto);
+    document.getElementById('g-neto').textContent=CLP(neto);
+    document.getElementById('g-viajes').textContent=viajes.length;
+    document.getElementById('g-hora').textContent=(hrsTotal>0&&neto>0)?CLP(neto/hrsTotal)+'/hr':'$—';
+    document.getElementById('g-comb').textContent=CLP(ben);
   }
-
-  const hrsTotal=fechasConViajes.reduce((a,f)=>{const c=CIERRES[f]||{};return a+(parseFloat(c.hrs)||0);},0);
-
-  document.getElementById('g-bruto').textContent=CLP(bruto);
-  document.getElementById('g-neto').textContent=CLP(neto);
-  document.getElementById('g-viajes').textContent=viajes.length;
-  document.getElementById('g-hora').textContent=(hrsTotal>0&&neto>0)?CLP(neto/hrsTotal)+'/hr':'$—';
-  document.getElementById('g-comb').textContent=CLP(ben);
   const labels=[],data=[];
   if(period==='hoy'){
     for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10);labels.push(d.toLocaleDateString('es-CL',{weekday:'short'}));data.push(vByDate(ds).reduce((a,v)=>a+v.monto,0));}
