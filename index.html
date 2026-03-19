@@ -1547,31 +1547,9 @@ function initLeafletMap(){
       smoothFactor:1.5
     }).addTo(leafletMap);
 
-    // Label centrado con iconAnchor calculado dinámicamente
     const center=poly.getBounds().getCenter();
-    const labelHtml='<div style="'
-      +'color:#fff;'
-      +'font-size:11px;'
-      +'font-weight:800;'
-      +'font-family:Figtree,sans-serif;'
-      +'text-shadow:0 1px 4px rgba(0,0,0,1),0 0 8px rgba(0,0,0,.8);'
-      +'white-space:nowrap;'
-      +'pointer-events:none;'
-      +'text-align:center;'
-      +'transform:translate(-50%,-50%);'
-      +'"></div>';
-    // Usamos un marker con className vacío y ancla centrada
     const icon=L.divIcon({
-      html:'<span style="'
-        +'color:#fff;'
-        +'font-size:11px;'
-        +'font-weight:800;'
-        +'font-family:Figtree,sans-serif;'
-        +'text-shadow:0 1px 4px rgba(0,0,0,.9),0 0 6px rgba(0,0,0,.7);'
-        +'white-space:nowrap;'
-        +'display:block;'
-        +'text-align:center;'
-        +''>'+name+'</span>',
+      html:'<span style="color:#fff;font-size:11px;font-weight:800;font-family:Figtree,sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.9),0 0 6px rgba(0,0,0,.7);white-space:nowrap;display:block;text-align:center;">'+name+'</span>',
       className:'',
       iconSize:null,
       iconAnchor:null
