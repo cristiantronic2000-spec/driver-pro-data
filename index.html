@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -183,7 +182,29 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 .zsr-tipo{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
 .zsr-coords{font-size:11px;color:var(--g400);margin-top:4px}
 
-/* ── ZONE DETAIL SUBMAP ──────────────────────────────── */
+/* ── BILLETERA ───────────────────────────────────────── */
+.wallet-hero{background:var(--green);margin:12px 16px;border-radius:18px;padding:20px;color:#fff}
+.wallet-hero .wamt{font-size:36px;font-weight:900;letter-spacing:-1px;line-height:1.1}
+.wallet-hero .wlbl{font-size:12px;color:rgba(255,255,255,.7);font-weight:600;margin-top:2px}
+.wallet-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.2);border-radius:10px;margin-top:14px;overflow:hidden}
+.wstat{background:rgba(255,255,255,.12);padding:10px 12px}
+.wsval{font-size:15px;font-weight:800}
+.wslbl{font-size:9px;color:rgba(255,255,255,.6);margin-top:1px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.wallet-shortcut{margin:0 16px 4px;display:flex;gap:8px}
+.wallet-shortcut button{flex:1;padding:12px 8px;background:#fff;border:1.5px solid var(--g200);border-radius:12px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;color:var(--black);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.wallet-shortcut button:active{background:var(--g50)}
+.wbal-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--g100)}
+.wbal-row:last-child{border:none}
+.wbal-lbl{font-size:14px;color:var(--g600)}
+.wbal-amt{font-size:15px;font-weight:800}
+.wbal-amt.pos{color:var(--green)}
+.wbal-amt.neg{color:var(--red)}
+.wal-pay-row{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--g100)}
+.wal-pay-row:last-child{border:none}
+.wal-tipo{font-size:13px;font-weight:700}
+.wal-meta{font-size:11px;color:var(--g400);margin-top:1px}
+.wal-monto{font-size:15px;font-weight:800;color:var(--green)}
+/* ─────────────────────────────────────────────────── */
 .zone-submap-wrap{margin:0 16px 10px;border-radius:14px;overflow:hidden;border:1px solid var(--g200)}
 .zone-submap{height:200px;width:100%}
 .zone-note-add{display:flex;gap:8px;align-items:center;margin:0 16px 10px}
@@ -231,9 +252,124 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <div class="mbox"><div class="mlbl">Me quedo semana</div><div class="mval cg" id="h-sn">$0</div><div class="msub">menos combustible</div></div>
     <div class="mbox"><div class="mlbl">Combustible semana</div><div class="mval cr" id="h-litros">0 L</div><div class="msub" id="h-litros-sub">estimado</div></div>
   </div>
-  <div style="padding:0 16px 4px"><button class="bp" onclick="openM('modal-viaje')">+ Agregar viaje</button></div>
+  <!-- Acceso rápido billetera -->
+  <div class="wallet-shortcut">
+    <button onclick="showTab('billetera')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 12h.01"/><path d="M2 10h20"/></svg>
+      Billetera
+    </button>
+    <button onclick="openM('modal-viaje')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Agregar viaje
+    </button>
+  </div>
+  <div style="height:4px"></div>
   <div class="slbl">Últimos 10 viajes</div>
   <div id="h-last10"><div class="empty"><div class="etxt">Cargando...</div></div></div>
+</div>
+
+<!-- BILLETERA -->
+<div class="page" id="page-billetera">
+  <div class="ph"><div class="pt">Billetera</div></div>
+  <div class="stabs" id="btabs">
+    <button class="stab on" onclick="stab('b','efectivo',this)">Efectivo</button>
+    <button class="stab" onclick="stab('b','movimientos',this)">Movimientos</button>
+    <button class="stab" onclick="stab('b','pagos',this)">Pagos</button>
+  </div>
+
+  <!-- TAB: EFECTIVO -->
+  <div id="bsub-efectivo">
+    <div style="height:12px"></div>
+    <!-- Hero verde billetera -->
+    <div class="wallet-hero">
+      <div class="wlbl">DISPONIBLE EN BILLETERA</div>
+      <div class="wamt" id="w-billetera">$0</div>
+      <div class="wallet-stats">
+        <div class="wstat"><div class="wsval" id="w-retiro">$0</div><div class="wslbl">Disponible para retiro</div></div>
+        <div class="wstat"><div class="wsval" id="w-inicial">$0</div><div class="wslbl">Monto inicial hoy</div></div>
+      </div>
+    </div>
+
+    <!-- Monto inicial del día -->
+    <div style="margin:0 16px 12px;background:var(--g50);border-radius:14px;padding:14px 16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+        <div>
+          <div style="font-size:13px;font-weight:700">Monto inicial en billetera</div>
+          <div style="font-size:11px;color:var(--g400);margin-top:2px">Efectivo con el que empezaste el día</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="number" id="w-inicial-input" inputmode="numeric" placeholder="0"
+            style="width:100px;padding:8px 10px;border:1.5px solid var(--g200);border-radius:10px;font-size:15px;font-weight:700;font-family:var(--font);text-align:right;outline:none">
+          <button onclick="guardarMontoinicial()" style="padding:8px 14px;background:var(--black);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparación efectivo viajes vs billetera -->
+    <div style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden">
+      <div style="padding:12px 16px 8px;font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.04em">Efectivo del día</div>
+      <div class="wbal-row"><span class="wbal-lbl">Viajes cobrados en efectivo</span><span class="wbal-amt pos" id="w-viajes-ef">$0</span></div>
+      <div class="wbal-row"><span class="wbal-lbl">Pagos ingresados en billetera</span><span class="wbal-amt pos" id="w-pagos-ef">$0</span></div>
+      <div class="wbal-row"><span class="wbal-lbl" style="font-weight:700">Diferencia</span><span class="wbal-amt" id="w-diff-ef">$0</span></div>
+    </div>
+
+    <!-- Lista pagos del día + botón agregar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px;margin-bottom:8px">
+      <div class="slbl" style="padding:0;margin:0">Pagos de hoy</div>
+      <button onclick="openModalWallet()" style="padding:7px 14px;background:var(--black);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer">+ Agregar</button>
+    </div>
+    <div id="w-pagos-list"></div>
+  </div>
+
+  <!-- TAB: MOVIMIENTOS -->
+  <div id="bsub-movimientos" style="display:none">
+    <div class="snav">
+      <button class="sbtn" onclick="navDate('wmov',-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div style="flex:1;text-align:center">
+        <input type="date" class="date-pick-btn" id="wmov-date" onchange="pickDate('wmov',this.value)"
+          style="border:none;background:none;font-size:16px;font-weight:800;text-align:center;padding:0;width:auto">
+      </div>
+      <button class="sbtn" onclick="navDate('wmov',1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+    <div style="text-align:center;padding-bottom:8px">
+      <button class="date-today-btn" style="font-size:12px;padding:6px 16px" onclick="pickDate('wmov','')">Hoy</button>
+    </div>
+    <!-- Resumen del día -->
+    <div id="w-mov-summary" style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden"></div>
+    <div id="w-mov-list"></div>
+  </div>
+
+  <!-- TAB: PAGOS -->
+  <div id="bsub-pagos" style="display:none">
+    <!-- Selector de fecha -->
+    <div class="snav">
+      <button class="sbtn" onclick="navDate('wpag',-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div style="flex:1;text-align:center">
+        <input type="date" class="date-pick-btn" id="wpag-date" onchange="pickDate('wpag',this.value)"
+          style="border:none;background:none;font-size:16px;font-weight:800;text-align:center;padding:0;width:auto">
+      </div>
+      <button class="sbtn" onclick="navDate('wpag',1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+    <div style="text-align:center;padding-bottom:8px">
+      <button class="date-today-btn" style="font-size:12px;padding:6px 16px" onclick="pickDate('wpag','')">Hoy</button>
+    </div>
+    <!-- Disponibles -->
+    <div style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden">
+      <div style="padding:12px 16px 8px;font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.04em">Disponibilidad</div>
+      <div class="wbal-row"><span class="wbal-lbl">Disponible en Billetera</span><span class="wbal-amt pos" id="wp-billetera">$0</span></div>
+      <div class="wbal-row"><span class="wbal-lbl">Disponible para retiro</span><span class="wbal-amt pos" id="wp-retiro">$0</span></div>
+    </div>
+    <!-- Por medio de pago -->
+    <div style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden">
+      <div style="padding:12px 16px 8px;font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.04em">Ingresos por medio de pago</div>
+      <div class="wbal-row"><span class="wbal-lbl">💵 Efectivo (viajes)</span><span class="wbal-amt" id="wp-ef">$0</span></div>
+      <div class="wbal-row"><span class="wbal-lbl">💳 Tarjeta (viajes)</span><span class="wbal-amt" id="wp-tk">$0</span></div>
+      <div class="wbal-row"><span class="wbal-lbl">🏦 Transferencia (viajes)</span><span class="wbal-amt" id="wp-tr">$0</span></div>
+    </div>
+    <!-- Pagos billetera del día -->
+    <div class="slbl">Pagos registrados en billetera</div>
+    <div id="wp-list"></div>
+  </div>
 </div>
 
 <!-- VIAJES -->
@@ -674,12 +810,14 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
   </button>
   <!-- ÍCONO VIAJES: flecha señalética de ruta -->
   <button class="ni" onclick="showTab('viajes')" id="ni-viajes">
-    <svg viewBox="0 0 24 24">
-      <path d="M12 2L8 7h3v8H8l4 5 4-5h-3V7h3z"/>
-    </svg>
+    <svg viewBox="0 0 24 24"><path d="M12 2L8 7h3v8H7l5 5 5-5h-4V7h3z"/></svg>
     <span>Viajes</span>
   </button>
   <button class="ni" onclick="showTab('ganancias')" id="ni-ganancias"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Ganancias</span></button>
+  <button class="ni" onclick="showTab('billetera')" id="ni-billetera">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 12h.01"/><path d="M2 10h20"/></svg>
+    <span>Billetera</span>
+  </button>
   <button class="ni" onclick="showTab('mas')" id="ni-mapa" style="display:none"></button>
   <button class="ni" onclick="showTab('mas')" id="ni-mas"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Más</span></button>
 </nav>
@@ -820,6 +958,25 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
   </div>
 </div>
 
+<!-- MODAL PAGO BILLETERA -->
+<div class="mbg" id="modal-wallet" onclick="closeMBg(event,'modal-wallet')">
+  <div class="modal">
+    <div class="mhdl"></div>
+    <div class="mtit" id="mw-title">Agregar pago en efectivo</div>
+    <input type="hidden" id="mw-id">
+    <div class="fg"><label class="fl">Monto recibido (CLP)</label><input class="fi" type="number" id="mw-monto" inputmode="numeric" placeholder="5000"></div>
+    <div class="fgrid">
+      <div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" id="mw-fecha"></div>
+      <div class="fg"><label class="fl">Hora</label><input class="fi" type="time" id="mw-hora"></div>
+    </div>
+    <div class="fg"><label class="fl">Descripción (opcional)</label><input class="fi" type="text" id="mw-desc" placeholder="Ej: viaje centro"></div>
+    <div style="height:8px"></div>
+    <button class="bp bgreen" onclick="saveWalletPago()">Guardar pago</button>
+    <div style="height:8px"></div>
+    <button class="bs" onclick="closeM('modal-wallet')">Cancelar</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -849,7 +1006,7 @@ const SEED_PDFS=[
   {periodo:'9 mar - 16 mar 2026', bruto:109706,flex:1380,sii:15960,pagado:89466, ef:74495,tr:14971,prio:2254,din:2250}
 ];
 
-let VIAJES=[],CIERRES={},TURNOS=[],ZONAS={},PDFS=[];
+let VIAJES=[],CIERRES={},TURNOS=[],ZONAS={},PDFS=[],WALLET_PAGOS=[],WALLET_INICIAL={};
 let CONFIG={rend:16,bencina:1200,fondo:5,meta:50000,sii:15.25};
 let payState={v:'ef',m:'ef'};
 let benState=false,period='hoy';
@@ -909,7 +1066,7 @@ window.navDate=function(key,dir){
 
 function initDatePickers(){
   const t=today();
-  ['hist','gan','resumen'].forEach(k=>{
+  ['hist','gan','resumen','wmov','wpag'].forEach(k=>{
     selectedDates[k]=t;
     const el=document.getElementById(k+'-date');
     if(el){el.value=t;el.max=t;}
@@ -927,6 +1084,14 @@ function startListeners(){
   onSnapshot(collection(db,'turnos'),(snap)=>{TURNOS=snap.docs.map(d=>({...d.data(),_fid:d.id})).sort((a,b)=>b.fecha.localeCompare(a.fecha));renderTurnos();renderCal();});
   onSnapshot(collection(db,'zonas'),(snap)=>{ZONAS={};snap.docs.forEach(d=>{ZONAS[d.id]={...d.data()};});applyZoneColors();renderMapNotes();updateAddrZonesList();});
   onSnapshot(collection(db,'pdfs'),(snap)=>{PDFS=snap.docs.map(d=>({...d.data(),_fid:d.id})).sort((a,b)=>b.periodo.localeCompare(a.periodo));renderPdfs();});
+  onSnapshot(collection(db,'wallet_pagos'),(snap)=>{
+    WALLET_PAGOS=snap.docs.map(d=>({...d.data(),_fid:d.id})).sort((a,b)=>(b.fecha+' '+b.hora).localeCompare(a.fecha+' '+a.hora));
+    renderWallet();
+  });
+  onSnapshot(collection(db,'wallet_inicial'),(snap)=>{
+    WALLET_INICIAL={};snap.docs.forEach(d=>{WALLET_INICIAL[d.id]={...d.data()};});
+    renderWallet();
+  });
   onSnapshot(doc(db,'config','main'),(snap)=>{if(snap.exists()){CONFIG={...CONFIG,...snap.data()};document.getElementById('cfg-rend').value=CONFIG.rend;document.getElementById('cfg-ben').value=CONFIG.bencina;document.getElementById('cfg-fondo').value=CONFIG.fondo;document.getElementById('cfg-meta').value=CONFIG.meta;document.getElementById('cfg-sii').value=CONFIG.sii||15.25;}});
 }
 
@@ -1004,6 +1169,7 @@ window.showTab=function(id){
   if(id==='inicio') renderInicio();
   if(id==='viajes'){renderVHoy();refreshVAgregar();}
   if(id==='ganancias') renderGan();
+  if(id==='billetera') renderWallet();
   if(id==='mapa'){renderMapNotes();setTimeout(()=>{initLeafletMap();if(leafletMap) leafletMap.invalidateSize();applyZoneColors();},200);}
   if(id==='mas'){renderCal();renderTurnos();}
   const fbs=document.getElementById('fb-status');if(fbs) fbs.textContent=navigator.onLine?'Conectado a Firebase':'Offline';
@@ -1024,9 +1190,9 @@ window.stab=function(prefix,sub,btn){
     },200);
     return;
   }
-  const pm={v:'vsub',g:'gsub',m:'msub',x:'xsub'};
-  const tm={v:'vtabs',g:'gtabs',m:'mtabs',x:'xtabs'};
-  const pgm={v:'page-viajes',g:'page-ganancias',m:'page-mapa',x:'page-mas'};
+  const pm={v:'vsub',g:'gsub',m:'msub',x:'xsub',b:'bsub'};
+  const tm={v:'vtabs',g:'gtabs',m:'mtabs',x:'xtabs',b:'btabs'};
+  const pgm={v:'page-viajes',g:'page-ganancias',m:'page-mapa',x:'page-mas',b:'page-billetera'};
   const pref=pm[prefix];
   const page=document.getElementById(pgm[prefix]);
   if(page) page.querySelectorAll('[id^="'+pref+'-"]').forEach(el=>el.style.display='none');
@@ -1045,7 +1211,9 @@ window.stab=function(prefix,sub,btn){
   if(prefix==='m'&&sub==='mapa') setTimeout(()=>{initLeafletMap();if(leafletMap) leafletMap.invalidateSize();applyZoneColors();},200);
   if(prefix==='m'&&sub==='notas') renderMapNotes();
   if(prefix==='m'&&sub==='buscar'){updateAddrZonesList();setTimeout(()=>{initAddrMap();},200);}
-  if(prefix==='x'&&sub==='turnos'){renderCal();renderTurnos();}
+  if(prefix==='b'&&sub==='efectivo') renderWalletEfectivo();
+  if(prefix==='b'&&sub==='movimientos') renderWalletMovimientos();
+  if(prefix==='b'&&sub==='pagos') renderWalletPagos();
   if(prefix==='x'&&sub==='cierre') renderCierreInfo();
   if(prefix==='x'&&sub==='cierres'){renderCierres();renderCierreInfo();}
   if(prefix==='x'&&sub==='config'){
@@ -1687,6 +1855,8 @@ window.pickDate=function(key,val){
   if(key==='hist') renderVHist();
   if(key==='gan') renderGHist();
   if(key==='resumen') renderGan();
+  if(key==='wmov') renderWalletMovimientos();
+  if(key==='wpag') renderWalletPagos();
 };
 
 window.setPeriod=function(p,btn){
@@ -2809,6 +2979,191 @@ window.importData=function(input){
     }catch(e){toast('Error al importar: '+e.message);}
   };
   reader.readAsText(f);
+};
+
+// ── BILLETERA ─────────────────────────────────────────────────────────────
+
+// Calcular totales de billetera para una fecha
+function walletCalc(fecha){
+  const inicial=(WALLET_INICIAL[fecha]||{}).monto||0;
+  const pagos=WALLET_PAGOS.filter(p=>p.fecha===fecha);
+  const totalPagos=pagos.reduce((a,p)=>a+p.monto,0);
+  const enBilletera=inicial+totalPagos; // todo el efectivo físico disponible
+
+  const vs=vByDate(fecha);
+  const viajesEf=vs.filter(v=>v.pago==='ef').reduce((a,v)=>a+v.monto,0);
+  // Disponible para retiro Uber = neto - lo que ya está en billetera (pagos cobrados, sin el inicial)
+  const recibo=Math.max(0,viajesEf-viajesEf*(CONFIG.sii/100));
+  const disponibleRetiro=Math.max(0,recibo-totalPagos);
+  const diff=totalPagos-viajesEf;
+  return{inicial,totalPagos,enBilletera,viajesEf,recibo,disponibleRetiro,diff,pagos};
+}
+
+function renderWallet(){
+  const activo=document.querySelector('#page-billetera .stab.on');
+  const sub=activo?activo.getAttribute('onclick').match(/'([^']+)'/)?.[1]:'efectivo';
+  if(sub==='efectivo') renderWalletEfectivo();
+  else if(sub==='movimientos') renderWalletMovimientos();
+  else if(sub==='pagos') renderWalletPagos();
+}
+
+function renderWalletEfectivo(){
+  const fecha=today();
+  const{inicial,totalPagos,enBilletera,viajesEf,disponibleRetiro,diff}=walletCalc(fecha);
+
+  // Hero
+  document.getElementById('w-billetera').textContent=CLP(enBilletera);
+  document.getElementById('w-retiro').textContent=CLP(disponibleRetiro);
+  document.getElementById('w-inicial').textContent=CLP(inicial);
+
+  // Input inicial
+  const inp=document.getElementById('w-inicial-input');
+  if(inp&&!inp.value) inp.value=inicial||'';
+
+  // Comparación
+  document.getElementById('w-viajes-ef').textContent=CLP(viajesEf);
+  document.getElementById('w-pagos-ef').textContent=CLP(totalPagos);
+  const diffEl=document.getElementById('w-diff-ef');
+  diffEl.textContent=(diff>=0?'+':'')+CLP(diff);
+  diffEl.className='wbal-amt '+(diff<0?'neg':diff>0?'pos':'');
+
+  // Lista de pagos del día
+  const el=document.getElementById('w-pagos-list');
+  const pagos=WALLET_PAGOS.filter(p=>p.fecha===fecha);
+  if(!pagos.length){
+    el.innerHTML='<div class="empty"><div class="etxt">Sin pagos registrados hoy</div><div class="esub">Toca + Agregar para registrar</div></div>';
+    return;
+  }
+  el.innerHTML='';
+  pagos.forEach(p=>{
+    const row=document.createElement('div');row.className='trow';
+    row.innerHTML=`<div class="tico" style="background:#e6f4ea"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#00A651;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>`
+      +`<div class="tinfo"><div class="tname">${p.desc||'Pago en efectivo'}</div><div class="tmeta">${p.fecha} · ${p.hora}</div></div>`
+      +`<div class="tamt g">${CLP(p.monto)}</div>`
+      +`<div class="tactions">`
+      +`<button class="tacbtn tacedit" title="Editar">✏️</button>`
+      +`<button class="tacbtn tacdel" title="Eliminar">🗑️</button>`
+      +`</div>`;
+    row.querySelector('.tacedit').addEventListener('click',()=>editWalletPago(p._fid));
+    row.querySelector('.tacdel').addEventListener('click',()=>confirmDel('wallet_pago',p._fid,(p.desc||'Pago')+' · '+CLP(p.monto)));
+    el.appendChild(row);
+  });
+}
+
+function renderWalletMovimientos(){
+  const ds=selectedDates.wmov||today();
+  const inp=document.getElementById('wmov-date');if(inp) inp.value=ds;
+  const{totalPagos,enBilletera,viajesEf,disponibleRetiro,pagos}=walletCalc(ds);
+  const vs=vByDate(ds);
+
+  // Resumen
+  const sumEl=document.getElementById('w-mov-summary');
+  sumEl.innerHTML=`<div class="wbal-row"><span class="wbal-lbl">Efectivo de viajes</span><span class="wbal-amt pos">${CLP(viajesEf)}</span></div>`
+    +`<div class="wbal-row"><span class="wbal-lbl">Pagos en billetera</span><span class="wbal-amt pos">${CLP(totalPagos)}</span></div>`
+    +`<div class="wbal-row"><span class="wbal-lbl">Disponible billetera</span><span class="wbal-amt pos">${CLP(enBilletera)}</span></div>`
+    +`<div class="wbal-row" style="font-weight:800"><span class="wbal-lbl">Disponible retiro</span><span class="wbal-amt pos">${CLP(disponibleRetiro)}</span></div>`;
+
+  const el=document.getElementById('w-mov-list');
+  if(!pagos.length){el.innerHTML='<div class="empty"><div class="etxt">Sin movimientos este día</div></div>';return;}
+  el.innerHTML='';
+  pagos.forEach(p=>{
+    const row=document.createElement('div');row.className='trow';
+    row.innerHTML=`<div class="tico" style="background:#e6f4ea"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#00A651;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>`
+      +`<div class="tinfo"><div class="tname">${p.desc||'Pago en efectivo'}</div><div class="tmeta">${p.fecha} · ${p.hora}</div></div>`
+      +`<div class="tamt g">${CLP(p.monto)}</div>`;
+    el.appendChild(row);
+  });
+}
+
+function renderWalletPagos(){
+  const ds=selectedDates.wpag||today();
+  const inp=document.getElementById('wpag-date');if(inp) inp.value=ds;
+  const{enBilletera,disponibleRetiro,pagos}=walletCalc(ds);
+  const vs=vByDate(ds);
+  const ef=vs.filter(v=>v.pago==='ef').reduce((a,v)=>a+v.monto,0);
+  const tk=vs.filter(v=>v.pago==='tk').reduce((a,v)=>a+v.monto,0);
+  const tr=vs.filter(v=>v.pago==='tr').reduce((a,v)=>a+v.monto,0);
+
+  document.getElementById('wp-billetera').textContent=CLP(enBilletera);
+  document.getElementById('wp-retiro').textContent=CLP(disponibleRetiro);
+  document.getElementById('wp-ef').textContent=CLP(ef);
+  document.getElementById('wp-tk').textContent=CLP(tk);
+  document.getElementById('wp-tr').textContent=CLP(tr);
+
+  const el=document.getElementById('wp-list');
+  if(!pagos.length){el.innerHTML='<div class="empty"><div class="etxt">Sin pagos este día</div></div>';return;}
+  el.innerHTML='';
+  pagos.forEach(p=>{
+    const row=document.createElement('div');row.className='trow';
+    row.innerHTML=`<div class="tico" style="background:#e6f4ea"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#00A651;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>`
+      +`<div class="tinfo"><div class="tname">${p.desc||'Pago efectivo'}</div><div class="tmeta">${p.hora}</div></div>`
+      +`<div class="tamt g">${CLP(p.monto)}</div>`;
+    el.appendChild(row);
+  });
+}
+
+window.guardarMontoinicial=async function(){
+  const monto=parseFloat(document.getElementById('w-inicial-input').value)||0;
+  const fecha=today();
+  try{
+    await setDoc(doc(db,'wallet_inicial',fecha),{monto,fecha});
+    toast('Monto inicial guardado: '+CLP(monto));
+  }catch(e){toast('Error: '+e.message);}
+};
+
+window.openModalWallet=function(){
+  const dt=nowDatetimeCL();
+  document.getElementById('mw-title').textContent='Agregar pago en efectivo';
+  document.getElementById('mw-id').value='';
+  document.getElementById('mw-monto').value='';
+  document.getElementById('mw-fecha').value=dt.fecha;
+  document.getElementById('mw-hora').value=dt.hora;
+  document.getElementById('mw-desc').value='';
+  document.getElementById('modal-wallet').classList.add('open');
+};
+
+window.editWalletPago=function(fid){
+  const p=WALLET_PAGOS.find(x=>x._fid===fid);if(!p) return;
+  document.getElementById('mw-title').textContent='Editar pago';
+  document.getElementById('mw-id').value=fid;
+  document.getElementById('mw-monto').value=p.monto;
+  document.getElementById('mw-fecha').value=p.fecha;
+  document.getElementById('mw-hora').value=p.hora;
+  document.getElementById('mw-desc').value=p.desc||'';
+  document.getElementById('modal-wallet').classList.add('open');
+};
+
+window.saveWalletPago=async function(){
+  const fid=document.getElementById('mw-id').value;
+  const dt=nowDatetimeCL();
+  const data={
+    monto:parseFloat(document.getElementById('mw-monto').value)||0,
+    fecha:document.getElementById('mw-fecha').value||dt.fecha,
+    hora:document.getElementById('mw-hora').value||dt.hora,
+    desc:document.getElementById('mw-desc').value.trim()
+  };
+  if(!data.monto){toast('Ingresa el monto');return;}
+  try{
+    if(fid){await updateDoc(doc(db,'wallet_pagos',fid),data);toast('Pago actualizado');}
+    else{await addDoc(collection(db,'wallet_pagos'),data);toast('Pago guardado: '+CLP(data.monto));}
+    closeM('modal-wallet');
+  }catch(e){toast('Error: '+e.message);}
+};
+
+// Extender confirmDel para wallet_pago
+const _origConfirmDel=window.confirmDel;
+window.confirmDel=function(tipo,fid,label){
+  if(tipo==='wallet_pago'){
+    document.getElementById('confirm-msg').textContent='Eliminar "'+label+'"? Esta acción no se puede deshacer.';
+    pendingDeleteFn=async()=>{
+      try{await deleteDoc(doc(db,'wallet_pagos',fid));closeM('modal-confirm');toast('Eliminado');}
+      catch(e){toast('Error: '+e.message);}
+    };
+    document.getElementById('confirm-btn').onclick=()=>{if(pendingDeleteFn) pendingDeleteFn();};
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
+  _origConfirmDel(tipo,fid,label);
 };
 
 window.addEventListener('online',()=>setSyncStatus('online','Sincronizado'));
