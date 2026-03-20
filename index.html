@@ -17,12 +17,12 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--black:#000;--white:#fff;--g50:#f7f7f7;--g100:#f0f0f0;--g200:#e0e0e0;--g400:#9e9e9e;--g600:#616161;--blue:#276EF1;--green:#00A651;--red:#E11900;--amber:#FFC043;--font:'Figtree',sans-serif;--nav-h:80px;--safe:env(safe-area-inset-bottom,0px)}
-html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);color:var(--black)}
-#app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;background:#fff;position:relative;overflow:hidden}
+html,body{height:100%;overflow:hidden;background:#e8e8e8;font-family:var(--font);color:var(--black)}
+#app{display:flex;flex-direction:column;height:100%;width:100%;max-width:480px;margin:0 auto;background:#fff;position:relative;overflow:hidden;box-shadow:0 0 40px rgba(0,0,0,.15)}
 .pages{flex:1;overflow:hidden;position:relative}
 .page{position:absolute;inset:0;overflow-y:auto;padding-bottom:calc(var(--nav-h) + var(--safe) + 20px);display:none;-webkit-overflow-scrolling:touch}
 .page.active{display:block}
-.nav{position:absolute;bottom:0;left:0;right:0;height:calc(var(--nav-h) + var(--safe));background:#fff;border-top:1px solid var(--g200);display:flex;align-items:flex-start;padding-top:8px;z-index:100}
+.nav{position:absolute;bottom:0;left:0;right:0;height:calc(var(--nav-h) + var(--safe));background:#fff;border-top:1px solid var(--g200);display:flex;align-items:flex-start;padding-top:8px;z-index:100;max-width:480px}
 .ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;border:none;background:none;font-family:var(--font)}
 .ni svg{width:22px;height:22px;stroke:var(--g400);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:stroke .15s}
 .ni span{font-size:10px;color:var(--g400);font-weight:500;transition:color .15s}
@@ -68,9 +68,9 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 .bs:active{opacity:.7}
 .bgreen{background:var(--green)!important;color:#fff!important}
 .bred{background:var(--red)!important;color:#fff!important}
-.mbg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end}
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .mbg.open{display:flex}
-.modal{background:#fff;border-radius:24px 24px 0 0;padding:24px 20px calc(24px + var(--safe));width:100%;max-height:92vh;overflow-y:auto}
+.modal{background:#fff;border-radius:24px 24px 0 0;padding:24px 20px calc(24px + var(--safe));width:100%;max-width:480px;max-height:92vh;overflow-y:auto}
 .mhdl{width:40px;height:4px;background:var(--g200);border-radius:2px;margin:0 auto 20px}
 .mtit{font-size:20px;font-weight:900;margin-bottom:20px}
 .fg{margin-bottom:16px}
@@ -86,7 +86,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 .sbtn{width:36px;height:36px;background:var(--g100);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .sbtn svg{width:16px;height:16px;stroke:var(--black);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
 .snlbl{font-size:16px;font-weight:800}
-.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--black);color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;z-index:999;transition:transform .3s;pointer-events:none;white-space:nowrap}
+.toast{position:absolute;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--black);color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;z-index:999;transition:transform .3s;pointer-events:none;white-space:nowrap;max-width:90%}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .psel{display:flex;background:var(--g100);border-radius:12px;padding:3px;margin:0 16px 16px}
 .pbtn{flex:1;padding:8px;border:none;background:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s;color:var(--g600)}
@@ -282,11 +282,11 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <div style="height:12px"></div>
     <!-- Hero verde billetera -->
     <div class="wallet-hero">
-      <div class="wlbl">DISPONIBLE EN BILLETERA</div>
+      <div class="wlbl">COBRADO HOY EN EFECTIVO</div>
       <div class="wamt" id="w-billetera">$0</div>
       <div class="wallet-stats">
-        <div class="wstat"><div class="wsval" id="w-retiro">$0</div><div class="wslbl">Disponible para retiro</div></div>
-        <div class="wstat"><div class="wsval" id="w-inicial">$0</div><div class="wslbl">Monto inicial hoy</div></div>
+        <div class="wstat"><div class="wsval" id="w-retiro">$0</div><div class="wslbl">Disponible para retiro en Uber</div></div>
+        <div class="wstat"><div class="wsval" id="w-inicial">$0</div><div class="wslbl">Efectivo inicial del día</div></div>
       </div>
     </div>
 
@@ -294,8 +294,8 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <div style="margin:0 16px 12px;background:var(--g50);border-radius:14px;padding:14px 16px">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
         <div>
-          <div style="font-size:13px;font-weight:700">Monto inicial en billetera</div>
-          <div style="font-size:11px;color:var(--g400);margin-top:2px">Efectivo con el que empezaste el día</div>
+          <div style="font-size:13px;font-weight:700">Efectivo inicial en billetera</div>
+          <div style="font-size:11px;color:var(--g400);margin-top:2px">Con cuánto efectivo empezaste el día</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <input type="number" id="w-inicial-input" inputmode="numeric" placeholder="0"
@@ -305,12 +305,14 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       </div>
     </div>
 
-    <!-- Comparación efectivo viajes vs billetera -->
+    <!-- Totales del día -->
     <div style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden">
-      <div style="padding:12px 16px 8px;font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.04em">Efectivo del día</div>
-      <div class="wbal-row"><span class="wbal-lbl">Viajes cobrados en efectivo</span><span class="wbal-amt pos" id="w-viajes-ef">$0</span></div>
-      <div class="wbal-row"><span class="wbal-lbl">Pagos ingresados en billetera</span><span class="wbal-amt pos" id="w-pagos-ef">$0</span></div>
-      <div class="wbal-row"><span class="wbal-lbl" style="font-weight:700">Diferencia</span><span class="wbal-amt" id="w-diff-ef">$0</span></div>
+      <div style="padding:12px 16px 8px;font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.04em">Hoy</div>
+      <div class="wbal-row"><span class="wbal-lbl">Total bruto de viajes</span><span class="wbal-amt" id="w-viajes-bruto">$0</span></div>
+      <div class="wbal-row"><span class="wbal-lbl">Efectivo de viajes (ya en mano)</span><span class="wbal-amt pos" id="w-viajes-ef">$0</span></div>
+      <div class="wbal-row"><span class="wbal-lbl">Pagos registrados en billetera</span><span class="wbal-amt pos" id="w-pagos-ef">$0</span></div>
+      <div class="wbal-row"><span class="wbal-lbl" style="font-weight:700">Diferencia cobrado vs registrado</span><span class="wbal-amt" id="w-diff-ef">$0</span></div>
+      <div class="wbal-row" style="font-weight:800;border-top:1.5px solid var(--g200)"><span class="wbal-lbl">Disponible para retiro en Uber</span><span class="wbal-amt pos" id="w-retiro-row">$0</span></div>
     </div>
 
     <!-- Lista pagos del día + botón agregar -->
@@ -573,121 +575,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 </div>
 
 <!-- MAPA -->
-<div class="page" id="page-mapa">
-  <div class="ph" style="display:flex;align-items:center;gap:10px">
-    <button onclick="showTab('mas')" style="background:var(--g100);border:none;border-radius:10px;padding:6px 10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;flex-shrink:0">‹ Más</button>
-    <div class="pt" style="font-size:24px">Zonas</div>
-  </div>
-  <div class="stabs" id="mtabs">
-    <button class="stab on" onclick="stab('m','mapa',this)">Mapa</button>
-    <button class="stab" onclick="stab('m','notas',this)">Mis notas</button>
-    <button class="stab" onclick="stab('m','buscar',this)">Buscar dirección</button>
-  </div>
-
-  <!-- TAB MAPA -->
-  <div id="msub-mapa">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px 4px">
-      <div style="display:flex;gap:10px;font-size:11px;font-weight:600;color:var(--g600)">
-        <span style="display:flex;align-items:center;gap:3px"><span style="width:9px;height:9px;background:rgba(0,166,81,.7);border-radius:2px;display:inline-block"></span>Tranquila</span>
-        <span style="display:flex;align-items:center;gap:3px"><span style="width:9px;height:9px;background:rgba(255,192,67,.8);border-radius:2px;display:inline-block"></span>Precaución</span>
-        <span style="display:flex;align-items:center;gap:3px"><span style="width:9px;height:9px;background:rgba(225,25,0,.6);border-radius:2px;display:inline-block"></span>Evitar</span>
-      </div>
-      <button id="btn-edit-zone" onclick="toggleZoneEdit()" style="background:var(--g100);border:none;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer">✏️ Editar zonas</button>
-    </div>
-
-    <div id="zone-edit-panel" style="display:none;margin:0 16px 8px;background:var(--g50);border-radius:14px;padding:12px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:8px">Modo edición activo</div>
-      <div style="font-size:12px;color:var(--g600);margin-bottom:10px">1. Selecciona una zona abajo<br>2. Toca puntos en el mapa para dibujar el polígono<br>3. Toca "Guardar zona" cuando termines</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px" id="zone-select-btns"></div>
-      <div id="zone-edit-status" style="font-size:12px;color:var(--g400);margin-bottom:8px">Selecciona una zona para comenzar</div>
-      <div style="display:flex;gap:6px">
-        <button class="bs" style="flex:1;padding:8px;font-size:12px" onclick="undoLastPoint()">↩ Deshacer punto</button>
-        <button class="bs" style="flex:1;padding:8px;font-size:12px" onclick="clearDrawing()">🗑 Limpiar</button>
-        <button class="bp" style="flex:1;padding:8px;font-size:12px" onclick="saveDrawnZone()">💾 Guardar zona</button>
-      </div>
-    </div>
-
-    <div style="margin:0 16px;border-radius:14px;overflow:hidden;border:1px solid var(--g200);">
-      <div id="leaflet-map" style="height:300px;width:100%;"></div>
-    </div>
-    <div style="text-align:center;font-size:11px;color:var(--g400);padding:5px 0 2px" id="map-hint">Toca una zona para ver detalle y notas</div>
-
-    <!-- ZONE DETAIL: submap + notas -->
-    <div id="zone-detail-panel" style="display:none;margin-top:4px">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 6px">
-        <div style="font-size:17px;font-weight:900" id="zone-detail-name">—</div>
-        <button onclick="clearZoneSelection()" style="background:var(--g100);border:none;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer">✕ Cerrar</button>
-      </div>
-
-      <!-- Mini mapa con sub-polígonos por nota -->
-      <div class="zone-submap-wrap">
-        <div id="zone-submap" class="zone-submap"></div>
-      </div>
-      <!-- Toolbar submapa -->
-      <div id="zone-submap-toolbar" style="display:none;margin:0 16px 8px;background:var(--g50);border-radius:12px;padding:10px 12px">
-        <div style="font-size:12px;font-weight:700;margin-bottom:6px">Dibujando sub-zona: <span id="submap-drawing-label" style="color:var(--blue)">—</span></div>
-        <div style="font-size:11px;color:var(--g400);margin-bottom:8px">Toca el mini mapa para marcar puntos</div>
-        <div style="display:flex;gap:6px">
-          <button class="bs" style="flex:1;padding:7px;font-size:11px" onclick="undoSubPoint()">↩ Deshacer</button>
-          <button class="bs" style="flex:1;padding:7px;font-size:11px" onclick="cancelSubDraw()">✕ Cancelar</button>
-          <button class="bp" style="flex:1;padding:7px;font-size:11px" onclick="saveSubPolygon()">💾 Guardar</button>
-        </div>
-      </div>
-
-      <div style="margin:0 16px;background:var(--g50);border-radius:14px;padding:14px;margin-bottom:10px">
-        <div style="font-size:13px;color:var(--g600);margin-bottom:8px" id="zone-detail-desc">Sin descripción</div>
-        <div id="zone-detail-notes" style="margin-bottom:10px"></div>
-      </div>
-
-      <!-- Agregar nota + dibujar su sub-zona -->
-      <div style="padding:0 16px 8px">
-        <div style="display:flex;gap:8px;margin-bottom:8px">
-          <input type="text" id="zone-inline-nota" placeholder="Agregar nota a esta zona..." style="flex:1;padding:10px 14px;border:1.5px solid var(--g200);border-radius:12px;font-size:14px;font-family:var(--font);outline:none;background:#fff;transition:border-color .15s">
-          <button onclick="addInlineNote()" style="padding:10px 14px;background:var(--black);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;white-space:nowrap">+ Nota</button>
-        </div>
-        <button class="bs" style="padding:10px;font-size:13px" onclick="openZoneModal()">✏️ Editar zona completa</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB NOTAS -->
-  <div id="msub-notas" style="display:none"><div id="map-notes-list" style="padding:8px 0"></div></div>
-
-  <!-- TAB BUSCAR DIRECCIÓN -->
-  <div id="msub-buscar" style="display:none">
-    <div style="height:12px"></div>
-    <div style="padding:0 16px;font-size:13px;color:var(--g600);margin-bottom:8px;font-weight:600">Ingresa una dirección para saber en qué zona cae y si debes evitarla.</div>
-    <div class="zone-search-wrap">
-      <input type="text" class="zone-search-input" id="addr-input" placeholder="Ej: Av. Las Industrias 1234, El Monte" onkeydown="if(event.key==='Enter') searchAddress()">
-      <button class="zone-search-btn" onclick="searchAddress()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </button>
-    </div>
-    <div class="zone-search-result" id="addr-result">
-      <!-- Zona general -->
-      <div style="font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Zona general</div>
-      <div class="zsr-zona" id="addr-zona-name">—</div>
-      <!-- Sub-zona -->
-      <div id="addr-subzona-wrap" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--g200)">
-        <div style="font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Sub-zona</div>
-        <div id="addr-subzona-name" style="font-size:16px;font-weight:800"></div>
-        <div id="addr-subzona-badge" style="margin-top:4px"></div>
-        <div id="addr-subzona-desc" style="font-size:12px;color:var(--g600);margin-top:4px"></div>
-      </div>
-      <!-- Si no cae en sub-zona -->
-      <div id="addr-no-subzona" style="display:none;margin-top:8px;font-size:12px;color:var(--g400)"></div>
-      <div id="addr-zona-badge" style="margin-top:6px"></div>
-      <div id="addr-zona-desc" style="font-size:12px;color:var(--g600);margin-top:4px"></div>
-      <div class="zsr-coords" id="addr-coords" style="font-size:10px;color:var(--g400);margin-top:6px"></div>
-    </div>
-    <div style="margin:4px 16px 8px;border-radius:14px;overflow:hidden;border:1px solid var(--g200);display:none" id="addr-map-wrap">
-      <div id="addr-map" style="height:220px;width:100%"></div>
-    </div>
-    <div style="margin:8px 16px;font-size:12px;color:var(--g400)">
-      Zonas configuradas: <strong id="addr-zones-list">—</strong>
-    </div>
-  </div>
-</div>
+<!-- page-mapa content moved to xsub-mapa -->
 
 <!-- MÁS -->
 <div class="page" id="page-mas">
@@ -755,7 +643,103 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
   </div>
   <!-- xsub-cierre eliminado, fusionado arriba -->
   <div id="xsub-cierre" style="display:none"></div>
-  <div id="xsub-mapa" style="display:none"></div>
+  <div id="xsub-mapa" style="display:none">
+    <!-- Botón volver a turnos -->
+    <div style="padding:8px 16px 4px;display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:20px;font-weight:900">Zonas</div>
+      <div style="display:flex;gap:10px;font-size:11px;font-weight:600;color:var(--g600)">
+        <span style="display:flex;align-items:center;gap:3px"><span style="width:9px;height:9px;background:rgba(0,166,81,.7);border-radius:2px;display:inline-block"></span>Tranquila</span>
+        <span style="display:flex;align-items:center;gap:3px"><span style="width:9px;height:9px;background:rgba(255,192,67,.8);border-radius:2px;display:inline-block"></span>Precaución</span>
+        <span style="display:flex;align-items:center;gap:3px"><span style="width:9px;height:9px;background:rgba(225,25,0,.6);border-radius:2px;display:inline-block"></span>Evitar</span>
+      </div>
+    </div>
+    <!-- sub-tabs del mapa -->
+    <div class="stabs" id="mtabs" style="position:sticky;top:56px">
+      <button class="stab on" onclick="stab('m','mapa',this)">Mapa</button>
+      <button class="stab" onclick="stab('m','notas',this)">Mis notas</button>
+      <button class="stab" onclick="stab('m','buscar',this)">Buscar dirección</button>
+    </div>
+    <div id="msub-mapa-inner">
+      <!-- Controles mapa -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 16px 4px">
+        <button id="btn-edit-zone" onclick="toggleZoneEdit()" style="background:var(--g100);border:none;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer">✏️ Editar zonas</button>
+      </div>
+      <div id="zone-edit-panel" style="display:none;margin:0 16px 8px;background:var(--g50);border-radius:14px;padding:12px">
+        <div style="font-size:13px;font-weight:700;margin-bottom:8px">Modo edición activo</div>
+        <div style="font-size:12px;color:var(--g600);margin-bottom:10px">1. Selecciona una zona abajo<br>2. Toca puntos en el mapa para dibujar el polígono<br>3. Toca "Guardar zona" cuando termines</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px" id="zone-select-btns"></div>
+        <div id="zone-edit-status" style="font-size:12px;color:var(--g400);margin-bottom:8px">Selecciona una zona para comenzar</div>
+        <div style="display:flex;gap:6px">
+          <button class="bs" style="flex:1;padding:8px;font-size:12px" onclick="undoLastPoint()">↩ Deshacer</button>
+          <button class="bs" style="flex:1;padding:8px;font-size:12px" onclick="clearDrawing()">🗑 Limpiar</button>
+          <button class="bp" style="flex:1;padding:8px;font-size:12px" onclick="saveDrawnZone()">💾 Guardar zona</button>
+        </div>
+      </div>
+      <div style="margin:0 16px;border-radius:14px;overflow:hidden;border:1px solid var(--g200)">
+        <div id="leaflet-map" style="height:300px;width:100%"></div>
+      </div>
+      <div style="text-align:center;font-size:11px;color:var(--g400);padding:5px 0 2px" id="map-hint">Toca una zona para ver detalle y notas</div>
+      <div id="zone-detail-panel" style="display:none;margin-top:4px">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 6px">
+          <div style="font-size:17px;font-weight:900" id="zone-detail-name">—</div>
+          <button onclick="clearZoneSelection()" style="background:var(--g100);border:none;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer">✕ Cerrar</button>
+        </div>
+        <div class="zone-submap-wrap"><div id="zone-submap" class="zone-submap"></div></div>
+        <div id="zone-submap-toolbar" style="display:none;margin:0 16px 8px;background:var(--g50);border-radius:12px;padding:10px 12px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:6px">Dibujando sub-zona: <span id="submap-drawing-label" style="color:var(--blue)">—</span></div>
+          <div style="font-size:11px;color:var(--g400);margin-bottom:8px">Toca el mini mapa para marcar puntos</div>
+          <div style="display:flex;gap:6px">
+            <button class="bs" style="flex:1;padding:7px;font-size:11px" onclick="undoSubPoint()">↩ Deshacer</button>
+            <button class="bs" style="flex:1;padding:7px;font-size:11px" onclick="cancelSubDraw()">✕ Cancelar</button>
+            <button class="bp" style="flex:1;padding:7px;font-size:11px" onclick="saveSubPolygon()">💾 Guardar</button>
+          </div>
+        </div>
+        <div style="margin:0 16px;background:var(--g50);border-radius:14px;padding:14px;margin-bottom:10px">
+          <div style="font-size:13px;color:var(--g600);margin-bottom:8px" id="zone-detail-desc">Sin descripción</div>
+          <div id="zone-detail-notes" style="margin-bottom:10px"></div>
+        </div>
+        <div style="padding:0 16px 8px">
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <input type="text" id="zone-inline-nota" placeholder="Agregar nota a esta zona..." style="flex:1;padding:10px 14px;border:1.5px solid var(--g200);border-radius:12px;font-size:14px;font-family:var(--font);outline:none;background:#fff;transition:border-color .15s">
+            <button onclick="addInlineNote()" style="padding:10px 14px;background:var(--black);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;white-space:nowrap">+ Nota</button>
+          </div>
+          <button class="bs" style="padding:10px;font-size:13px" onclick="openZoneModal()">✏️ Editar zona completa</button>
+        </div>
+      </div>
+    </div>
+    <div id="msub-notas-inner" style="display:none"><div id="map-notes-list" style="padding:8px 0"></div></div>
+    <div id="msub-buscar-inner" style="display:none">
+      <div style="height:12px"></div>
+      <div style="padding:0 16px;font-size:13px;color:var(--g600);margin-bottom:8px;font-weight:600">Ingresa una dirección para saber en qué zona cae y si debes evitarla.</div>
+      <div class="zone-search-wrap">
+        <input type="text" class="zone-search-input" id="addr-input" placeholder="Ej: Av. Las Industrias 1234, El Monte" onkeydown="if(event.key==='Enter') searchAddress()">
+        <button class="zone-search-btn" onclick="searchAddress()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
+      <div class="zone-search-result" id="addr-result">
+        <div style="font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Zona general</div>
+        <div class="zsr-zona" id="addr-zona-name">—</div>
+        <div id="addr-subzona-wrap" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--g200)">
+          <div style="font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Sub-zona</div>
+          <div id="addr-subzona-name" style="font-size:16px;font-weight:800"></div>
+          <div id="addr-subzona-badge" style="margin-top:4px"></div>
+          <div id="addr-subzona-desc" style="font-size:12px;color:var(--g600);margin-top:4px"></div>
+        </div>
+        <div id="addr-no-subzona" style="display:none;margin-top:8px;font-size:12px;color:var(--g400)"></div>
+        <div id="addr-zona-badge" style="margin-top:6px"></div>
+        <div id="addr-zona-desc" style="font-size:12px;color:var(--g600);margin-top:4px"></div>
+        <div class="zsr-coords" id="addr-coords" style="font-size:10px;color:var(--g400);margin-top:6px"></div>
+      </div>
+      <div style="margin:4px 16px 8px;border-radius:14px;overflow:hidden;border:1px solid var(--g200);display:none" id="addr-map-wrap">
+        <div id="addr-map" style="height:220px;width:100%"></div>
+      </div>
+      <div style="margin:8px 16px;font-size:12px;color:var(--g400)">
+        Zonas configuradas: <strong id="addr-zones-list">—</strong>
+      </div>
+    </div>
+  </div>
+  <div id="xsub-sync" style="display:none">
     <div class="stsec">
       <div style="background:var(--g50);border-radius:12px;padding:14px;margin-top:16px;margin-bottom:12px">
         <div style="font-size:12px;font-weight:700;color:var(--g600);margin-bottom:3px">FIREBASE FIRESTORE</div>
@@ -1097,6 +1081,23 @@ function startListeners(){
 
 function refreshAll(){
   renderInicio();renderVHoy();renderGan();renderCierreInfo();renderCierres();
+  // Refresh current visible sub-tabs
+  const activePage=document.querySelector('.page.active');
+  if(activePage){
+    const pid=activePage.id;
+    if(pid==='page-viajes'){
+      const vtab=document.querySelector('#vtabs .stab.on');
+      const vsub=vtab?vtab.getAttribute('onclick').match(/'v','([^']+)'/)?.[1]:'hoy';
+      if(vsub==='hoy') renderVHoy();
+      if(vsub==='historial') renderVHist();
+    }
+    if(pid==='page-ganancias'){
+      const gsub=document.querySelector('#gtabs .stab.on');
+      const gname=gsub?gsub.getAttribute('onclick').match(/'g','([^']+)'/)?.[1]:'resumen';
+      if(gname==='historial') renderGHist();
+    }
+    if(pid==='page-billetera') renderWallet();
+  }
   const combEl=document.getElementById('gsub-combustible');
   if(combEl&&combEl.style.display!=='none') renderCombustible();
   const el=document.getElementById('fb-counts');if(el) el.textContent=VIAJES.length+' viajes · '+Object.keys(CIERRES).length+' cierres';
@@ -1176,29 +1177,28 @@ window.showTab=function(id){
 };
 
 window.stab=function(prefix,sub,btn){
-  // Caso especial: mapa desde Más — muestra page-mapa pero deja nav en Más
-  if(prefix==='x'&&sub==='mapa'){
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.getElementById('page-mapa').classList.add('active');
-    // Marcar tab como activa
-    const tabs=document.getElementById('xtabs');
-    if(tabs) tabs.querySelectorAll('.stab').forEach(t=>t.classList.remove('on'));
-    if(btn) btn.classList.add('on');
-    // page-mapa necesita su propia cabecera de Más visible — agregar botón Volver
-    setTimeout(()=>{
-      initLeafletMap();if(leafletMap) leafletMap.invalidateSize();applyZoneColors();
-    },200);
-    return;
-  }
   const pm={v:'vsub',g:'gsub',m:'msub',x:'xsub',b:'bsub'};
   const tm={v:'vtabs',g:'gtabs',m:'mtabs',x:'xtabs',b:'btabs'};
-  const pgm={v:'page-viajes',g:'page-ganancias',m:'page-mapa',x:'page-mas',b:'page-billetera'};
-  const pref=pm[prefix];
-  const page=document.getElementById(pgm[prefix]);
-  if(page) page.querySelectorAll('[id^="'+pref+'-"]').forEach(el=>el.style.display='none');
-  const target=document.getElementById(pref+'-'+sub);if(target) target.style.display='block';
-  const tabs=document.getElementById(tm[prefix]);if(tabs) tabs.querySelectorAll('.stab').forEach(t=>t.classList.remove('on'));
+  const pgm={v:'page-viajes',g:'page-ganancias',m:'page-mas',x:'page-mas',b:'page-billetera'};
+
+  // m prefix uses -inner suffix for divs inside xsub-mapa
+  const innerSuffix = prefix==='m' ? '-inner' : '';
+  const pref = pm[prefix];
+  const page = document.getElementById(pgm[prefix]);
+
+  if(page){
+    if(prefix==='m'){
+      page.querySelectorAll('[id^="msub-"][id$="-inner"]').forEach(el=>el.style.display='none');
+    } else {
+      page.querySelectorAll('[id^="'+pref+'-"]').forEach(el=>el.style.display='none');
+    }
+  }
+  const target=document.getElementById(pref+'-'+sub+innerSuffix);
+  if(target) target.style.display='block';
+  const tabs=document.getElementById(tm[prefix]);
+  if(tabs) tabs.querySelectorAll('.stab').forEach(t=>t.classList.remove('on'));
   if(btn) btn.classList.add('on');
+
   if(prefix==='g'&&sub==='resumen'){period='hoy';document.getElementById('resumen-psel').querySelectorAll('.pbtn').forEach((b,i)=>{b.classList.toggle('on',i===0);});document.getElementById('resumen-dia-nav').style.display='none';renderGan();}
   if(prefix==='g'&&sub==='historial') renderGHist();
   if(prefix==='g'&&sub==='pagos') renderPagos();
@@ -1211,9 +1211,11 @@ window.stab=function(prefix,sub,btn){
   if(prefix==='m'&&sub==='mapa') setTimeout(()=>{initLeafletMap();if(leafletMap) leafletMap.invalidateSize();applyZoneColors();},200);
   if(prefix==='m'&&sub==='notas') renderMapNotes();
   if(prefix==='m'&&sub==='buscar'){updateAddrZonesList();setTimeout(()=>{initAddrMap();},200);}
-  if(prefix==='b'&&sub==='efectivo') renderWalletEfectivo();
-  if(prefix==='b'&&sub==='movimientos') renderWalletMovimientos();
-  if(prefix==='b'&&sub==='pagos') renderWalletPagos();
+  if(prefix==='x'&&sub==='mapa'){
+    // activar xsub-mapa, luego iniciar mapa
+    setTimeout(()=>{initLeafletMap();if(leafletMap) leafletMap.invalidateSize();applyZoneColors();renderMapNotes();},200);
+  }
+  if(prefix==='x'&&sub==='turnos'){renderCal();renderTurnos();}
   if(prefix==='x'&&sub==='cierre') renderCierreInfo();
   if(prefix==='x'&&sub==='cierres'){renderCierres();renderCierreInfo();}
   if(prefix==='x'&&sub==='config'){
@@ -1225,6 +1227,9 @@ window.stab=function(prefix,sub,btn){
     const fbs=document.getElementById('fb-status');if(fbs) fbs.textContent=navigator.onLine?'Conectado a Firebase':'Offline';
     const fbc=document.getElementById('fb-counts');if(fbc) fbc.textContent=VIAJES.length+' viajes · '+Object.keys(CIERRES).length+' cierres';
   }
+  if(prefix==='b'&&sub==='efectivo') renderWalletEfectivo();
+  if(prefix==='b'&&sub==='movimientos') renderWalletMovimientos();
+  if(prefix==='b'&&sub==='pagos') renderWalletPagos();
 };
 
 window.openM=function(id){
@@ -1422,6 +1427,7 @@ window.addViajeSimple=async function(){
     document.getElementById('v-hora-ini').value=nowTimeCL();
     checkProcesoBanner();
     toast('Viaje guardado: '+CLP(v.monto));
+    renderVHoy();renderInicio();
   }catch(e){toast('Error: '+e.message);}
 };
 
@@ -1453,6 +1459,7 @@ window.saveViajeModal=async function(){
     else{await addDoc(collection(db,'viajes'),v);toast('Viaje guardado: '+CLP(v.monto));}
     localStorage.removeItem(PROCESO_KEY);
     closeM('modal-viaje');
+    renderVHoy();renderInicio();
   }catch(e){toast('Error: '+e.message);}
 };
 
@@ -1545,6 +1552,7 @@ window.saveTurnoModal=async function(){
     if(fid){await updateDoc(doc(db,'turnos',fid),data);toast('Turno actualizado');}
     else{await addDoc(collection(db,'turnos'),data);toast('Turno guardado');}
     closeM('modal-turno');
+    renderTurnos();renderCal();
   }catch(e){toast('Error: '+e.message);}
 };
 
@@ -1572,6 +1580,7 @@ window.savePdfModal=async function(){
     if(fid){await updateDoc(doc(db,'pdfs',fid),data);toast('Resumen actualizado');}
     else{await addDoc(collection(db,'pdfs'),data);toast('Resumen guardado');}
     closeM('modal-pdf');
+    renderPdfs();
   }catch(e){toast('Error: '+e.message);}
 };
 
@@ -1595,6 +1604,7 @@ window.confirmDel=function(tipo,fid,label){
       if(tipo==='turno') await deleteDoc(doc(db,'turnos',fid));
       if(tipo==='pdf') await deleteDoc(doc(db,'pdfs',fid));
       if(tipo==='cierre') await deleteDoc(doc(db,'cierres',fid));
+      if(tipo==='wallet_pago') await deleteDoc(doc(db,'wallet_pagos',fid));
       closeM('modal-confirm');toast('Eliminado');
     }catch(e){toast('Error: '+e.message);}
   };
@@ -2988,20 +2998,32 @@ function walletCalc(fecha){
   const inicial=(WALLET_INICIAL[fecha]||{}).monto||0;
   const pagos=WALLET_PAGOS.filter(p=>p.fecha===fecha);
   const totalPagos=pagos.reduce((a,p)=>a+p.monto,0);
-  const enBilletera=inicial+totalPagos; // todo el efectivo físico disponible
 
   const vs=vByDate(fecha);
-  const viajesEf=vs.filter(v=>v.pago==='ef').reduce((a,v)=>a+v.monto,0);
-  // Disponible para retiro Uber = neto - lo que ya está en billetera (pagos cobrados, sin el inicial)
-  const recibo=Math.max(0,viajesEf-viajesEf*(CONFIG.sii/100));
-  const disponibleRetiro=Math.max(0,recibo-totalPagos);
+  const viajesEf =vs.filter(v=>v.pago==='ef').reduce((a,v)=>a+v.monto,0);
+  const viajesDig=vs.filter(v=>v.pago!=='ef').reduce((a,v)=>a+v.monto,0);
+  const viajesBruto=viajesEf+viajesDig;
+
+  // Disponible en Billetera = pagos en efectivo registrados hoy
+  const enBilletera=totalPagos;
+
+  // Disponible para retiro en Uber = total bruto − efectivo ya cobrado por ti
+  // Uber te debe el total, pero el efectivo ya lo tienes tú
+  const disponibleRetiro=Math.max(0,viajesBruto-viajesEf);
+
+  // Diferencia: cuánto cobraste en mano vs cuánto registraste en billetera
   const diff=totalPagos-viajesEf;
-  return{inicial,totalPagos,enBilletera,viajesEf,recibo,disponibleRetiro,diff,pagos};
+
+  return{inicial,totalPagos,enBilletera,viajesEf,viajesDig,viajesBruto,disponibleRetiro,diff,pagos};
 }
 
 function renderWallet(){
-  const activo=document.querySelector('#page-billetera .stab.on');
-  const sub=activo?activo.getAttribute('onclick').match(/'([^']+)'/)?.[1]:'efectivo';
+  const page=document.getElementById('page-billetera');
+  if(!page||!page.classList.contains('active')) return; // no renderizar si no está visible
+  const activo=document.querySelector('#btabs .stab.on');
+  const onclick=activo?activo.getAttribute('onclick'):'';
+  const subMatch=onclick.match(/'b','([^']+)'/);
+  const sub=subMatch?subMatch[1]:'efectivo';
   if(sub==='efectivo') renderWalletEfectivo();
   else if(sub==='movimientos') renderWalletMovimientos();
   else if(sub==='pagos') renderWalletPagos();
@@ -3009,41 +3031,34 @@ function renderWallet(){
 
 function renderWalletEfectivo(){
   const fecha=today();
-  const{inicial,totalPagos,enBilletera,viajesEf,disponibleRetiro,diff}=walletCalc(fecha);
+  const{inicial,totalPagos,enBilletera,viajesEf,viajesBruto,disponibleRetiro,diff,pagos}=walletCalc(fecha);
 
   // Hero
   document.getElementById('w-billetera').textContent=CLP(enBilletera);
   document.getElementById('w-retiro').textContent=CLP(disponibleRetiro);
   document.getElementById('w-inicial').textContent=CLP(inicial);
-
-  // Input inicial
   const inp=document.getElementById('w-inicial-input');
-  if(inp&&!inp.value) inp.value=inicial||'';
+  if(inp) inp.value=inicial||'';
 
-  // Comparación
-  document.getElementById('w-viajes-ef').textContent=CLP(viajesEf);
-  document.getElementById('w-pagos-ef').textContent=CLP(totalPagos);
+  // Recuadros totales
+  const setId=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val;};
+  setId('w-viajes-bruto',CLP(viajesBruto));
+  setId('w-viajes-ef',CLP(viajesEf));
+  setId('w-pagos-ef',CLP(totalPagos));
+  setId('w-retiro-row',CLP(disponibleRetiro));
   const diffEl=document.getElementById('w-diff-ef');
-  diffEl.textContent=(diff>=0?'+':'')+CLP(diff);
-  diffEl.className='wbal-amt '+(diff<0?'neg':diff>0?'pos':'');
+  if(diffEl){diffEl.textContent=(diff>=0?'+':'')+CLP(diff);diffEl.className='wbal-amt '+(diff<0?'neg':diff>0?'pos':'');}
 
-  // Lista de pagos del día
+  // Lista de pagos
   const el=document.getElementById('w-pagos-list');
-  const pagos=WALLET_PAGOS.filter(p=>p.fecha===fecha);
-  if(!pagos.length){
-    el.innerHTML='<div class="empty"><div class="etxt">Sin pagos registrados hoy</div><div class="esub">Toca + Agregar para registrar</div></div>';
-    return;
-  }
+  if(!pagos.length){el.innerHTML='<div class="empty"><div class="etxt">Sin pagos registrados hoy</div><div class="esub">Toca + Agregar para registrar</div></div>';return;}
   el.innerHTML='';
   pagos.forEach(p=>{
     const row=document.createElement('div');row.className='trow';
     row.innerHTML=`<div class="tico" style="background:#e6f4ea"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#00A651;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>`
-      +`<div class="tinfo"><div class="tname">${p.desc||'Pago en efectivo'}</div><div class="tmeta">${p.fecha} · ${p.hora}</div></div>`
+      +`<div class="tinfo"><div class="tname">${p.desc||'Pago en efectivo'}</div><div class="tmeta">${p.hora}</div></div>`
       +`<div class="tamt g">${CLP(p.monto)}</div>`
-      +`<div class="tactions">`
-      +`<button class="tacbtn tacedit" title="Editar">✏️</button>`
-      +`<button class="tacbtn tacdel" title="Eliminar">🗑️</button>`
-      +`</div>`;
+      +'<div class="tactions"><button class="tacbtn tacedit">✏️</button><button class="tacbtn tacdel">🗑️</button></div>';
     row.querySelector('.tacedit').addEventListener('click',()=>editWalletPago(p._fid));
     row.querySelector('.tacdel').addEventListener('click',()=>confirmDel('wallet_pago',p._fid,(p.desc||'Pago')+' · '+CLP(p.monto)));
     el.appendChild(row);
@@ -3053,16 +3068,13 @@ function renderWalletEfectivo(){
 function renderWalletMovimientos(){
   const ds=selectedDates.wmov||today();
   const inp=document.getElementById('wmov-date');if(inp) inp.value=ds;
-  const{totalPagos,enBilletera,viajesEf,disponibleRetiro,pagos}=walletCalc(ds);
-  const vs=vByDate(ds);
-
-  // Resumen
+  const{totalPagos,enBilletera,viajesEf,viajesBruto,disponibleRetiro,pagos}=walletCalc(ds);
   const sumEl=document.getElementById('w-mov-summary');
-  sumEl.innerHTML=`<div class="wbal-row"><span class="wbal-lbl">Efectivo de viajes</span><span class="wbal-amt pos">${CLP(viajesEf)}</span></div>`
-    +`<div class="wbal-row"><span class="wbal-lbl">Pagos en billetera</span><span class="wbal-amt pos">${CLP(totalPagos)}</span></div>`
-    +`<div class="wbal-row"><span class="wbal-lbl">Disponible billetera</span><span class="wbal-amt pos">${CLP(enBilletera)}</span></div>`
-    +`<div class="wbal-row" style="font-weight:800"><span class="wbal-lbl">Disponible retiro</span><span class="wbal-amt pos">${CLP(disponibleRetiro)}</span></div>`;
-
+  sumEl.innerHTML=
+    `<div class="wbal-row"><span class="wbal-lbl">Total bruto viajes</span><span class="wbal-amt">${CLP(viajesBruto)}</span></div>`
+    +`<div class="wbal-row"><span class="wbal-lbl">Efectivo de viajes (ya cobrado)</span><span class="wbal-amt">${CLP(viajesEf)}</span></div>`
+    +`<div class="wbal-row"><span class="wbal-lbl">Disponible en billetera</span><span class="wbal-amt pos">${CLP(enBilletera)}</span></div>`
+    +`<div class="wbal-row" style="font-weight:800"><span class="wbal-lbl">Disponible retiro Uber</span><span class="wbal-amt pos">${CLP(disponibleRetiro)}</span></div>`;
   const el=document.getElementById('w-mov-list');
   if(!pagos.length){el.innerHTML='<div class="empty"><div class="etxt">Sin movimientos este día</div></div>';return;}
   el.innerHTML='';
@@ -3078,18 +3090,16 @@ function renderWalletMovimientos(){
 function renderWalletPagos(){
   const ds=selectedDates.wpag||today();
   const inp=document.getElementById('wpag-date');if(inp) inp.value=ds;
-  const{enBilletera,disponibleRetiro,pagos}=walletCalc(ds);
+  const{enBilletera,viajesBruto,viajesEf,disponibleRetiro,pagos}=walletCalc(ds);
   const vs=vByDate(ds);
   const ef=vs.filter(v=>v.pago==='ef').reduce((a,v)=>a+v.monto,0);
   const tk=vs.filter(v=>v.pago==='tk').reduce((a,v)=>a+v.monto,0);
   const tr=vs.filter(v=>v.pago==='tr').reduce((a,v)=>a+v.monto,0);
-
   document.getElementById('wp-billetera').textContent=CLP(enBilletera);
   document.getElementById('wp-retiro').textContent=CLP(disponibleRetiro);
   document.getElementById('wp-ef').textContent=CLP(ef);
   document.getElementById('wp-tk').textContent=CLP(tk);
   document.getElementById('wp-tr').textContent=CLP(tr);
-
   const el=document.getElementById('wp-list');
   if(!pagos.length){el.innerHTML='<div class="empty"><div class="etxt">Sin pagos este día</div></div>';return;}
   el.innerHTML='';
@@ -3108,6 +3118,7 @@ window.guardarMontoinicial=async function(){
   try{
     await setDoc(doc(db,'wallet_inicial',fecha),{monto,fecha});
     toast('Monto inicial guardado: '+CLP(monto));
+    renderWalletEfectivo();
   }catch(e){toast('Error: '+e.message);}
 };
 
@@ -3147,23 +3158,8 @@ window.saveWalletPago=async function(){
     if(fid){await updateDoc(doc(db,'wallet_pagos',fid),data);toast('Pago actualizado');}
     else{await addDoc(collection(db,'wallet_pagos'),data);toast('Pago guardado: '+CLP(data.monto));}
     closeM('modal-wallet');
+    renderWalletEfectivo();
   }catch(e){toast('Error: '+e.message);}
-};
-
-// Extender confirmDel para wallet_pago
-const _origConfirmDel=window.confirmDel;
-window.confirmDel=function(tipo,fid,label){
-  if(tipo==='wallet_pago'){
-    document.getElementById('confirm-msg').textContent='Eliminar "'+label+'"? Esta acción no se puede deshacer.';
-    pendingDeleteFn=async()=>{
-      try{await deleteDoc(doc(db,'wallet_pagos',fid));closeM('modal-confirm');toast('Eliminado');}
-      catch(e){toast('Error: '+e.message);}
-    };
-    document.getElementById('confirm-btn').onclick=()=>{if(pendingDeleteFn) pendingDeleteFn();};
-    document.getElementById('modal-confirm').classList.add('open');
-    return;
-  }
-  _origConfirmDel(tipo,fid,label);
 };
 
 window.addEventListener('online',()=>setSyncStatus('online','Sincronizado'));
