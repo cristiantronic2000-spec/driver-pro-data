@@ -17,8 +17,8 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--black:#000;--white:#fff;--g50:#f7f7f7;--g100:#f0f0f0;--g200:#e0e0e0;--g400:#9e9e9e;--g600:#616161;--blue:#276EF1;--green:#00A651;--red:#E11900;--amber:#FFC043;--font:'Figtree',sans-serif;--nav-h:80px;--safe:env(safe-area-inset-bottom,0px)}
-html,body{height:100%;overflow:hidden;background:#e8e8e8;font-family:var(--font);color:var(--black)}
-#app{display:flex;flex-direction:column;height:100%;width:100%;max-width:480px;margin:0 auto;background:#fff;position:relative;overflow:hidden;box-shadow:0 0 40px rgba(0,0,0,.15)}
+html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);color:var(--black)}
+#app{display:flex;flex-direction:column;height:100%;width:100%;max-width:480px;margin:0 auto;background:#fff;position:relative;overflow:hidden}
 .pages{flex:1;overflow:hidden;position:relative}
 .page{position:absolute;inset:0;overflow-y:auto;padding-bottom:calc(var(--nav-h) + var(--safe) + 20px);display:none;-webkit-overflow-scrolling:touch}
 .page.active{display:block}
@@ -164,6 +164,7 @@ html,body{height:100%;overflow:hidden;background:#e8e8e8;font-family:var(--font)
 .sync-dot.syncing{background:var(--amber);animation:pulse .8s infinite}
 .sync-dot.error{background:var(--red)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes pulseGreen{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
 .leaflet-div-icon{background:none!important;border:none!important;}
 .leaflet-div-icon span{transform:translate(-50%,-50%);display:block;}
 #splash{position:fixed;inset:0;background:#000;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .4s}
@@ -252,6 +253,28 @@ html,body{height:100%;overflow:hidden;background:#e8e8e8;font-family:var(--font)
     <div class="mbox"><div class="mlbl">Me quedo semana</div><div class="mval cg" id="h-sn">$0</div><div class="msub">menos combustible</div></div>
     <div class="mbox"><div class="mlbl">Combustible semana</div><div class="mval cr" id="h-litros">0 L</div><div class="msub" id="h-litros-sub">estimado</div></div>
   </div>
+  <!-- Banner viaje en proceso (inicio) -->
+  <div id="inicio-proceso-banner" style="display:none;margin:0 16px 12px;background:#000;border-radius:16px;padding:16px;cursor:pointer" onclick="cargarProceso()">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:10px;height:10px;border-radius:50%;background:#00ff88;flex-shrink:0;animation:pulseGreen 1.2s infinite"></div>
+        <div>
+          <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em">Viaje en proceso</div>
+          <div style="font-size:15px;font-weight:800;color:#fff;margin-top:1px" id="inicio-proceso-lbl">—</div>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:26px;font-weight:900;color:#fff;letter-spacing:-1px;font-variant-numeric:tabular-nums" id="inicio-proceso-timer">00:00</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.4);font-weight:600">tiempo transcurrido</div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,.45);margin-bottom:12px" id="inicio-proceso-meta">—</div>
+    <div style="display:flex;gap:8px">
+      <button onclick="event.stopPropagation();cargarProceso()" style="flex:1;padding:10px;background:#fff;color:#000;border:none;border-radius:10px;font-size:13px;font-weight:800;font-family:var(--font);cursor:pointer">Completar viaje</button>
+      <button onclick="event.stopPropagation();descartarProceso()" style="padding:10px 14px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer">✕</button>
+    </div>
+  </div>
+
   <!-- Botones de acción rápida -->
   <div style="padding:0 16px;display:flex;flex-direction:column;gap:8px;margin-bottom:4px">
     <button onclick="openModalWallet()" style="width:100%;padding:14px 16px;background:#fff;color:var(--black);border:1.5px solid var(--g200);border-radius:14px;font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
@@ -282,11 +305,15 @@ html,body{height:100%;overflow:hidden;background:#e8e8e8;font-family:var(--font)
     <div style="height:12px"></div>
     <!-- Hero verde billetera -->
     <div class="wallet-hero">
-      <div class="wlbl">COBRADO HOY EN EFECTIVO</div>
+      <div class="wlbl">EN MANO HOY</div>
       <div class="wamt" id="w-billetera">$0</div>
       <div class="wallet-stats">
-        <div class="wstat"><div class="wsval" id="w-retiro">$0</div><div class="wslbl">Disponible para retiro en Uber</div></div>
-        <div class="wstat"><div class="wsval" id="w-inicial">$0</div><div class="wslbl">Efectivo inicial del día</div></div>
+        <div class="wstat"><div class="wsval" id="w-billetera-ef">$0</div><div class="wslbl">💵 Efectivo</div></div>
+        <div class="wstat"><div class="wsval" id="w-billetera-tr">$0</div><div class="wslbl">🏦 Transferencia</div></div>
+      </div>
+      <div class="wallet-stats" style="margin-top:1px">
+        <div class="wstat"><div class="wsval" id="w-retiro">$0</div><div class="wslbl">Disponible retiro Uber</div></div>
+        <div class="wstat"><div class="wsval" id="w-inicial">$0</div><div class="wslbl">Efectivo inicial</div></div>
       </div>
     </div>
 
@@ -309,7 +336,8 @@ html,body{height:100%;overflow:hidden;background:#e8e8e8;font-family:var(--font)
     <div style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden">
       <div style="padding:12px 16px 8px;font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.04em">Hoy</div>
       <div class="wbal-row"><span class="wbal-lbl">Total pagado (post-SII)</span><span class="wbal-amt" id="w-viajes-bruto">$0</span></div>
-      <div class="wbal-row"><span class="wbal-lbl">Efectivo de viajes (ya en mano)</span><span class="wbal-amt pos" id="w-viajes-ef">$0</span></div>
+      <div class="wbal-row"><span class="wbal-lbl">💵 Efectivo de viajes (en mano)</span><span class="wbal-amt pos" id="w-viajes-ef">$0</span></div>
+      <div class="wbal-row"><span class="wbal-lbl">🏦 Transferencia de viajes</span><span class="wbal-amt pos" id="w-viajes-tr">$0</span></div>
       <div class="wbal-row"><span class="wbal-lbl">Pagos registrados en billetera</span><span class="wbal-amt pos" id="w-pagos-ef">$0</span></div>
       <div class="wbal-row"><span class="wbal-lbl" style="font-weight:700">Diferencia cobrado vs registrado</span><span class="wbal-amt" id="w-diff-ef">$0</span></div>
       <div class="wbal-row" style="font-weight:800;border-top:1.5px solid var(--g200)"><span class="wbal-lbl">Disponible para retiro en Uber</span><span class="wbal-amt pos" id="w-retiro-row">$0</span></div>
@@ -463,6 +491,7 @@ html,body{height:100%;overflow:hidden;background:#e8e8e8;font-family:var(--font)
     <div style="height:12px"></div>
     <div class="psel" id="resumen-psel">
       <button class="pbtn on" onclick="setPeriod('hoy',this)">Hoy</button>
+      <button class="pbtn" onclick="setPeriod('ayer',this)">Ayer</button>
       <button class="pbtn" onclick="setPeriod('semana',this)">Semana</button>
       <button class="pbtn" onclick="setPeriod('mes',this)">Mes</button>
       <button class="pbtn" onclick="setPeriod('dia',this)">Día</button>
@@ -510,6 +539,7 @@ html,body{height:100%;overflow:hidden;background:#e8e8e8;font-family:var(--font)
     <div id="pagos-sub-app">
       <div class="psel" id="pagos-app-psel">
         <button class="pbtn on" onclick="setPagosAppPeriod('hoy',this)">Hoy</button>
+        <button class="pbtn" onclick="setPagosAppPeriod('ayer',this)">Ayer</button>
         <button class="pbtn" onclick="setPagosAppPeriod('semana',this)">Semana</button>
         <button class="pbtn" onclick="setPagosAppPeriod('mes',this)">Mes</button>
         <button class="pbtn" onclick="setPagosAppPeriod('anio',this)">Año</button>
@@ -533,6 +563,7 @@ html,body{height:100%;overflow:hidden;background:#e8e8e8;font-family:var(--font)
     <div id="pagos-sub-desglose" style="display:none">
       <div class="psel" id="pagos-psel">
         <button class="pbtn on" onclick="setPagosPeriod('hoy',this)">Hoy</button>
+        <button class="pbtn" onclick="setPagosPeriod('ayer',this)">Ayer</button>
         <button class="pbtn" onclick="setPagosPeriod('semana',this)">Semana</button>
         <button class="pbtn" onclick="setPagosPeriod('mes',this)">Mes</button>
         <button class="pbtn" onclick="setPagosPeriod('anio',this)">Año</button>
@@ -545,9 +576,10 @@ html,body{height:100%;overflow:hidden;background:#e8e8e8;font-family:var(--font)
     <div style="height:12px"></div>
     <div class="psel" id="comb-psel">
       <button class="pbtn on" onclick="setCombPeriod('hoy',this)">Hoy</button>
+      <button class="pbtn" onclick="setCombPeriod('ayer',this)">Ayer</button>
       <button class="pbtn" onclick="setCombPeriod('7',this)">7 días</button>
       <button class="pbtn" onclick="setCombPeriod('30',this)">30 días</button>
-      <button class="pbtn" onclick="setCombPeriod('0',this)">Todo</button>
+      <button class="pbtn" onclick="setCombPeriod('dia',this)">Día</button>
     </div>
     <div class="snav" id="comb-nav" style="display:none">
       <button class="sbtn" onclick="navComb(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
@@ -947,8 +979,15 @@ html,body{height:100%;overflow:hidden;background:#e8e8e8;font-family:var(--font)
 <div class="mbg" id="modal-wallet" onclick="closeMBg(event,'modal-wallet')">
   <div class="modal">
     <div class="mhdl"></div>
-    <div class="mtit" id="mw-title">Agregar pago en efectivo</div>
+    <div class="mtit" id="mw-title">Agregar pago recibido</div>
     <input type="hidden" id="mw-id">
+    <div class="fg"><label class="fl">Tipo de pago recibido</label>
+      <div class="popts" id="mw-tipo-opts">
+        <button class="popt on" onclick="selWalletTipo(this,'ef')">💵 Efectivo</button>
+        <button class="popt" onclick="selWalletTipo(this,'tr')">🏦 Transferencia</button>
+      </div>
+    </div>
+    <input type="hidden" id="mw-tipo" value="ef">
     <div class="fg"><label class="fl">Monto recibido (CLP)</label><input class="fi" type="number" id="mw-monto" inputmode="numeric" placeholder="5000"></div>
     <div class="fgrid">
       <div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" id="mw-fecha"></div>
@@ -1311,6 +1350,42 @@ function tripCard(v){
   return row;
 }
 
+// ── BANNER INICIO — VIAJE EN PROCESO CON CRONÓMETRO ─────────────────────
+let _inicioProcTimer=null;
+
+function checkInicioProcesoBanner(){
+  const raw=localStorage.getItem(PROCESO_KEY);
+  const banner=document.getElementById('inicio-proceso-banner');
+  if(!banner) return;
+  if(!raw){
+    banner.style.display='none';
+    if(_inicioProcTimer){clearInterval(_inicioProcTimer);_inicioProcTimer=null;}
+    return;
+  }
+  try{
+    const p=JSON.parse(raw);
+    banner.style.display='block';
+    document.getElementById('inicio-proceso-lbl').textContent=(p.tipo||'UberX')+' · iniciado '+p.horaIni;
+    document.getElementById('inicio-proceso-meta').textContent='Fecha: '+p.fecha+(p.kv?' · vacío '+p.kv+' km':'')+(p.kj?' · viaje '+p.kj+' km':'');
+    // Cronómetro
+    function tick(){
+      const el=document.getElementById('inicio-proceso-timer');
+      if(!el) return;
+      const ts=p.ts||Date.now();
+      const secs=Math.floor((Date.now()-ts)/1000);
+      const h=Math.floor(secs/3600);
+      const m=Math.floor((secs%3600)/60);
+      const s=secs%60;
+      el.textContent=h>0
+        ?(h+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'))
+        :(String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'));
+    }
+    tick();
+    if(_inicioProcTimer) clearInterval(_inicioProcTimer);
+    _inicioProcTimer=setInterval(tick,1000);
+  }catch(e){localStorage.removeItem(PROCESO_KEY);banner.style.display='none';}
+}
+
 // ── VIAJE EN PROCESO (localStorage) ──────────────────────────────────────
 const PROCESO_KEY='driverpro_proceso';
 
@@ -1322,6 +1397,7 @@ function initViajeAgregar(){
   if(vFecha&&!vFecha.value) vFecha.value=dt.fecha;
   if(vHoraIni&&!vHoraIni.value) vHoraIni.value=dt.hora;
   checkProcesoBanner();
+  checkInicioProcesoBanner();
 }
 
 function checkProcesoBanner(){
@@ -1353,6 +1429,7 @@ window.guardarProceso=function(){
   ['v-monto','v-kv','v-kj','v-hora-fin'].forEach(id=>{const el=document.getElementById(id);if(el) el.value='';});
   document.getElementById('v-hora-ini').value=nowTimeCL();
   checkProcesoBanner();
+  checkInicioProcesoBanner();
   toast('Viaje guardado en proceso ⏳');
 };
 
@@ -1370,6 +1447,7 @@ window.guardarProcesoModal=function(){
   localStorage.setItem(PROCESO_KEY,JSON.stringify(proceso));
   closeM('modal-viaje');
   checkProcesoBanner();
+  checkInicioProcesoBanner();
   // Si estamos en tab viajes/agregar, refrescar banner
   stab('v','agregar',document.querySelector('#vtabs .stab.on'));
   toast('Viaje guardado en proceso ⏳');
@@ -1402,6 +1480,7 @@ window.cargarProceso=function(){
 window.descartarProceso=function(){
   localStorage.removeItem(PROCESO_KEY);
   checkProcesoBanner();
+  checkInicioProcesoBanner();
   toast('Viaje en proceso descartado');
 };
 
@@ -1507,7 +1586,7 @@ window.saveCierreHoy=async function(){
   const diffKm=km-kmEstimado;
   const netoFinal=calcNeto(hoy,false)-combReal;
   try{
-    await setDoc(doc(db,'cierres',today()),{...data,kmDiff:Math.round(diffKm)});
+    await setDoc(doc(db,'cierres',today()),{...data,lit:parseFloat(litsReal.toFixed(2)),kmDiff:Math.round(diffKm)});
     // Mostrar resultado en el diff box
     const detEl=document.getElementById('cierre-diff');
     if(detEl){
@@ -1652,6 +1731,7 @@ function calcMetrics(viajes){
 }
 function vPeriod(){
   if(period==='hoy') return vByDate(today());
+  if(period==='ayer'){const d=new Date(today()+'T12:00:00');d.setDate(d.getDate()-1);return vByDate(d.toISOString().slice(0,10));}
   if(period==='dia') return vByDate(selectedDates.resumen||today());
   const days=period==='semana'?6:29;
   const d=new Date();d.setDate(d.getDate()-days);
@@ -1689,6 +1769,7 @@ function ultimasSemanas(n){
 }
 
 function renderInicio(){
+  checkInicioProcesoBanner();
   const hoy=vByDate(today());
   const bruto=hoy.reduce((a,v)=>a+v.monto,0);
   const cierre=CIERRES[today()]||{};
@@ -1772,9 +1853,9 @@ function renderGan(){
 
   const labels=[],data=[];
 
-  if(period==='hoy'||period==='dia'){
+  if(period==='hoy'||period==='ayer'||period==='dia'){
     // Semana Lun→Dom que contiene la fecha base
-    const base=period==='dia'?(selectedDates.resumen||today()):today();
+    const base=period==='dia'?(selectedDates.resumen||today()):period==='ayer'?(()=>{const d=new Date(today()+'T12:00:00');d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);})():today();
     const dias=semanaActual(base);
     const DIAS_ES=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
     dias.forEach((ds,i)=>{
@@ -1810,9 +1891,11 @@ function renderGan(){
   const todayStr=today();
   const lunesHoy=lunesDe(todayStr);
   const bgColors=data.map((_,i)=>{
-    if(period==='hoy'||period==='dia'){
+    if(period==='hoy'||period==='ayer'||period==='dia'){
+      const base=period==='dia'?(selectedDates.resumen||todayStr):period==='ayer'?(()=>{const d=new Date(todayStr+'T12:00:00');d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);})():todayStr;
       const dias=semanaActual(period==='dia'?(selectedDates.resumen||todayStr):todayStr);
-      return dias[i]===todayStr?'#000':'#e0e0e0';
+      const highlight=period==='ayer'?(()=>{const d=new Date(todayStr+'T12:00:00');d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);})():todayStr;
+      return dias[i]===highlight?'#000':'#e0e0e0';
     }
     if(period==='semana'){
       const semanas=ultimasSemanas(4);
@@ -1931,6 +2014,7 @@ function renderPagos(){renderPagosApp();}
 
 function vByPeriod(p){
   if(p==='hoy') return VIAJES.filter(v=>v.fecha===today());
+  if(p==='ayer'){const d=new Date(today()+'T12:00:00');d.setDate(d.getDate()-1);const ay=d.toISOString().slice(0,10);return VIAJES.filter(v=>v.fecha===ay);}
   if(p==='semana'){const d=new Date();d.setDate(d.getDate()-6);return VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=d);}
   if(p==='mes'){const d=new Date();d.setDate(d.getDate()-29);return VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=d);}
   const inicio=new Date(new Date().getFullYear(),0,1);
@@ -2009,6 +2093,15 @@ function getCombFechas(){
     const lbl=combDayOffset===0?'Últimos 4 días':fmtD(hasta)+' y anteriores';
     const navLbl=document.getElementById('comb-nav-lbl');if(navLbl) navLbl.textContent=lbl;
     return [desdeStr,hasta];
+  }
+  if(combPeriod==='ayer'){
+    const ay=new Date(t+'T12:00:00');ay.setDate(ay.getDate()-1);
+    const ayStr=ay.toISOString().slice(0,10);
+    return [ayStr,ayStr];
+  }
+  if(combPeriod==='dia'){
+    const d=selectedDates.combDia||t;
+    return [d,d];
   }
   if(combPeriod==='7'){
     const d=new Date(t+'T12:00:00');d.setDate(d.getDate()-6);
@@ -2212,7 +2305,7 @@ function renderCierres(){
     row.innerHTML='<div class="tico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>'
       +'<div class="tinfo">'
       +'<div class="tname">'+fmtD(fecha)+'</div>'
-      +'<div class="tmeta">'+vs.length+' viajes · '+(c.km||0)+' km · '+(c.hrs||0)+'h · '+(c.lit||0)+'L bencina</div>'
+      +'<div class="tmeta">'+vs.length+' viajes · '+(c.km||0)+' km · '+(c.hrs||0)+'h · '+litrosConsumidos(c).toFixed(1)+'L combustible</div>'
       +'</div>'
       +'<div class="tamt g">'+CLP(bruto)+'</div>'
       +'<div class="tactions">'
@@ -3112,27 +3205,33 @@ window.importData=function(input){
 function walletCalc(fecha){
   const inicial=(WALLET_INICIAL[fecha]||{}).monto||0;
   const pagos=WALLET_PAGOS.filter(p=>p.fecha===fecha);
-  const totalPagos=pagos.reduce((a,p)=>a+p.monto,0);
+  const pagosEf=pagos.filter(p=>p.tipo==='tr'?false:true);
+  const pagosTr=pagos.filter(p=>p.tipo==='tr');
+  const totalPagosEf=pagosEf.reduce((a,p)=>a+p.monto,0);
+  const totalPagosTr=pagosTr.reduce((a,p)=>a+p.monto,0);
+  const totalPagos=totalPagosEf+totalPagosTr;
 
   const vs=vByDate(fecha);
   const viajesEf =vs.filter(v=>v.pago==='ef').reduce((a,v)=>a+v.monto,0);
+  const viajesTr =vs.filter(v=>v.pago==='tr').reduce((a,v)=>a+v.monto,0);
   const viajesDig=vs.filter(v=>v.pago!=='ef').reduce((a,v)=>a+v.monto,0);
   const viajesBruto=viajesEf+viajesDig;
 
   // Total pagado = bruto - SII
   const totalPagado=Math.max(0,viajesBruto-viajesBruto*(CONFIG.sii/100));
 
-  // Disponible en Billetera = pagos en efectivo registrados hoy (lo que cobraste en mano)
+  // En billetera = efectivo + transferencias registradas manualmente
   const enBilletera=totalPagos;
+  const enBilleteraEf=totalPagosEf;
+  const enBilleteraTr=totalPagosTr;
 
-  // Disponible para retiro en Uber = total pagado − lo que ya tienes en billetera
-  // Ejemplo: $36.100 pagado − $24.100 en billetera = $11.256 a retirar en Uber
+  // Disponible para retiro en Uber = total pagado − lo que ya tienes en mano
   const disponibleRetiro=Math.max(0,totalPagado-enBilletera);
 
-  // Diferencia: cuánto cobraste en viajes ef vs cuánto registraste
-  const diff=totalPagos-viajesEf;
+  // Diferencia: cuánto cobraste en viajes ef+tr vs cuánto registraste
+  const diff=totalPagos-(viajesEf+viajesTr);
 
-  return{inicial,totalPagos,enBilletera,viajesEf,viajesDig,viajesBruto,totalPagado,disponibleRetiro,diff,pagos};
+  return{inicial,totalPagos,totalPagosEf,totalPagosTr,enBilletera,enBilleteraEf,enBilleteraTr,viajesEf,viajesTr,viajesDig,viajesBruto,totalPagado,disponibleRetiro,diff,pagos};
 }
 
 function renderWallet(){
@@ -3149,10 +3248,12 @@ function renderWallet(){
 
 function renderWalletEfectivo(){
   const fecha=today();
-  const{inicial,totalPagos,enBilletera,viajesEf,totalPagado,disponibleRetiro,diff,pagos}=walletCalc(fecha);
+  const{inicial,totalPagos,enBilletera,enBilleteraEf,enBilleteraTr,viajesEf,viajesTr,totalPagado,disponibleRetiro,diff,pagos}=walletCalc(fecha);
 
   // Hero
   document.getElementById('w-billetera').textContent=CLP(enBilletera);
+  document.getElementById('w-billetera-ef').textContent=CLP(enBilleteraEf);
+  document.getElementById('w-billetera-tr').textContent=CLP(enBilleteraTr);
   document.getElementById('w-retiro').textContent=CLP(disponibleRetiro);
   document.getElementById('w-inicial').textContent=CLP(inicial);
   const inp=document.getElementById('w-inicial-input');
@@ -3162,6 +3263,7 @@ function renderWalletEfectivo(){
   const setId=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val;};
   setId('w-viajes-bruto',CLP(totalPagado));
   setId('w-viajes-ef',CLP(viajesEf));
+  setId('w-viajes-tr',CLP(viajesTr));
   setId('w-pagos-ef',CLP(totalPagos));
   setId('w-retiro-row',CLP(disponibleRetiro));
   const diffEl=document.getElementById('w-diff-ef');
@@ -3172,13 +3274,18 @@ function renderWalletEfectivo(){
   if(!pagos.length){el.innerHTML='<div class="empty"><div class="etxt">Sin pagos registrados hoy</div><div class="esub">Toca + Agregar para registrar</div></div>';return;}
   el.innerHTML='';
   pagos.forEach(p=>{
+    const esTr=p.tipo==='tr';
+    const ico=esTr?'🏦':'💵';
+    const bg=esTr?'#E3F2FD':'#e6f4ea';
+    const strokeColor=esTr?'#1565C0':'#00A651';
+    const label=esTr?'Transferencia':'Efectivo';
     const row=document.createElement('div');row.className='trow';
-    row.innerHTML=`<div class="tico" style="background:#e6f4ea"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#00A651;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>`
-      +`<div class="tinfo"><div class="tname">${p.desc||'Pago en efectivo'}</div><div class="tmeta">${p.hora}</div></div>`
+    row.innerHTML=`<div class="tico" style="background:${bg}"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:${strokeColor};fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>`
+      +`<div class="tinfo"><div class="tname">${p.desc||label}</div><div class="tmeta">${p.hora} · <span class="bdg ${esTr?'bk':'bc'}">${label}</span></div></div>`
       +`<div class="tamt g">${CLP(p.monto)}</div>`
       +'<div class="tactions"><button class="tacbtn tacedit">✏️</button><button class="tacbtn tacdel">🗑️</button></div>';
     row.querySelector('.tacedit').addEventListener('click',()=>editWalletPago(p._fid));
-    row.querySelector('.tacdel').addEventListener('click',()=>confirmDel('wallet_pago',p._fid,(p.desc||'Pago')+' · '+CLP(p.monto)));
+    row.querySelector('.tacdel').addEventListener('click',()=>confirmDel('wallet_pago',p._fid,(p.desc||label)+' · '+CLP(p.monto)));
     el.appendChild(row);
   });
 }
@@ -3186,24 +3293,31 @@ function renderWalletEfectivo(){
 function renderWalletMovimientos(){
   const ds=selectedDates.wmov||today();
   const inp=document.getElementById('wmov-date');if(inp) inp.value=ds;
-  const{totalPagos,enBilletera,viajesEf,totalPagado,efPostSii,disponibleRetiro,pagos}=walletCalc(ds);
+  const{totalPagos,totalPagosEf,totalPagosTr,enBilletera,viajesEf,viajesTr,totalPagado,disponibleRetiro,pagos}=walletCalc(ds);
   const sumEl=document.getElementById('w-mov-summary');
   sumEl.innerHTML=
     `<div class="wbal-row"><span class="wbal-lbl">Total pagado (post-SII)</span><span class="wbal-amt">${CLP(totalPagado)}</span></div>`
-    +`<div class="wbal-row"><span class="wbal-lbl">Efectivo ya cobrado</span><span class="wbal-amt">${CLP(viajesEf)}</span></div>`
+    +`<div class="wbal-row"><span class="wbal-lbl">💵 Efectivo de viajes</span><span class="wbal-amt">${CLP(viajesEf)}</span></div>`
+    +`<div class="wbal-row"><span class="wbal-lbl">🏦 Transferencia de viajes</span><span class="wbal-amt">${CLP(viajesTr)}</span></div>`
+    +`<div class="wbal-row"><span class="wbal-lbl">Registrado: efectivo</span><span class="wbal-amt pos">${CLP(totalPagosEf)}</span></div>`
+    +`<div class="wbal-row"><span class="wbal-lbl">Registrado: transferencia</span><span class="wbal-amt pos">${CLP(totalPagosTr)}</span></div>`
     +`<div class="wbal-row"><span class="wbal-lbl">Disponible en billetera</span><span class="wbal-amt pos">${CLP(enBilletera)}</span></div>`
     +`<div class="wbal-row" style="font-weight:800;border-top:1.5px solid var(--g200)"><span class="wbal-lbl">Disponible retiro Uber</span><span class="wbal-amt pos">${CLP(disponibleRetiro)}</span></div>`;
   const el=document.getElementById('w-mov-list');
   if(!pagos.length){el.innerHTML='<div class="empty"><div class="etxt">Sin movimientos este día</div></div>';return;}
   el.innerHTML='';
   pagos.forEach(p=>{
+    const esTr=p.tipo==='tr';
+    const bg=esTr?'#E3F2FD':'#e6f4ea';
+    const strokeColor=esTr?'#1565C0':'#00A651';
+    const label=esTr?'Transferencia':'Efectivo';
     const row=document.createElement('div');row.className='trow';
-    row.innerHTML=`<div class="tico" style="background:#e6f4ea"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#00A651;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>`
-      +`<div class="tinfo"><div class="tname">${p.desc||'Pago en efectivo'}</div><div class="tmeta">${p.fecha} · ${p.hora}</div></div>`
+    row.innerHTML=`<div class="tico" style="background:${bg}"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:${strokeColor};fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>`
+      +`<div class="tinfo"><div class="tname">${p.desc||label}</div><div class="tmeta">${p.fecha} · ${p.hora} · <span class="bdg ${esTr?'bk':'bc'}">${label}</span></div></div>`
       +`<div class="tamt g">${CLP(p.monto)}</div>`
       +`<div class="tactions"><button class="tacbtn tacedit">✏️</button><button class="tacbtn tacdel">🗑️</button></div>`;
     row.querySelector('.tacedit').addEventListener('click',()=>editWalletPago(p._fid));
-    row.querySelector('.tacdel').addEventListener('click',()=>confirmDel('wallet_pago',p._fid,(p.desc||'Pago')+' · '+CLP(p.monto)));
+    row.querySelector('.tacdel').addEventListener('click',()=>confirmDel('wallet_pago',p._fid,(p.desc||label)+' · '+CLP(p.monto)));
     el.appendChild(row);
   });
 }
@@ -3211,7 +3325,7 @@ function renderWalletMovimientos(){
 function renderWalletPagos(){
   const ds=selectedDates.wpag||today();
   const inp=document.getElementById('wpag-date');if(inp) inp.value=ds;
-  const{enBilletera,viajesBruto,viajesEf,disponibleRetiro,pagos}=walletCalc(ds);
+  const{enBilletera,viajesBruto,viajesEf,viajesTr,disponibleRetiro,pagos}=walletCalc(ds);
   const vs=vByDate(ds);
   const ef=vs.filter(v=>v.pago==='ef').reduce((a,v)=>a+v.monto,0);
   const tk=vs.filter(v=>v.pago==='tk').reduce((a,v)=>a+v.monto,0);
@@ -3225,9 +3339,13 @@ function renderWalletPagos(){
   if(!pagos.length){el.innerHTML='<div class="empty"><div class="etxt">Sin pagos este día</div></div>';return;}
   el.innerHTML='';
   pagos.forEach(p=>{
+    const esTr=p.tipo==='tr';
+    const bg=esTr?'#E3F2FD':'#e6f4ea';
+    const strokeColor=esTr?'#1565C0':'#00A651';
+    const label=esTr?'Transferencia':'Efectivo';
     const row=document.createElement('div');row.className='trow';
-    row.innerHTML=`<div class="tico" style="background:#e6f4ea"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#00A651;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>`
-      +`<div class="tinfo"><div class="tname">${p.desc||'Pago efectivo'}</div><div class="tmeta">${p.hora}</div></div>`
+    row.innerHTML=`<div class="tico" style="background:${bg}"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:${strokeColor};fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>`
+      +`<div class="tinfo"><div class="tname">${p.desc||label}</div><div class="tmeta">${p.hora} · <span class="bdg ${esTr?'bk':'bc'}">${label}</span></div></div>`
       +`<div class="tamt g">${CLP(p.monto)}</div>`;
     el.appendChild(row);
   });
@@ -3243,14 +3361,22 @@ window.guardarMontoinicial=async function(){
   }catch(e){toast('Error: '+e.message);}
 };
 
+window.selWalletTipo=function(el,tipo){
+  document.querySelectorAll('#mw-tipo-opts .popt').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('mw-tipo').value=tipo;
+};
+
 window.openModalWallet=function(){
   const dt=nowDatetimeCL();
-  document.getElementById('mw-title').textContent='Agregar pago en efectivo';
+  document.getElementById('mw-title').textContent='Agregar pago recibido';
   document.getElementById('mw-id').value='';
   document.getElementById('mw-monto').value='';
   document.getElementById('mw-fecha').value=dt.fecha;
   document.getElementById('mw-hora').value=dt.hora;
   document.getElementById('mw-desc').value='';
+  document.getElementById('mw-tipo').value='ef';
+  document.querySelectorAll('#mw-tipo-opts .popt').forEach((b,i)=>b.classList.toggle('on',i===0));
   document.getElementById('modal-wallet').classList.add('open');
 };
 
@@ -3262,6 +3388,9 @@ window.editWalletPago=function(fid){
   document.getElementById('mw-fecha').value=p.fecha;
   document.getElementById('mw-hora').value=p.hora;
   document.getElementById('mw-desc').value=p.desc||'';
+  const tipo=p.tipo||'ef';
+  document.getElementById('mw-tipo').value=tipo;
+  document.querySelectorAll('#mw-tipo-opts .popt').forEach((b,i)=>b.classList.toggle('on',(i===0&&tipo==='ef')||(i===1&&tipo==='tr')));
   document.getElementById('modal-wallet').classList.add('open');
 };
 
@@ -3272,7 +3401,8 @@ window.saveWalletPago=async function(){
     monto:parseFloat(document.getElementById('mw-monto').value)||0,
     fecha:document.getElementById('mw-fecha').value||dt.fecha,
     hora:document.getElementById('mw-hora').value||dt.hora,
-    desc:document.getElementById('mw-desc').value.trim()
+    desc:document.getElementById('mw-desc').value.trim(),
+    tipo:document.getElementById('mw-tipo').value||'ef'
   };
   if(!data.monto){toast('Ingresa el monto');return;}
   try{
