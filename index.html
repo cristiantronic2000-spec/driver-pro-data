@@ -268,7 +268,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 <div class="page active" id="page-inicio">
   <div style="height:4px"></div>
   <div class="sync-bar"><div class="sync-dot syncing" id="sync-dot"></div><span id="sync-lbl">Conectando...</span></div>
-  <div class="hero">
+  <div class="hero" style="position:relative;overflow:hidden">
     <div class="hgreet">
       <img class="hlogo" src="favicon.png" alt="" onerror="this.style.display='none'">
       Driver Pro · Cristian
@@ -292,6 +292,25 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <div class="mbox"><div class="mlbl">Total pagado semana</div><div class="mval" id="h-sp">$0</div><div class="msub">bruto − SII 15.25%</div></div>
     <div class="mbox"><div class="mlbl">Me quedo semana</div><div class="mval cg" id="h-sn">$0</div><div class="msub">menos combustible</div></div>
     <div class="mbox"><div class="mlbl">Combustible semana</div><div class="mval cr" id="h-litros">0 L</div><div class="msub" id="h-litros-sub">estimado</div></div>
+  </div>
+  <!-- Barra meta viajes diarios -->
+  <div style="margin:0 16px 12px;background:var(--g50);border-radius:14px;padding:14px 16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:12px;font-weight:700;color:var(--g600)">META DIARIA</span>
+      <span style="font-size:13px;font-weight:800" id="h-meta-lbl">0 / 0 viajes</span>
+    </div>
+    <!-- Barra principal (meta base) + extra -->
+    <div style="position:relative;height:10px;background:var(--g200);border-radius:5px;overflow:visible">
+      <div id="h-meta-fill" style="height:100%;background:var(--black);border-radius:5px;transition:width .5s;max-width:100%"></div>
+      <div id="h-meta-extra-fill" style="position:absolute;top:0;height:100%;background:var(--green);border-radius:5px;transition:width .5s left .5s"></div>
+      <!-- Marcador divisor base/extra -->
+      <div id="h-meta-marker" style="display:none;position:absolute;top:-3px;width:2px;height:16px;background:var(--g400);border-radius:1px"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:5px">
+      <span style="font-size:10px;color:var(--g400);font-weight:600">0</span>
+      <span id="h-meta-mid" style="font-size:10px;color:var(--g400);font-weight:600;display:none"></span>
+      <span id="h-meta-max" style="font-size:10px;color:var(--g400);font-weight:600"></span>
+    </div>
   </div>
   <!-- Banner viaje en proceso (inicio) -->
   <div id="inicio-proceso-banner" style="display:none;margin:0 16px 12px;background:#000;border-radius:16px;padding:16px;cursor:pointer" onclick="cargarProceso()">
@@ -359,8 +378,11 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
         <div class="wstat"><div class="wsval" id="w-billetera-tr">$0</div><div class="wslbl">🏦 Transferencia</div></div>
       </div>
       <div class="wallet-stats" style="margin-top:1px">
-        <div class="wstat"><div class="wsval" id="w-retiro">$0</div><div class="wslbl">Disponible retiro Uber</div></div>
+        <div class="wstat"><div class="wsval" id="w-billetera-tk">$0</div><div class="wslbl">💳 Tarjeta (incentivos)</div></div>
         <div class="wstat"><div class="wsval" id="w-inicial">$0</div><div class="wslbl">Efectivo inicial</div></div>
+      </div>
+      <div class="wallet-stats" style="margin-top:1px">
+        <div class="wstat" style="grid-column:span 2"><div class="wsval" id="w-retiro">$0</div><div class="wslbl">Disponible retiro Uber</div></div>
       </div>
     </div>
 
@@ -386,6 +408,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
   <div class="wbal-row"><span class="wbal-lbl">Total pagado (post-SII)</span><span class="wbal-amt" id="w-viajes-bruto">$0</span></div>
   <div class="wbal-row"><span class="wbal-lbl">💵 Efectivo de viajes (en mano)</span><span class="wbal-amt pos" id="w-viajes-ef">$0</span></div>
   <div class="wbal-row"><span class="wbal-lbl">🏦 Transferencia de viajes</span><span class="wbal-amt pos" id="w-viajes-tr">$0</span></div>
+  <div class="wbal-row"><span class="wbal-lbl">💳 Tarjeta registrada (incentivos)</span><span class="wbal-amt pos" id="w-pagos-tk">$0</span></div>
   <div class="wbal-row"><span class="wbal-lbl">Pagos registrados en billetera</span><span class="wbal-amt pos" id="w-pagos-ef">$0</span></div>
   <div class="wbal-row"><span class="wbal-lbl" style="font-weight:700">Diferencia cobrado vs registrado</span><span class="wbal-amt" id="w-diff-ef">$0</span></div>
   <div class="wbal-row" style="font-weight:800;border-top:1.5px solid var(--g200)"><span class="wbal-lbl">Disponible para retiro en Uber</span><span class="wbal-amt pos" id="w-retiro-row">$0</span></div>
@@ -546,6 +569,14 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       </div>
     </div>
     <div id="inc-sub-historial" style="display:none">
+      <div class="snav" id="inc-hist-nav">
+        <button class="sbtn" onclick="navIncHist(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <div style="flex:1;text-align:center">
+          <span id="inc-hist-lbl" style="font-size:15px;font-weight:800"></span>
+        </div>
+        <button class="sbtn" onclick="navIncHist(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+      <div style="text-align:center;padding-bottom:8px"><button class="date-today-btn" style="font-size:12px;padding:6px 16px" onclick="navIncHistHoy()">Semana actual</button></div>
       <div id="inc-historial-list"></div>
     </div>
   </div>
@@ -568,10 +599,11 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <div class="psel" id="resumen-psel">
       <button class="pbtn on" onclick="setPeriod('hoy',this)">Hoy</button>
       <button class="pbtn" onclick="setPeriod('ayer',this)">Ayer</button>
+      <button class="pbtn" onclick="setPeriod('dia',this)">Día</button>
       <button class="pbtn" onclick="setPeriod('semana',this)">Semana</button>
       <button class="pbtn" onclick="setPeriod('mes',this)">Mes</button>
-      <button class="pbtn" onclick="setPeriod('dia',this)">Día</button>
     </div>
+    <!-- Nav: Día específico -->
     <div id="resumen-dia-nav" style="display:none">
       <div class="snav">
         <button class="sbtn" onclick="navDate('resumen',-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
@@ -581,6 +613,24 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
         <button class="sbtn" onclick="navDate('resumen',1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
       </div>
       <div style="text-align:center;padding-bottom:4px"><button class="date-today-btn" style="font-size:12px;padding:6px 16px" onclick="pickDate('resumen','')">Hoy</button></div>
+    </div>
+    <!-- Nav: Semana -->
+    <div id="resumen-semana-nav" style="display:none">
+      <div class="snav">
+        <button class="sbtn" onclick="navResumenSemana(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <div style="flex:1;text-align:center"><span id="resumen-semana-lbl" style="font-size:15px;font-weight:800"></span></div>
+        <button class="sbtn" onclick="navResumenSemana(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+      <div style="text-align:center;padding-bottom:4px"><button class="date-today-btn" style="font-size:12px;padding:6px 16px" onclick="navResumenSemanaHoy()">Esta semana</button></div>
+    </div>
+    <!-- Nav: Mes -->
+    <div id="resumen-mes-nav" style="display:none">
+      <div class="snav">
+        <button class="sbtn" onclick="navResumenMes(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <div style="flex:1;text-align:center"><span id="resumen-mes-lbl" style="font-size:15px;font-weight:800"></span></div>
+        <button class="sbtn" onclick="navResumenMes(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+      <div style="text-align:center;padding-bottom:4px"><button class="date-today-btn" style="font-size:12px;padding:6px 16px" onclick="navResumenMesHoy()">Este mes</button></div>
     </div>
     <div class="card"><div class="chwrap"><canvas id="ch-gan"></canvas></div></div>
     <div class="mgrid">
@@ -616,10 +666,10 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       <div class="psel" id="pagos-app-psel">
         <button class="pbtn on" onclick="setPagosAppPeriod('hoy',this)">Hoy</button>
         <button class="pbtn" onclick="setPagosAppPeriod('ayer',this)">Ayer</button>
+        <button class="pbtn" onclick="setPagosAppPeriod('dia',this)">Día</button>
         <button class="pbtn" onclick="setPagosAppPeriod('semana',this)">Semana</button>
         <button class="pbtn" onclick="setPagosAppPeriod('mes',this)">Mes</button>
         <button class="pbtn" onclick="setPagosAppPeriod('anio',this)">Año</button>
-        <button class="pbtn" onclick="setPagosAppPeriod('dia',this)">Día</button>
       </div>
       <div id="pagos-app-dia-nav" style="display:none">
         <div class="snav">
@@ -651,10 +701,10 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       <div class="psel" id="pagos-psel">
         <button class="pbtn on" onclick="setPagosPeriod('hoy',this)">Hoy</button>
         <button class="pbtn" onclick="setPagosPeriod('ayer',this)">Ayer</button>
+        <button class="pbtn" onclick="setPagosPeriod('dia',this)">Día</button>
         <button class="pbtn" onclick="setPagosPeriod('semana',this)">Semana</button>
         <button class="pbtn" onclick="setPagosPeriod('mes',this)">Mes</button>
         <button class="pbtn" onclick="setPagosPeriod('anio',this)">Año</button>
-        <button class="pbtn" onclick="setPagosPeriod('dia',this)">Día</button>
       </div>
       <div id="pagos-des-dia-nav" style="display:none">
         <div class="snav">
@@ -711,9 +761,9 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <!-- Period selector -->
     <div class="psel" id="inc-gan-psel">
       <button class="pbtn on" onclick="setIncGanPeriod('hoy',this)">Hoy</button>
+      <button class="pbtn" onclick="setIncGanPeriod('dia',this)">Día</button>
       <button class="pbtn" onclick="setIncGanPeriod('semana',this)">Semana</button>
       <button class="pbtn" onclick="setIncGanPeriod('mes',this)">Mes</button>
-      <button class="pbtn" onclick="setIncGanPeriod('dia',this)">Día</button>
     </div>
     <!-- Day picker (for 'dia' mode) -->
     <div id="inc-gan-dia-nav" style="display:none">
@@ -941,6 +991,11 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       <div class="strow"><div><div class="stlbl">Fondo mantención</div><div style="font-size:12px;color:var(--g400)">% de cada viaje</div></div><input class="stinput" type="number" id="cfg-fondo" value="5" min="0" max="30" style="width:60px" onchange="saveConfig()"></div>
       <div class="strow"><div><div class="stlbl">Meta fondo</div><div style="font-size:12px;color:var(--g400)">CLP objetivo</div></div><input class="stinput" type="number" id="cfg-meta" value="50000" style="width:90px" onchange="saveConfig()"></div>
     </div>
+    <div class="stsec">
+      <div class="sttit">Meta viajes diarios</div>
+      <div class="strow"><div><div class="stlbl">Meta base</div><div style="font-size:12px;color:var(--g400)">viajes para completar el día</div></div><input class="stinput" type="number" id="cfg-meta-dia" value="20" min="1" style="width:60px" onchange="saveConfig()"></div>
+      <div class="strow"><div><div class="stlbl">Viajes extra</div><div style="font-size:12px;color:var(--g400)">viajes adicionales a lograr</div></div><input class="stinput" type="number" id="cfg-meta-dia-extra" value="5" min="0" style="width:60px" onchange="saveConfig()"></div>
+    </div>
     <!-- Sync como fila con botón -->
     <div class="stsec">
       <div class="sttit">Sincronización</div>
@@ -1057,6 +1112,14 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 
     <button class="bp" onclick="saveIncentivo()">Guardar</button>
     <div style="height:10px"></div>
+    <!-- Campos visibles solo al editar incentivo cerrado -->
+    <div id="minc-cierre-wrap" style="display:none;border-top:1px solid var(--g200);padding-top:14px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:var(--g600);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">Datos de cierre</div>
+      <div class="fgrid">
+        <div class="fg"><label class="fl">Fecha de cierre</label><input class="fi" type="date" id="minc-fecha-cierre"></div>
+        <div class="fg"><label class="fl">Monto cobrado ($)</label><input class="fi" type="text" id="minc-monto-cobrado" inputmode="numeric" placeholder="0"></div>
+      </div>
+    </div>
     <button class="bs" onclick="closeM('modal-incentivo')">Cancelar</button>
   </div>
 </div>
@@ -1196,7 +1259,8 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <div class="fg"><label class="fl">Tipo de pago recibido</label>
       <div class="popts" id="mw-tipo-opts">
         <button class="popt on" onclick="selWalletTipo(this,'ef')">💵 Efectivo</button>
-        <button class="popt" onclick="selWalletTipo(this,'tr')">🏦 Transferencia</button>
+        <button class="popt" onclick="selWalletTipo(this,'tk')">💳 Tarjeta</button>
+        <button class="popt" onclick="selWalletTipo(this,'tr')">🏦 Transfer.</button>
       </div>
     </div>
     <input type="hidden" id="mw-tipo" value="ef">
@@ -1258,7 +1322,7 @@ const SEED_PDFS=[
 ];
 
 let VIAJES=[],CIERRES={},TURNOS=[],ZONAS={},PDFS=[],WALLET_PAGOS=[],WALLET_INICIAL={},INCENTIVOS=[];
-let CONFIG={rend:16,bencina:1200,fondo:5,meta:50000,sii:15.25};
+let CONFIG={rend:16,bencina:1200,fondo:5,meta:50000,sii:15.25,metaDia:20,metaDiaExtra:5};
 let payState={v:'ef',m:'ef'};
 let benState=false,period='hoy';
 let offsets={hist:0,gan:0};
@@ -1349,7 +1413,7 @@ function startListeners(){
     renderIncentivosViajes();
     renderIncentivosGanancias();
   });
-  onSnapshot(doc(db,'config','main'),(snap)=>{if(snap.exists()){CONFIG={...CONFIG,...snap.data()};document.getElementById('cfg-rend').value=CONFIG.rend;document.getElementById('cfg-ben').value=CONFIG.bencina;document.getElementById('cfg-fondo').value=CONFIG.fondo;document.getElementById('cfg-meta').value=CONFIG.meta;document.getElementById('cfg-sii').value=CONFIG.sii||15.25;}});
+  onSnapshot(doc(db,'config','main'),(snap)=>{if(snap.exists()){CONFIG={...CONFIG,...snap.data()};document.getElementById('cfg-rend').value=CONFIG.rend;document.getElementById('cfg-ben').value=CONFIG.bencina;document.getElementById('cfg-fondo').value=CONFIG.fondo;document.getElementById('cfg-meta').value=CONFIG.meta;document.getElementById('cfg-sii').value=CONFIG.sii||15.25;const cmdEl=document.getElementById('cfg-meta-dia');if(cmdEl) cmdEl.value=CONFIG.metaDia||20;const cmdeEl=document.getElementById('cfg-meta-dia-extra');if(cmdeEl) cmdeEl.value=CONFIG.metaDiaExtra||5;}});
 }
 
 function refreshAll(){
@@ -1431,6 +1495,8 @@ window.saveConfig=async function(){
   CONFIG.fondo=parseFloat(document.getElementById('cfg-fondo').value)||5;
   CONFIG.meta=parseFloat(document.getElementById('cfg-meta').value)||50000;
   CONFIG.sii=parseFloat(document.getElementById('cfg-sii').value)||15.25;
+  CONFIG.metaDia=parseInt(document.getElementById('cfg-meta-dia').value)||20;
+  CONFIG.metaDiaExtra=parseInt(document.getElementById('cfg-meta-dia-extra').value)||5;
   try{await setDoc(doc(db,'config','main'),CONFIG);toast('Configuración guardada');}catch(e){toast('Error: '+e.message);}
 };
 
@@ -1960,9 +2026,15 @@ function vPeriod(){
   if(period==='hoy') return vByDate(today());
   if(period==='ayer'){const d=new Date(today()+'T12:00:00');d.setDate(d.getDate()-1);return vByDate(d.toISOString().slice(0,10));}
   if(period==='dia') return vByDate(selectedDates.resumen||today());
-  const days=period==='semana'?6:29;
-  const d=new Date();d.setDate(d.getDate()-days);
-  return sortViajes(VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=d));
+  if(period==='semana'){
+    const {lunStr,domStr}=resumenSemanaStr();
+    return sortViajes(VIAJES.filter(v=>v.fecha>=lunStr&&v.fecha<=domStr));
+  }
+  if(period==='mes'){
+    const {priStr,ultStr}=resumenMesStr();
+    return sortViajes(VIAJES.filter(v=>v.fecha>=priStr&&v.fecha<=ultStr));
+  }
+  return sortViajes(VIAJES);
 }
 
 // ── Helpers de semana Lun→Dom ────────────────────────────────────────────
@@ -2005,12 +2077,52 @@ function renderInicio(){
   // Combustible: real si hay cierre, estimado si no
   const combCosto=hoy.length>0?(tieneCierreReal?combustibleReal(today()):combustibleEstimado(hoy)):0;
   const recibo=hoy.length>0?Math.max(0,bruto-bruto*(CONFIG.sii/100)):0;
-  const quedo=hoy.length>0?Math.max(0,recibo-combCosto):0;
+  // Incluir incentivos cobrados hoy en el neto del día
+  const incHoy=INCENTIVOS.filter(i=>i.cerrado&&i.fechaCierre===today()&&i.montoCobrado>0)
+    .reduce((a,i)=>a+(i.montoCobrado||0),0);
+  const quedo=hoy.length>0?Math.max(0,recibo-combCosto+incHoy):incHoy;
 
   document.getElementById('h-quedo').textContent=CLP(quedo);
   document.getElementById('h-bruto').textContent=CLP(bruto);
   document.getElementById('h-recibo').textContent=CLP(recibo);
-  document.getElementById('h-viajes').textContent=hoy.length;
+  // Solo viajes completados (no cancelaciones)
+  const hoyCompletados = hoy.filter(v => v.tipo !== 'Cancelación');
+  document.getElementById('h-viajes').textContent=hoyCompletados.length;
+
+  // Barra meta diaria
+  const metaBase = parseInt(CONFIG.metaDia)||20;
+  const metaExtra = parseInt(CONFIG.metaDiaExtra)||5;
+  const metaTotal = metaBase + metaExtra;
+  const nViajes = hoyCompletados.length;
+  const pctBase = metaBase>0 ? Math.min(nViajes, metaBase)/metaBase*100 : 0;
+  const pctExtra = (metaExtra>0 && nViajes>metaBase)
+    ? Math.min(nViajes-metaBase, metaExtra)/metaExtra*100 : 0;
+  const markerLeft = metaBase/metaTotal*100;
+  const extraLeft = markerLeft;
+  const extraWidth = pctExtra*(100-extraLeft)/100;
+
+  const fillEl=document.getElementById('h-meta-fill');
+  const extraFill=document.getElementById('h-meta-extra-fill');
+  const markerEl=document.getElementById('h-meta-marker');
+  const lblEl=document.getElementById('h-meta-lbl');
+  const midEl=document.getElementById('h-meta-mid');
+  const maxEl=document.getElementById('h-meta-max');
+
+  if(fillEl) fillEl.style.width=pctBase+'%';
+  if(extraFill){
+    extraFill.style.left=extraLeft+'%';
+    extraFill.style.width=extraWidth+'%';
+  }
+  if(markerEl){
+    markerEl.style.display=metaExtra>0?'block':'none';
+    markerEl.style.left=markerLeft+'%';
+  }
+  if(lblEl){
+    const status = nViajes>=metaTotal ? '🏆 ¡Meta extra lograda!' : nViajes>=metaBase ? '✅ Meta lograda' : '';
+    lblEl.textContent = nViajes+' / '+metaTotal+' viajes'+(status?' · '+status:'');
+  }
+  if(midEl){ midEl.style.display=metaExtra>0?'block':'none'; midEl.textContent=metaBase+''; }
+  if(maxEl) maxEl.textContent=metaTotal+'';
 
   // Indicador combustible hoy (estimado o real)
   const combEl=document.getElementById('h-comb-est');
@@ -2081,31 +2193,28 @@ function renderGan(){
   const labels=[],data=[];
 
   if(period==='hoy'||period==='ayer'||period==='dia'){
-    // Semana Lun→Dom que contiene la fecha base
     const base=period==='dia'?(selectedDates.resumen||today()):period==='ayer'?(()=>{const d=new Date(today()+'T12:00:00');d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);})():today();
     const dias=semanaActual(base);
     const DIAS_ES=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
-    dias.forEach((ds,i)=>{
-      labels.push(DIAS_ES[i]);
-      data.push(vByDate(ds).reduce((a,v)=>a+v.monto,0));
-    });
-
+    dias.forEach((ds,i)=>{labels.push(DIAS_ES[i]);data.push(vByDate(ds).reduce((a,v)=>a+v.monto,0));});
   } else if(period==='semana'){
-    // 4 semanas completas Lun→Dom (3 anteriores + semana actual)
-    const semanas=ultimasSemanas(4);
-    semanas.forEach(dias=>{
-      const lun=dias[0];const dom=dias[6];
-      const lbl=new Date(lun+'T12:00:00').getDate()+'/'+
-                (new Date(lun+'T12:00:00').getMonth()+1)+'–'+
-                new Date(dom+'T12:00:00').getDate()+'/'+
-                (new Date(dom+'T12:00:00').getMonth()+1);
-      labels.push(lbl);
-      data.push(dias.reduce((sum,ds)=>sum+vByDate(ds).reduce((a,v)=>a+v.monto,0),0));
-    });
-
+    // Días Lun→Dom de la semana seleccionada
+    const {lunStr}=resumenSemanaStr();
+    const dias=Array.from({length:7},(_,i)=>{const d=new Date(lunStr+'T12:00:00');d.setDate(d.getDate()+i);return d.toISOString().slice(0,10);});
+    const DIAS_ES=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+    dias.forEach((ds,i)=>{labels.push(DIAS_ES[i]);data.push(vByDate(ds).reduce((a,v)=>a+v.monto,0));});
   } else {
-    // Mes: últimas 5 semanas completas
-    const semanas=ultimasSemanas(5);
+    // Mes: semanas del mes seleccionado
+    const {priStr,ultStr}=resumenMesStr();
+    // Construir semanas Lun→Dom que caigan dentro del mes
+    const semanas=[];
+    let cur=new Date(lunesDe(priStr)+'T12:00:00');
+    const fin=new Date(ultStr+'T12:00:00');
+    while(cur<=fin){
+      const dias=Array.from({length:7},(_,i)=>{const d=new Date(cur);d.setDate(d.getDate()+i);return d.toISOString().slice(0,10);});
+      semanas.push(dias);
+      cur.setDate(cur.getDate()+7);
+    }
     semanas.forEach(dias=>{
       const lun=dias[0];
       labels.push('Sem '+new Date(lun+'T12:00:00').getDate()+'/'+( new Date(lun+'T12:00:00').getMonth()+1));
@@ -2116,19 +2225,20 @@ function renderGan(){
   if(charts.gan) charts.gan.destroy();
   // Columna de hoy o semana actual resaltada en negro, resto gris
   const todayStr=today();
-  const lunesHoy=lunesDe(todayStr);
   const bgColors=data.map((_,i)=>{
     if(period==='hoy'||period==='ayer'||period==='dia'){
       const base=period==='dia'?(selectedDates.resumen||todayStr):period==='ayer'?(()=>{const d=new Date(todayStr+'T12:00:00');d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);})():todayStr;
-      const dias=semanaActual(period==='dia'?(selectedDates.resumen||todayStr):todayStr);
+      const dias=semanaActual(base);
       const highlight=period==='ayer'?(()=>{const d=new Date(todayStr+'T12:00:00');d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);})():todayStr;
       return dias[i]===highlight?'#000':'#e0e0e0';
     }
     if(period==='semana'){
-      const semanas=ultimasSemanas(4);
-      return semanas[i][0]===lunesHoy?'#000':'#e0e0e0';
+      // Resaltar el día de hoy si cae en la semana seleccionada
+      const {lunStr}=resumenSemanaStr();
+      const dias=Array.from({length:7},(_,j)=>{const d=new Date(lunStr+'T12:00:00');d.setDate(d.getDate()+j);return d.toISOString().slice(0,10);});
+      return dias[i]===todayStr?'#000':'#e0e0e0';
     }
-    // mes: última semana en negro
+    // mes: resaltar la semana que contiene hoy si cae en este mes
     return i===data.length-1?'#000':'#e0e0e0';
   });
   charts.gan=new Chart(document.getElementById('ch-gan'),{
@@ -2197,12 +2307,81 @@ window.pickDate=function(key,val){
   if(key==='wpag') renderWalletPagos();
 };
 
+// ── Navegadores semana/mes en Resumen ───────────────────────────────────────
+let resumenSemanaOffset = 0; // 0 = semana actual, -1 = anterior...
+let resumenMesOffset = 0;    // 0 = mes actual, -1 = anterior...
+
+function resumenSemanaStr(){
+  const lunes = lunesDe(today());
+  const d = new Date(lunes+'T12:00:00');
+  d.setDate(d.getDate() + resumenSemanaOffset*7);
+  const lunStr = d.toISOString().slice(0,10);
+  const dom = new Date(d); dom.setDate(dom.getDate()+6);
+  const domStr = dom.toISOString().slice(0,10);
+  const fmt = s => s.slice(5).split('-').reverse().join('/');
+  return { lunStr, domStr, label: fmt(lunStr)+' → '+fmt(domStr) };
+}
+
+function resumenMesStr(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth() + resumenMesOffset;
+  const d = new Date(y, m, 1);
+  const mesY = d.getFullYear();
+  const mesM = d.getMonth();
+  const priStr = mesY+'-'+String(mesM+1).padStart(2,'0')+'-01';
+  const ultDia = new Date(mesY, mesM+1, 0).getDate();
+  const ultStr = mesY+'-'+String(mesM+1).padStart(2,'0')+'-'+String(ultDia).padStart(2,'0');
+  const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  return { priStr, ultStr, label: MESES[mesM]+' '+mesY };
+}
+
+window.navResumenSemana = function(dir){
+  resumenSemanaOffset += dir;
+  const { label } = resumenSemanaStr();
+  const lbl = document.getElementById('resumen-semana-lbl');
+  if(lbl) lbl.textContent = label;
+  renderGan();
+};
+window.navResumenSemanaHoy = function(){
+  resumenSemanaOffset = 0;
+  const { label } = resumenSemanaStr();
+  const lbl = document.getElementById('resumen-semana-lbl');
+  if(lbl) lbl.textContent = label;
+  renderGan();
+};
+window.navResumenMes = function(dir){
+  resumenMesOffset += dir;
+  const { label } = resumenMesStr();
+  const lbl = document.getElementById('resumen-mes-lbl');
+  if(lbl) lbl.textContent = label;
+  renderGan();
+};
+window.navResumenMesHoy = function(){
+  resumenMesOffset = 0;
+  const { label } = resumenMesStr();
+  const lbl = document.getElementById('resumen-mes-lbl');
+  if(lbl) lbl.textContent = label;
+  renderGan();
+};
+
 window.setPeriod=function(p,btn){
   period=p;
   document.getElementById('resumen-psel').querySelectorAll('.pbtn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
-  const nav=document.getElementById('resumen-dia-nav');
-  if(nav) nav.style.display=p==='dia'?'block':'none';
+  document.getElementById('resumen-dia-nav').style.display    = p==='dia'     ? 'block':'none';
+  document.getElementById('resumen-semana-nav').style.display = p==='semana'  ? 'block':'none';
+  document.getElementById('resumen-mes-nav').style.display    = p==='mes'     ? 'block':'none';
+  if(p==='semana'){
+    resumenSemanaOffset=0;
+    const {label}=resumenSemanaStr();
+    const lbl=document.getElementById('resumen-semana-lbl');if(lbl) lbl.textContent=label;
+  }
+  if(p==='mes'){
+    resumenMesOffset=0;
+    const {label}=resumenMesStr();
+    const lbl=document.getElementById('resumen-mes-lbl');if(lbl) lbl.textContent=label;
+  }
   renderGan();
 };
 
@@ -2284,6 +2463,18 @@ function renderPagosDesglose(){
   const tk=viajes.filter(v=>v.pago==='tk').reduce((a,v)=>a+v.monto,0);
   const tr=viajes.filter(v=>v.pago==='tr').reduce((a,v)=>a+v.monto,0);
   const total=ef+tk+tr;const descSII=total*(CONFIG.sii/100);const recibo=Math.max(0,total-descSII);
+
+  // Incentivos cerrados en el período
+  let incFechaIni, incFechaFin;
+  if(pagosPeriod==='hoy'){ incFechaIni=incFechaFin=today(); }
+  else if(pagosPeriod==='ayer'){ const d=new Date(today()+'T12:00:00');d.setDate(d.getDate()-1);incFechaIni=incFechaFin=d.toISOString().slice(0,10); }
+  else if(pagosPeriod==='dia'){ incFechaIni=incFechaFin=selectedDates.pagosDesDia||today(); }
+  else if(pagosPeriod==='semana'){ const d=new Date();d.setDate(d.getDate()-6);incFechaIni=d.toISOString().slice(0,10);incFechaFin=today(); }
+  else if(pagosPeriod==='mes'){ const d=new Date();d.setDate(d.getDate()-29);incFechaIni=d.toISOString().slice(0,10);incFechaFin=today(); }
+  else { const d=new Date(new Date().getFullYear(),0,1);incFechaIni=d.toISOString().slice(0,10);incFechaFin=today(); }
+  const incsPeriod=INCENTIVOS.filter(i=>i.cerrado&&i.montoCobrado>0&&(i.fechaCierre||'')>=incFechaIni&&(i.fechaCierre||'')<=incFechaFin);
+  const incTotal=incsPeriod.reduce((a,i)=>a+(i.montoCobrado||0),0);
+
   if(charts.pagDes) charts.pagDes.destroy();
   const cvs=document.getElementById('ch-pag-des');
   if(cvs&&total>0){charts.pagDes=new Chart(cvs,{type:'doughnut',data:{labels:['Total pagado','Retención SII'],datasets:[{data:[Math.round(recibo),Math.round(descSII)],backgroundColor:['#000','#E11900'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:12,weight:'700'},padding:12}}}}});}
@@ -2292,9 +2483,11 @@ function renderPagosDesglose(){
     '<div class="drow"><span class="dlbl">Ganancias brutas</span><span class="dval">'+CLP(total)+'</span></div>'
     +'<div class="drow"><span class="dlbl">Retención SII ('+CONFIG.sii+'%)</span><span class="dval cr">-'+CLP(descSII)+'</span></div>'
     +'<div class="drow" style="font-weight:800"><span class="dlbl">Total pagado</span><span class="dval">'+CLP(recibo)+'</span></div>'
-    +'<div class="drow"><span class="dlbl">Efectivo</span><span class="dval">'+CLP(ef)+'</span></div>'
-    +'<div class="drow"><span class="dlbl">Tarjeta</span><span class="dval">'+CLP(tk)+'</span></div>'
-    +'<div class="drow"><span class="dlbl">Transferencia</span><span class="dval">'+CLP(tr)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">💵 Efectivo</span><span class="dval">'+CLP(ef)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">💳 Tarjeta</span><span class="dval">'+CLP(tk)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">🏦 Transferencia</span><span class="dval">'+CLP(tr)+'</span></div>'
+    +'<div class="drow"><span class="dlbl">⭐ Incentivos cobrados</span><span class="dval cg">'+CLP(incTotal)+'</span></div>'
+    +'<div class="drow" style="font-weight:800;border-top:1.5px solid var(--g200)"><span class="dlbl">Total con incentivos</span><span class="dval cg">'+CLP(recibo+incTotal)+'</span></div>'
     +'<div class="drow"><span class="dlbl">Viajes</span><span class="dval">'+viajes.length+'</span></div>';
 }
 
@@ -2580,13 +2773,17 @@ function renderCierres(){
   el.innerHTML='';
   sorted.forEach(([fecha,c])=>{
     const vs=vByDate(fecha);const bruto=vs.reduce((a,v)=>a+v.monto,0);
+    // Incentivos cobrados ese día
+    const incDia=INCENTIVOS.filter(i=>i.cerrado&&i.montoCobrado>0&&i.fechaCierre===fecha)
+      .reduce((a,i)=>a+(i.montoCobrado||0),0);
+    const incStr=incDia>0?(' · ⭐ +'+CLP(incDia)+' incent.'):'';
     const row=document.createElement('div');row.className='trow';
     row.innerHTML='<div class="tico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>'
       +'<div class="tinfo">'
       +'<div class="tname">'+fmtD(fecha)+'</div>'
-      +'<div class="tmeta">'+vs.length+' viajes · '+(c.km||0)+' km · '+(c.hrs||0)+'h · '+litrosConsumidos(c).toFixed(1)+'L combustible</div>'
+      +'<div class="tmeta">'+vs.length+' viajes · '+(c.km||0)+' km · '+(c.hrs||0)+'h · '+litrosConsumidos(c).toFixed(1)+'L combustible'+incStr+'</div>'
       +'</div>'
-      +'<div class="tamt g">'+CLP(bruto)+'</div>'
+      +'<div class="tamt g">'+CLP(bruto+incDia)+'</div>'
       +'<div class="tactions">'
       +'<button class="tacbtn tacedit" title="Editar">✏️</button>'
       +'<button class="tacbtn tacdel" title="Eliminar">🗑️</button>'
@@ -2773,7 +2970,33 @@ window.calClick=function(ds){
     html+='<div style="padding:12px 0;color:var(--g400);font-size:14px;text-align:center">Sin viajes registrados</div>';
   }
 
-  if(!viajes.length&&!turnos.length&&!cierre.km){
+  // Incentivos del día (activos o cerrados ese día)
+  const incsDia = INCENTIVOS.filter(i => {
+    if(i.cerrado) return i.fechaCierre === ds;
+    const ini=incDatetime(i.fechaIni,i.horaIni), fin=incDatetime(i.fechaFin,i.horaFin);
+    const dIni=new Date(ds+'T00:00:00'), dFin=new Date(ds+'T23:59:59');
+    return ini<=dFin && fin>=dIni;
+  });
+  if(incsDia.length){
+    html+='<div style="margin-bottom:12px">';
+    html+='<div class="slbl" style="padding:0;margin:0 0 8px;font-size:11px">INCENTIVOS</div>';
+    incsDia.forEach(inc=>{
+      const v=incViajesEnRango(inc);
+      const logrado=v>=(inc.meta||0);
+      const cerradoStr=inc.cerrado?(' · Cerrado '+CLP2(inc.montoCobrado||0)):'';
+      const pct=Math.min(v,(inc.meta||0))/(inc.meta||1)*100;
+      html+='<div style="background:var(--g50);border-radius:12px;padding:12px 14px;margin-bottom:6px">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
+      html+='<div style="font-size:13px;font-weight:800">'+(inc.nombre||'Incentivo')+'</div>';
+      html+='<div style="font-size:12px;font-weight:700;color:'+(logrado?'var(--green)':'var(--g400)')+'">'+v+'/'+(inc.meta||0)+cerradoStr+'</div>';
+      html+='</div>';
+      html+='<div style="height:6px;background:var(--g200);border-radius:3px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+(logrado?'var(--green)':'var(--black)')+'"></div></div>';
+      html+='</div>';
+    });
+    html+='</div>';
+  }
+
+  if(!viajes.length&&!turnos.length&&!cierre.km&&!incsDia.length){
     html='<div class="empty"><div class="etxt">Sin datos para este día</div></div>';
   }
 
@@ -3504,11 +3727,14 @@ window.importData=function(input){
 function walletCalc(fecha){
   const inicial=(WALLET_INICIAL[fecha]||{}).monto||0;
   const pagos=WALLET_PAGOS.filter(p=>p.fecha===fecha);
-  const pagosEf=pagos.filter(p=>p.tipo==='tr'?false:true);
+  // ef = efectivo, tr = transferencia, tk = tarjeta (incentivos Uber)
+  const pagosEf=pagos.filter(p=>p.tipo==='ef');
   const pagosTr=pagos.filter(p=>p.tipo==='tr');
+  const pagosTk=pagos.filter(p=>p.tipo==='tk');
   const totalPagosEf=pagosEf.reduce((a,p)=>a+p.monto,0);
   const totalPagosTr=pagosTr.reduce((a,p)=>a+p.monto,0);
-  const totalPagos=totalPagosEf+totalPagosTr;
+  const totalPagosTk=pagosTk.reduce((a,p)=>a+p.monto,0);
+  const totalPagos=totalPagosEf+totalPagosTr+totalPagosTk;
 
   const vs=vByDate(fecha);
   const viajesEf =vs.filter(v=>v.pago==='ef').reduce((a,v)=>a+v.monto,0);
@@ -3519,18 +3745,20 @@ function walletCalc(fecha){
   // Total pagado = bruto - SII
   const totalPagado=Math.max(0,viajesBruto-viajesBruto*(CONFIG.sii/100));
 
-  // En billetera = efectivo + transferencias registradas manualmente
+  // En billetera = efectivo + transferencias + tarjeta registradas manualmente
   const enBilletera=totalPagos;
   const enBilleteraEf=totalPagosEf;
   const enBilleteraTr=totalPagosTr;
+  const enBilleteraTk=totalPagosTk;
 
-  // Disponible para retiro en Uber = total pagado − lo que ya tienes en mano
-  const disponibleRetiro=Math.max(0,totalPagado-enBilletera);
+  // Disponible para retiro en Uber = total pagado (post-SII) + tarjeta (incentivos) − efectivo y transfer ya en mano
+  // La tarjeta (incentivos) se suma porque es dinero extra que Uber te paga aparte
+  const disponibleRetiro=Math.max(0,totalPagado + totalPagosTk - totalPagosEf - totalPagosTr);
 
   // Diferencia: cuánto cobraste en viajes ef+tr vs cuánto registraste
   const diff=totalPagos-(viajesEf+viajesTr);
 
-  return{inicial,totalPagos,totalPagosEf,totalPagosTr,enBilletera,enBilleteraEf,enBilleteraTr,viajesEf,viajesTr,viajesDig,viajesBruto,totalPagado,disponibleRetiro,diff,pagos};
+  return{inicial,totalPagos,totalPagosEf,totalPagosTr,totalPagosTk,enBilletera,enBilleteraEf,enBilleteraTr,enBilleteraTk,viajesEf,viajesTr,viajesDig,viajesBruto,totalPagado,disponibleRetiro,diff,pagos};
 }
 
 function renderWallet(){
@@ -3553,6 +3781,7 @@ function renderWalletEfectivo(){
   document.getElementById('w-billetera').textContent=CLP(enBilletera);
   document.getElementById('w-billetera-ef').textContent=CLP(enBilleteraEf);
   document.getElementById('w-billetera-tr').textContent=CLP(enBilleteraTr);
+  const wtkEl=document.getElementById('w-billetera-tk');if(wtkEl) wtkEl.textContent=CLP(enBilleteraTk);
   document.getElementById('w-retiro').textContent=CLP(disponibleRetiro);
   document.getElementById('w-inicial').textContent=CLP(inicial);
   const inp=document.getElementById('w-inicial-input');
@@ -3563,7 +3792,8 @@ function renderWalletEfectivo(){
   setId('w-viajes-bruto',CLP(totalPagado));
   setId('w-viajes-ef',CLP(viajesEf));
   setId('w-viajes-tr',CLP(viajesTr));
-  setId('w-pagos-ef',CLP(totalPagos));
+  setId('w-pagos-ef',CLP(totalPagosEf+totalPagosTr));
+  setId('w-pagos-tk',CLP(totalPagosTk));
   setId('w-retiro-row',CLP(disponibleRetiro));
   const diffEl=document.getElementById('w-diff-ef');
   if(diffEl){diffEl.textContent=(diff>=0?'+':'')+CLP(diff);diffEl.className='wbal-amt '+(diff<0?'neg':diff>0?'pos':'');}
@@ -3574,13 +3804,14 @@ function renderWalletEfectivo(){
   el.innerHTML='';
   pagos.forEach(p=>{
     const esTr=p.tipo==='tr';
-    const ico=esTr?'🏦':'💵';
-    const bg=esTr?'#E3F2FD':'#e6f4ea';
-    const strokeColor=esTr?'#1565C0':'#00A651';
-    const label=esTr?'Transferencia':'Efectivo';
+    const esTk=p.tipo==='tk';
+    const bg=esTr?'#E3F2FD':esTk?'#EDE7F6':'#e6f4ea';
+    const strokeColor=esTr?'#1565C0':esTk?'#4527A0':'#00A651';
+    const label=esTr?'Transferencia':esTk?'Tarjeta (Incentivo)':'Efectivo';
+    const bdgClass=esTr?'bk':esTk?'bt':'bc';
     const row=document.createElement('div');row.className='trow';
     row.innerHTML=`<div class="tico" style="background:${bg}"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:${strokeColor};fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>`
-      +`<div class="tinfo"><div class="tname">${p.desc||label}</div><div class="tmeta">${p.hora} · <span class="bdg ${esTr?'bk':'bc'}">${label}</span></div></div>`
+      +`<div class="tinfo"><div class="tname">${p.desc||label}</div><div class="tmeta">${p.hora} · <span class="bdg ${bdgClass}">${label}</span></div></div>`
       +`<div class="tamt g">${CLP(p.monto)}</div>`
       +'<div class="tactions"><button class="tacbtn tacedit">✏️</button><button class="tacbtn tacdel">🗑️</button></div>';
     row.querySelector('.tacedit').addEventListener('click',()=>editWalletPago(p._fid));
@@ -3607,12 +3838,14 @@ function renderWalletMovimientos(){
   el.innerHTML='';
   pagos.forEach(p=>{
     const esTr=p.tipo==='tr';
-    const bg=esTr?'#E3F2FD':'#e6f4ea';
-    const strokeColor=esTr?'#1565C0':'#00A651';
-    const label=esTr?'Transferencia':'Efectivo';
+    const esTk=p.tipo==='tk';
+    const bg=esTr?'#E3F2FD':esTk?'#EDE7F6':'#e6f4ea';
+    const strokeColor=esTr?'#1565C0':esTk?'#4527A0':'#00A651';
+    const label=esTr?'Transferencia':esTk?'Tarjeta (Incentivo)':'Efectivo';
+    const bdgClass=esTr?'bk':esTk?'bt':'bc';
     const row=document.createElement('div');row.className='trow';
     row.innerHTML=`<div class="tico" style="background:${bg}"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:${strokeColor};fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>`
-      +`<div class="tinfo"><div class="tname">${p.desc||label}</div><div class="tmeta">${p.fecha} · ${p.hora} · <span class="bdg ${esTr?'bk':'bc'}">${label}</span></div></div>`
+      +`<div class="tinfo"><div class="tname">${p.desc||label}</div><div class="tmeta">${p.fecha} · ${p.hora} · <span class="bdg ${bdgClass}">${label}</span></div></div>`
       +`<div class="tamt g">${CLP(p.monto)}</div>`
       +`<div class="tactions"><button class="tacbtn tacedit">✏️</button><button class="tacbtn tacdel">🗑️</button></div>`;
     row.querySelector('.tacedit').addEventListener('click',()=>editWalletPago(p._fid));
@@ -3689,7 +3922,7 @@ window.editWalletPago=function(fid){
   document.getElementById('mw-desc').value=p.desc||'';
   const tipo=p.tipo||'ef';
   document.getElementById('mw-tipo').value=tipo;
-  document.querySelectorAll('#mw-tipo-opts .popt').forEach((b,i)=>b.classList.toggle('on',(i===0&&tipo==='ef')||(i===1&&tipo==='tr')));
+  document.querySelectorAll('#mw-tipo-opts .popt').forEach((b,i)=>b.classList.toggle('on',(i===0&&tipo==='ef')||(i===1&&tipo==='tk')||(i===2&&tipo==='tr')));
   document.getElementById('modal-wallet').classList.add('open');
 };
 
@@ -3862,7 +4095,8 @@ function renderIncentivosInicio(){
   const diarios = INCENTIVOS.filter(i => i.tipo === 'diario' && !i.cerrado);
 
   // Semanal: show active ones
-  const semActivos = semanales.filter(i => incEsActivo(i) || incEsProximo(i));
+  // Solo mostrar el incentivo semanal ACTIVO (no el próximo)
+  const semActivos = semanales.filter(i => incEsActivo(i));
   if(semActivos.length > 0){
     semWrap.style.display = 'block';
     semWrap.innerHTML = semActivos.map(i => buildIncCard(i, 'inicio')).join('');
@@ -3891,6 +4125,29 @@ function renderIncentivosInicio(){
     diaWrap.innerHTML = '';
   }
 }
+
+// ── Historial de incentivos: navegación por semana ─────────────────────────
+let incHistSemanaOffset = 0; // 0 = semana actual, -1 = semana anterior, etc.
+
+function incHistSemanaActual(){
+  const lunes = lunesDe(today());
+  const d = new Date(lunes + 'T12:00:00');
+  d.setDate(d.getDate() + incHistSemanaOffset * 7);
+  const lunStr = d.toISOString().slice(0, 10);
+  const dom = new Date(d); dom.setDate(dom.getDate() + 6);
+  const domStr = dom.toISOString().slice(0, 10);
+  return { lunStr, domStr };
+}
+
+window.navIncHist = function(dir){
+  incHistSemanaOffset += dir;
+  renderIncentivosViajes();
+};
+
+window.navIncHistHoy = function(){
+  incHistSemanaOffset = 0;
+  renderIncentivosViajes();
+};
 
 // ── Tab Activos / Historial ────────────────────────────
 let incTabActual = 'activos';
@@ -3925,7 +4182,8 @@ function incRowHTML(i){
       <div class="tmeta">${esSemanal?'Semanal':'Diario'} · ${dIni}→${dFin}</div>
       <div class="tmeta">${viajes}/${i.meta} viajes · Cerrado: ${i.fechaCierre||'—'}</div>
     </div>
-    <div class="tamt ${logrado?'g':''}" style="${!logrado?'color:var(--g400)':''}">${monto>0?CLP2(monto):'—'}</div>
+    <div class="tamt ${logrado?'g':''}" style="${!logrado?'color:var(--g400)':''}; margin-right:4px">${monto>0?CLP2(monto):'—'}</div>
+    <div class="tactions"><button class="tacbtn tacedit" onclick="editIncentivoHistorial('${i._fid}')">✏️</button></div>
   </div>`;
 }
 
@@ -3944,8 +4202,18 @@ function renderIncentivosViajes(){
   }
 
   if(!elH) return;
-  const historial = INCENTIVOS.filter(i => i.cerrado)
-    .sort((a,b) => (b.fechaCierre||b.fechaFin||'').localeCompare(a.fechaCierre||a.fechaFin||''));
+  const { lunStr, domStr } = incHistSemanaActual();
+  // Label de la semana
+  const lbl = document.getElementById('inc-hist-lbl');
+  if(lbl){
+    const fmtW = s => s.slice(5).split('-').reverse().join('/');
+    lbl.textContent = fmtW(lunStr) + ' → ' + fmtW(domStr);
+  }
+  const historial = INCENTIVOS.filter(i => {
+    if(!i.cerrado) return false;
+    const fc = i.fechaCierre || i.fechaFin || '';
+    return fc >= lunStr && fc <= domStr;
+  }).sort((a,b) => (b.fechaCierre||b.fechaFin||'').localeCompare(a.fechaCierre||a.fechaFin||''));
 
   if(!historial.length){
     elH.innerHTML = '<div class="inc-empty"><div class="inc-empty-ico">📋</div><div class="inc-empty-txt">Sin incentivos cerrados aún</div></div>';
@@ -4032,19 +4300,34 @@ function renderIncentivosGanancias(){
   const metasData = chartData.map(i => i.meta||0);
   const barColors = chartData.map(i => incViajesEnRango(i) >= (i.meta||0) ? 'rgba(0,166,81,.75)' : 'rgba(225,25,0,.6)');
 
+  // Gráfico 1: Viajes reales del día comparados con el rango del incentivo
   const ctxM = document.getElementById('ch-inc-monto');
   if(ctxM){
     if(chIncMonto) chIncMonto.destroy();
+    // Para cada incentivo en el período, mostrar viajes hechos en su rango vs su meta
+    const labelsM = chartData.map(i => (i.fechaCierre||i.fechaFin||'').slice(5).split('-').reverse().join('/'));
+    const viajesHechos = chartData.map(i => incViajesEnRango(i));
+    const metaBase2 = chartData.map(i => i.meta||0);
+    const metaExtra2 = chartData.map(i => (i.meta||0)+(i.extraViajes||0));
+    const barCol = chartData.map(i => {
+      const v=incViajesEnRango(i);
+      return v>=(i.meta||0)+(i.extraViajes||0)?'rgba(0,166,81,.85)':v>=(i.meta||0)?'rgba(39,110,241,.7)':'rgba(225,25,0,.6)';
+    });
     chIncMonto = new Chart(ctxM, {
       type:'bar',
       data:{
-        labels,
-        datasets:[{label:'Cobrado', data:montos, backgroundColor:barColors, borderRadius:6}]
+        labels: labelsM,
+        datasets:[
+          {label:'Viajes hechos', data:viajesHechos, backgroundColor:barCol, borderRadius:6},
+          {label:'Meta base', data:metaBase2, backgroundColor:'rgba(0,0,0,.1)', borderRadius:6},
+          {label:'Meta total', data:metaExtra2, type:'line', borderColor:'rgba(0,0,0,.3)', backgroundColor:'transparent', borderDash:[4,3], pointRadius:3, tension:0}
+        ]
       },
       options:{
         responsive:true, maintainAspectRatio:false,
-        plugins:{legend:{display:false},title:{display:true,text:'Monto cobrado (período seleccionado)',font:{size:12,weight:'700'}}},
-        scales:{y:{ticks:{callback:v=>'$'+v.toLocaleString('es-CL')},grid:{color:'rgba(0,0,0,.05)'}},x:{grid:{display:false}}}
+        plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11,weight:'700'},padding:10}},
+          title:{display:true,text:'Viajes hechos vs meta (por incentivo)',font:{size:12,weight:'700'}}},
+        scales:{y:{grid:{color:'rgba(0,0,0,.05)'}},x:{grid:{display:false}}}
       }
     });
   }
@@ -4105,6 +4388,32 @@ window.selIncTipo = function(el, tipo){
   document.getElementById('minc-extra-wrap').style.display = tipo === 'semanal' ? 'block' : 'none';
 };
 
+window.editIncentivoHistorial = function(fid){
+  const inc = INCENTIVOS.find(i => i._fid === fid);
+  if(!inc) return;
+  document.getElementById('minc-title').textContent = 'Editar incentivo cerrado';
+  document.getElementById('minc-id').value = fid;
+  document.getElementById('minc-tipo').value = inc.tipo;
+  document.querySelectorAll('#minc-tipo-opts .popt').forEach((b,i)=>b.classList.toggle('on',(i===0&&inc.tipo==='semanal')||(i===1&&inc.tipo==='diario')));
+  document.getElementById('minc-extra-wrap').style.display = inc.tipo==='semanal' ? 'block' : 'none';
+  document.getElementById('minc-fecha-ini').value = inc.fechaIni||'';
+  document.getElementById('minc-fecha-fin').value = inc.fechaFin||'';
+  document.getElementById('minc-hora-ini').value = inc.horaIni||'';
+  document.getElementById('minc-hora-fin').value = inc.horaFin||'';
+  document.getElementById('minc-meta').value = inc.meta||'';
+  document.getElementById('minc-premio').value = inc.premio||'';
+  document.getElementById('minc-extra-viajes').value = inc.extraViajes||'';
+  document.getElementById('minc-extra-premio').value = inc.extraPremio||'';
+  // Mostrar campos de cierre para incentivos cerrados
+  const cierreWrap = document.getElementById('minc-cierre-wrap');
+  if(cierreWrap){
+    cierreWrap.style.display = 'block';
+    document.getElementById('minc-fecha-cierre').value = inc.fechaCierre||'';
+    document.getElementById('minc-monto-cobrado').value = inc.montoCobrado||'';
+  }
+  document.getElementById('modal-incentivo').classList.add('open');
+};
+
 window.editIncentivo = function(fid){
   const inc = INCENTIVOS.find(i => i._fid === fid);
   if(!inc) return;
@@ -4121,6 +4430,9 @@ window.editIncentivo = function(fid){
   document.getElementById('minc-premio').value = inc.premio||'';
   document.getElementById('minc-extra-viajes').value = inc.extraViajes||'';
   document.getElementById('minc-extra-premio').value = inc.extraPremio||'';
+  // Ocultar campos de cierre para incentivos activos
+  const cierreWrap = document.getElementById('minc-cierre-wrap');
+  if(cierreWrap) cierreWrap.style.display = 'none';
   document.getElementById('modal-incentivo').classList.add('open');
 };
 
@@ -4143,7 +4455,21 @@ window.saveIncentivo = async function(){
   const nombre = tipo === 'diario'
     ? `Diario ${dIni} ${horaIni}-${horaFin}`
     : `Semanal ${dIni}-${dFin}`;
-  const data = { tipo, nombre, fechaIni, fechaFin, horaIni, horaFin, meta, premio, extraViajes, extraPremio, cerrado:false };
+  // Si estamos editando un incentivo cerrado, preservar fechaCierre y montoCobrado
+  const incExistente = fid ? INCENTIVOS.find(i => i._fid === fid) : null;
+  const esCerrado = incExistente && incExistente.cerrado;
+  const cierreWrap = document.getElementById('minc-cierre-wrap');
+  const fechaCierre = esCerrado && cierreWrap
+    ? (document.getElementById('minc-fecha-cierre').value || incExistente.fechaCierre || today())
+    : undefined;
+  const montoCobrado = esCerrado && cierreWrap
+    ? (parseInt((document.getElementById('minc-monto-cobrado').value||'0').replace(/[$.,]/g,''))||0)
+    : undefined;
+  const data = { tipo, nombre, fechaIni, fechaFin, horaIni, horaFin, meta, premio, extraViajes, extraPremio,
+    cerrado: esCerrado ? true : false,
+    ...(esCerrado && fechaCierre !== undefined ? { fechaCierre } : {}),
+    ...(esCerrado && montoCobrado !== undefined ? { montoCobrado } : {})
+  };
   try{
     if(fid){ await updateDoc(doc(db,'incentivos',fid),data); toast('Incentivo actualizado'); }
     else { await addDoc(collection(db,'incentivos'),data); toast('Incentivo creado'); }
@@ -4173,8 +4499,10 @@ window.cerrarIncentivo = async function(conPago){
     const updateData = { cerrado:true, fechaCierre:fecha, montoCobrado: (conPago && monto>0) ? monto : 0 };
     await updateDoc(doc(db,'incentivos',fid), updateData);
     if(conPago && monto > 0){
+      // Usar la hora actual para que aparezca en el historial del día correcto
+      const horaActual = nowTimeCL ? nowTimeCL() : new Date().toTimeString().slice(0,5);
       await addDoc(collection(db,'wallet_pagos'),{
-        monto, fecha, hora:'12:00',
+        monto, fecha, hora: horaActual,
         desc:'Incentivo Uber', tipo:'tk'
       });
       toast('Incentivo cerrado y pago registrado: ' + CLP2(monto));
