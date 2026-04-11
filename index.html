@@ -213,6 +213,43 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 .zone-note-add input{flex:1;padding:10px 14px;border:1.5px solid var(--g200);border-radius:12px;font-size:14px;font-family:var(--font);outline:none;background:#fff;transition:border-color .15s}
 .zone-note-add input:focus{border-color:var(--black)}
 .zone-note-add button{padding:10px 14px;background:var(--black);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;white-space:nowrap}
+
+/* ── INCENTIVOS ─────────────────────────────────────────────────────── */
+.inc-card{background:#000;margin:0 16px 12px;border-radius:16px;padding:18px;color:#fff;position:relative}
+.inc-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.inc-badge{font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.inc-title{font-size:16px;font-weight:900;color:#fff}
+.inc-subtitle{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px}
+.inc-actions{display:flex;gap:6px;flex-shrink:0}
+.inc-btn-sm{padding:6px 10px;border:none;border-radius:8px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:opacity .15s}
+.inc-btn-sm:active{opacity:.7}
+.inc-edit{background:rgba(255,255,255,.14);color:#fff}
+.inc-close{background:rgba(255,255,255,.9);color:#000}
+.inc-progress-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.inc-count{font-size:28px;font-weight:900;letter-spacing:-1px;line-height:1}
+.inc-count span{font-size:14px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:0}
+.inc-monto{text-align:right}
+.inc-monto-val{font-size:18px;font-weight:900;color:#4ade80}
+.inc-monto-lbl{font-size:10px;color:rgba(255,255,255,.4);font-weight:600;margin-top:1px}
+.inc-bar-wrap{position:relative;height:8px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden}
+.inc-bar-fill{height:100%;border-radius:99px;transition:width .4s;background:#4ade80;position:absolute;left:0;top:0}
+.inc-bar-fill-extra{height:100%;border-radius:99px;transition:width .4s;background:#facc15;position:absolute;top:0}
+.inc-bar-marker{position:absolute;top:-2px;width:2px;height:12px;background:rgba(255,255,255,.5);border-radius:1px}
+.inc-bar-labels{display:flex;justify-content:space-between;margin-top:5px}
+.inc-bar-lbl{font-size:10px;color:rgba(255,255,255,.35);font-weight:600}
+.inc-extra-row{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:space-between}
+.inc-extra-lbl{font-size:11px;color:rgba(255,255,255,.45)}
+.inc-extra-val{font-size:13px;font-weight:800;color:#facc15}
+.inc-vencido{opacity:.55}
+.inc-completado .inc-bar-fill{background:#4ade80}
+.inc-pago-card{background:var(--g50);border-radius:14px;margin:0 16px 10px;padding:14px 16px}
+.inc-pago-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.inc-pago-title{font-size:14px;font-weight:800}
+.inc-pago-monto{font-size:18px;font-weight:900;color:var(--green)}
+.inc-pago-meta{font-size:11px;color:var(--g400);margin-top:2px}
+.inc-empty{text-align:center;padding:40px 20px;color:var(--g400)}
+.inc-empty-ico{font-size:36px;margin-bottom:8px}
+.inc-empty-txt{font-size:14px;font-weight:600}
 </style>
 
 </head>
@@ -290,6 +327,10 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       Agregar viaje
     </button>
   </div>
+  <div style="height:16px"></div>
+  <!-- Incentivos activos en inicio -->
+  <div id="inicio-inc-semanal" style="display:none"></div>
+  <div id="inicio-inc-diario" style="display:none"></div>
   <div style="height:4px"></div>
   <div class="slbl">Últimos 10 viajes</div>
   <div id="h-last10"><div class="empty"><div class="etxt">Cargando...</div></div></div>
@@ -421,6 +462,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <button class="stab on" onclick="stab('v','agregar',this)">Agregar</button>
     <button class="stab" onclick="stab('v','hoy',this)">Hoy</button>
     <button class="stab" onclick="stab('v','historial',this)">Historial</button>
+    <button class="stab" onclick="stab('v','incentivos',this)">Incentivos</button>
   </div>
   <div id="vsub-agregar">
     <div style="height:12px"></div>
@@ -489,6 +531,24 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <div style="text-align:center;padding-bottom:8px"><button class="date-today-btn" style="font-size:12px;padding:6px 16px" onclick="pickDate('hist','')">Hoy</button></div>
     <div id="v-hist-list"></div>
   </div>
+
+  <!-- SUB INCENTIVOS -->
+  <div id="vsub-incentivos" style="display:none">
+    <div style="height:8px"></div>
+    <div class="psel" id="inc-subtabs" style="margin:0 16px 12px">
+      <button class="pbtn on" onclick="setIncTab('activos',this)">Activos</button>
+      <button class="pbtn" onclick="setIncTab('historial',this)">Historial</button>
+    </div>
+    <div id="inc-sub-activos">
+      <div id="inc-cards-list"></div>
+      <div style="padding:0 16px 16px">
+        <button class="bp" onclick="openModalIncentivo()">+ Nuevo incentivo</button>
+      </div>
+    </div>
+    <div id="inc-sub-historial" style="display:none">
+      <div id="inc-historial-list"></div>
+    </div>
+  </div>
 </div>
 
 <!-- GANANCIAS -->
@@ -499,6 +559,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <button class="stab on" onclick="stab('g','resumen',this)">Resumen</button>
     <button class="stab" onclick="stab('g','historial',this)">Historial</button>
     <button class="stab" onclick="stab('g','pagos',this)">Pagos</button>
+    <button class="stab" onclick="stab('g','incentivos',this)">Incentivos</button>
     <button class="stab" onclick="stab('g','combustible',this)">Combustible</button>
     <button class="stab" onclick="stab('g','uber',this)">Uber Info</button>
   </div>
@@ -643,6 +704,39 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <div id="uber-resumen-total" style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden"></div>
     <div class="slbl">Historial por período</div>
     <div id="uber-list"></div>
+  </div>
+  <!-- INCENTIVOS RESUMEN (Ganancias) -->
+  <div id="gsub-incentivos" style="display:none">
+    <div style="height:12px"></div>
+    <!-- Period selector -->
+    <div class="psel" id="inc-gan-psel">
+      <button class="pbtn on" onclick="setIncGanPeriod('hoy',this)">Hoy</button>
+      <button class="pbtn" onclick="setIncGanPeriod('semana',this)">Semana</button>
+      <button class="pbtn" onclick="setIncGanPeriod('mes',this)">Mes</button>
+      <button class="pbtn" onclick="setIncGanPeriod('dia',this)">Día</button>
+    </div>
+    <!-- Day picker (for 'dia' mode) -->
+    <div id="inc-gan-dia-nav" style="display:none">
+      <div class="snav">
+        <button class="sbtn" onclick="navIncGanDia(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <div style="flex:1;text-align:center">
+          <input type="date" class="date-pick-btn" id="inc-gan-dia-date" onchange="pickIncGanDia(this.value)" style="border:none;background:none;font-size:16px;font-weight:800;text-align:center;padding:0;width:auto">
+        </div>
+        <button class="sbtn" onclick="navIncGanDia(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+      <div style="text-align:center;padding-bottom:4px"><button class="date-today-btn" style="font-size:12px;padding:6px 16px" onclick="pickIncGanDia('')">Hoy</button></div>
+    </div>
+    <!-- Summary boxes -->
+    <div class="mgrid">
+      <div class="mbox"><div class="mlbl">Total cobrado</div><div class="mval cg" id="inc-gan-total">$0</div></div>
+      <div class="mbox"><div class="mlbl">Incentivos</div><div class="mval" id="inc-gan-count">0</div><div class="msub" id="inc-gan-logrados">0 logrados</div></div>
+    </div>
+    <!-- Charts -->
+    <div class="card"><div class="chwrap"><canvas id="ch-inc-monto"></canvas></div></div>
+    <div class="card"><div class="chwrap"><canvas id="ch-inc-viajes"></canvas></div></div>
+    <!-- Last 10 -->
+    <div class="slbl">Últimos 10 incentivos</div>
+    <div id="inc-pagos-list"></div>
   </div>
 </div>
 
@@ -916,6 +1010,80 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
   </div>
 </div>
 
+
+<!-- MODAL INCENTIVO -->
+<div class="mbg" id="modal-incentivo" onclick="closeMBg(event,'modal-incentivo')">
+  <div class="modal">
+    <div class="mhdl"></div>
+    <div class="mtit" id="minc-title">Nuevo incentivo</div>
+    <input type="hidden" id="minc-id">
+
+    <!-- Tipo -->
+    <div class="fg">
+      <label class="fl">Tipo</label>
+      <div class="popts" id="minc-tipo-opts">
+        <button class="popt on" onclick="selIncTipo(this,'semanal')">Semanal</button>
+        <button class="popt" onclick="selIncTipo(this,'diario')">Diario</button>
+      </div>
+      <input type="hidden" id="minc-tipo" value="semanal">
+    </div>
+
+    <!-- Fecha/hora inicio -->
+    <div class="fgrid">
+      <div class="fg"><label class="fl">Fecha inicio</label><input class="fi" type="date" id="minc-fecha-ini"></div>
+      <div class="fg"><label class="fl">Hora inicio</label><input class="fi" type="time" id="minc-hora-ini"></div>
+    </div>
+
+    <!-- Fecha/hora fin -->
+    <div class="fgrid">
+      <div class="fg"><label class="fl">Fecha fin</label><input class="fi" type="date" id="minc-fecha-fin"></div>
+      <div class="fg"><label class="fl">Hora fin</label><input class="fi" type="time" id="minc-hora-fin"></div>
+    </div>
+
+    <!-- Meta principal -->
+    <div class="fgrid">
+      <div class="fg"><label class="fl">Meta (viajes)</label><input class="fi" type="number" id="minc-meta" placeholder="50" inputmode="numeric"></div>
+      <div class="fg"><label class="fl">Premio ($)</label><input class="fi" type="text" id="minc-premio" placeholder="24000" inputmode="numeric"></div>
+    </div>
+
+    <!-- Extra (solo semanal) -->
+    <div id="minc-extra-wrap">
+      <div style="font-size:12px;font-weight:700;color:var(--g600);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">Viajes extra (opcional)</div>
+      <div class="fgrid">
+        <div class="fg"><label class="fl">+Viajes extra</label><input class="fi" type="number" id="minc-extra-viajes" placeholder="10" inputmode="numeric"></div>
+        <div class="fg"><label class="fl">+Premio extra ($)</label><input class="fi" type="text" id="minc-extra-premio" placeholder="7000" inputmode="numeric"></div>
+      </div>
+    </div>
+
+    <button class="bp" onclick="saveIncentivo()">Guardar</button>
+    <div style="height:10px"></div>
+    <button class="bs" onclick="closeM('modal-incentivo')">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL CERRAR INCENTIVO -->
+<div class="mbg" id="modal-cerrar-incentivo" onclick="closeMBg(event,'modal-cerrar-incentivo')">
+  <div class="modal">
+    <div class="mhdl"></div>
+    <div class="mtit">Cerrar incentivo</div>
+    <input type="hidden" id="mci-id">
+    <p style="font-size:14px;color:var(--g600);margin-bottom:16px">Elige la fecha de cierre y, si quieres, registra el pago en Retiro Uber.</p>
+    <div class="fg">
+      <label class="fl">Fecha de cierre</label>
+      <input class="fi" type="date" id="mci-fecha">
+    </div>
+    <div class="fg">
+      <label class="fl">Monto recibido ($) — opcional</label>
+      <input class="fi" type="text" id="mci-monto" placeholder="24000" inputmode="numeric">
+    </div>
+    <button class="bp bgreen" onclick="cerrarIncentivo(true)">✓ Registrar y cerrar</button>
+    <div style="height:10px"></div>
+    <button class="bs" onclick="cerrarIncentivo(false)">Cerrar sin registrar</button>
+    <div style="height:10px"></div>
+    <button class="bs" onclick="closeM('modal-cerrar-incentivo')">Cancelar</button>
+  </div>
+</div>
+
 <div class="mbg" id="modal-cierre" onclick="closeMBg(event,'modal-cierre')">
   <div class="modal">
     <div class="mhdl"></div>
@@ -1089,7 +1257,7 @@ const SEED_PDFS=[
   {periodo:'9 mar - 16 mar 2026', bruto:109706,flex:1380,sii:15960,pagado:89466, ef:74495,tr:14971,prio:2254,din:2250}
 ];
 
-let VIAJES=[],CIERRES={},TURNOS=[],ZONAS={},PDFS=[],WALLET_PAGOS=[],WALLET_INICIAL={};
+let VIAJES=[],CIERRES={},TURNOS=[],ZONAS={},PDFS=[],WALLET_PAGOS=[],WALLET_INICIAL={},INCENTIVOS=[];
 let CONFIG={rend:16,bencina:1200,fondo:5,meta:50000,sii:15.25};
 let payState={v:'ef',m:'ef'};
 let benState=false,period='hoy';
@@ -1175,10 +1343,17 @@ function startListeners(){
     WALLET_INICIAL={};snap.docs.forEach(d=>{WALLET_INICIAL[d.id]={...d.data()};});
     renderWallet();
   });
+  onSnapshot(collection(db,'incentivos'),(snap)=>{
+    INCENTIVOS=snap.docs.map(d=>({...d.data(),_fid:d.id}));
+    renderIncentivosInicio();
+    renderIncentivosViajes();
+    renderIncentivosGanancias();
+  });
   onSnapshot(doc(db,'config','main'),(snap)=>{if(snap.exists()){CONFIG={...CONFIG,...snap.data()};document.getElementById('cfg-rend').value=CONFIG.rend;document.getElementById('cfg-ben').value=CONFIG.bencina;document.getElementById('cfg-fondo').value=CONFIG.fondo;document.getElementById('cfg-meta').value=CONFIG.meta;document.getElementById('cfg-sii').value=CONFIG.sii||15.25;}});
 }
 
 function refreshAll(){
+  renderIncentivosInicio();
   renderInicio();renderVHoy();renderGan();renderCierreInfo();renderCierres();
   // Refresh current visible sub-tabs
   const activePage=document.querySelector('.page.active');
@@ -3535,6 +3710,479 @@ window.saveWalletPago=async function(){
     closeM('modal-wallet');
     renderWalletEfectivo();renderWalletMovimientos();
   }catch(e){toast('Error: '+e.message);}
+};
+
+
+// ════════════════════════════════════════════════════════
+// INCENTIVOS
+// ════════════════════════════════════════════════════════
+
+function incDatetime(fecha, hora){ return new Date(fecha + 'T' + hora + ':00'); }
+
+function nowCL(){
+  // Returns current datetime in Chile
+  return new Date(new Date().toLocaleString('en-US',{timeZone:'America/Santiago'}));
+}
+
+function incViajesEnRango(inc){
+  // Count completed trips (not cancelaciones) within incentivo datetime range
+  const ini = incDatetime(inc.fechaIni, inc.horaIni);
+  const fin = incDatetime(inc.fechaFin, inc.horaFin);
+  return VIAJES.filter(v => {
+    if(v.tipo === 'Cancelación') return false;
+    const vFecha = v.fecha;
+    const vHora = v.horaFin || v.horaIni || '00:00';
+    const vDt = incDatetime(vFecha, vHora);
+    return vDt >= ini && vDt <= fin;
+  }).length;
+}
+
+function incEsActivo(inc){
+  if(inc.cerrado) return false;
+  const now = nowCL();
+  const ini = incDatetime(inc.fechaIni, inc.horaIni);
+  const fin = incDatetime(inc.fechaFin, inc.horaFin);
+  return now >= ini && now <= fin;
+}
+
+function incEsProximo(inc){
+  if(inc.cerrado) return false;
+  const now = nowCL();
+  const ini = incDatetime(inc.fechaIni, inc.horaIni);
+  return now < ini;
+}
+
+function incEsVencido(inc){
+  if(inc.cerrado) return false;
+  const now = nowCL();
+  const fin = incDatetime(inc.fechaFin, inc.horaFin);
+  return now > fin;
+}
+
+function CLP2(n){ return '$'+Math.round(n).toLocaleString('es-CL'); }
+
+function buildIncCard(inc, context){
+  // context: 'inicio' | 'viajes'
+  const viajes = incViajesEnRango(inc);
+  const meta = inc.meta || 0;
+  const extraViajes = inc.extraViajes || 0;
+  const totalMeta = meta + extraViajes;
+  const premio = inc.premio || 0;
+  const extraPremio = inc.extraPremio || 0;
+
+  const enExtra = viajes > meta;
+  const pct = totalMeta > 0 ? Math.min(viajes, meta) / meta * 100 : 0;
+  const pctExtra = (extraViajes > 0 && enExtra)
+    ? Math.min(viajes - meta, extraViajes) / extraViajes * 100
+    : 0;
+
+  const activo = incEsActivo(inc);
+  const vencido = incEsVencido(inc) && !inc.cerrado;
+  const completado = viajes >= meta;
+
+  // Premium earned
+  let montoEstimado = completado ? premio : 0;
+  if(enExtra && extraPremio) montoEstimado = premio + (viajes >= totalMeta ? extraPremio : 0);
+
+  // Date range label
+  const dIni = inc.fechaIni ? inc.fechaIni.slice(5).split('-').reverse().join('/') : '';
+  const dFin = inc.fechaFin ? inc.fechaFin.slice(5).split('-').reverse().join('/') : '';
+  const rangoLbl = (inc.tipo === 'diario')
+    ? `${dIni} · ${inc.horaIni}–${inc.horaFin}`
+    : `${dIni} ${inc.horaIni} → ${dFin} ${inc.horaFin}`;
+
+  const statusBadge = inc.cerrado ? '✓ Cerrado'
+    : vencido ? '⚠ Vencido'
+    : activo ? '● Activo'
+    : '○ Próximo';
+
+  // Bar marker position (where meta is on bar if extra exists)
+  const markerPct = extraViajes > 0 ? (meta / totalMeta * 100) : 0;
+  const barMetaLabel = extraViajes > 0 ? `${meta}` : `${meta}`;
+  const barEndLabel = extraViajes > 0 ? `+${extraViajes}` : '';
+
+  // Extra bar starts after marker
+  const extraBarLeft = extraViajes > 0 ? markerPct : 0;
+  const extraBarWidth = pctExtra * (100 - extraBarLeft) / 100;
+
+  const editBtn = context === 'viajes'
+    ? `<button class="inc-btn-sm inc-edit" onclick="editIncentivo('${inc._fid}')">✏️</button>`
+    : '';
+  const closeBtn = context === 'viajes' && !inc.cerrado
+    ? `<button class="inc-btn-sm inc-close" onclick="abrirCerrarIncentivo('${inc._fid}')">Cerrar</button>`
+    : '';
+
+  return `
+<div class="inc-card${inc.cerrado?' inc-vencido':''}${completado?' inc-completado':''}">
+  <div class="inc-card-header">
+    <div>
+      <div class="inc-badge">${inc.tipo==='semanal'?'⭐ Incentivo semanal':'⚡ Incentivo diario'} · ${statusBadge}</div>
+      <div class="inc-title">${inc.nombre||'Incentivo'}</div>
+      <div class="inc-subtitle">${rangoLbl}</div>
+    </div>
+    <div class="inc-actions">${editBtn}${closeBtn}</div>
+  </div>
+
+  <div class="inc-progress-row">
+    <div>
+      <div class="inc-count">${viajes}<span>/${totalMeta > 0 ? totalMeta : meta} viajes</span></div>
+    </div>
+    <div class="inc-monto">
+      <div class="inc-monto-val">${completado ? CLP2(montoEstimado) : CLP2(premio)}</div>
+      <div class="inc-monto-lbl">${completado ? 'ganado' : 'meta principal'}</div>
+    </div>
+  </div>
+
+  <div class="inc-bar-wrap">
+    <div class="inc-bar-fill" style="width:${pct}%"></div>
+    ${extraViajes > 0 ? `<div class="inc-bar-fill-extra" style="left:${extraBarLeft}%;width:${extraBarWidth}%"></div>` : ''}
+    ${extraViajes > 0 ? `<div class="inc-bar-marker" style="left:${markerPct}%"></div>` : ''}
+  </div>
+  <div class="inc-bar-labels">
+    <span class="inc-bar-lbl">0</span>
+    ${extraViajes > 0 ? `<span class="inc-bar-lbl" style="position:absolute;left:${markerPct}%;transform:translateX(-50%);margin-top:0">${barMetaLabel}</span>` : ''}
+    <span class="inc-bar-lbl">${extraViajes > 0 ? barEndLabel : barMetaLabel}</span>
+  </div>
+
+  ${extraViajes > 0 ? `
+  <div class="inc-extra-row">
+    <span class="inc-extra-lbl">Extra: +${extraViajes} viajes → +${CLP2(extraPremio)}</span>
+    <span class="inc-extra-val">${viajes > meta ? viajes - meta + '/' + extraViajes + ' extra' : 'sin comenzar'}</span>
+  </div>` : ''}
+</div>`;
+}
+
+function renderIncentivosInicio(){
+  // Semanal: show always if active/upcoming
+  const semWrap = document.getElementById('inicio-inc-semanal');
+  const diaWrap = document.getElementById('inicio-inc-diario');
+  if(!semWrap || !diaWrap) return;
+
+  const semanales = INCENTIVOS.filter(i => i.tipo === 'semanal' && !i.cerrado);
+  const diarios = INCENTIVOS.filter(i => i.tipo === 'diario' && !i.cerrado);
+
+  // Semanal: show active ones
+  const semActivos = semanales.filter(i => incEsActivo(i) || incEsProximo(i));
+  if(semActivos.length > 0){
+    semWrap.style.display = 'block';
+    semWrap.innerHTML = semActivos.map(i => buildIncCard(i, 'inicio')).join('');
+  } else {
+    semWrap.style.display = 'none';
+    semWrap.innerHTML = '';
+  }
+
+  // Diario: show only the NEXT one (by start time)
+  const now = nowCL();
+  // First: find active diario (started but not ended)
+  let diaShow = diarios.find(i => incEsActivo(i));
+  if(!diaShow){
+    // Next upcoming
+    const upcoming = diarios
+      .filter(i => incEsProximo(i))
+      .sort((a,b) => incDatetime(a.fechaIni,a.horaIni) - incDatetime(b.fechaIni,b.horaIni));
+    diaShow = upcoming[0] || null;
+  }
+
+  if(diaShow){
+    diaWrap.style.display = 'block';
+    diaWrap.innerHTML = buildIncCard(diaShow, 'inicio');
+  } else {
+    diaWrap.style.display = 'none';
+    diaWrap.innerHTML = '';
+  }
+}
+
+// ── Tab Activos / Historial ────────────────────────────
+let incTabActual = 'activos';
+window.setIncTab = function(tab, btn){
+  incTabActual = tab;
+  document.querySelectorAll('#inc-subtabs .pbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('inc-sub-activos').style.display = tab==='activos' ? 'block' : 'none';
+  document.getElementById('inc-sub-historial').style.display = tab==='historial' ? 'block' : 'none';
+  renderIncentivosViajes();
+};
+
+function incRowHTML(i){
+  const viajes = incViajesEnRango(i);
+  const logrado = viajes >= (i.meta||0);
+  const dIni = i.fechaIni ? i.fechaIni.slice(5).split('-').reverse().join('/') : '';
+  const dFin = i.fechaFin ? i.fechaFin.slice(5).split('-').reverse().join('/') : '';
+  const esSemanal = i.tipo === 'semanal';
+  const monto = i.montoCobrado || 0;
+  return `<div class="trow" style="align-items:flex-start;padding:14px 16px">
+    <div class="tico" style="background:${logrado?'#E6F4EA':'#f0f0f0'};margin-top:2px">
+      <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:${logrado?'#00A651':'#9e9e9e'};fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round">
+        ${logrado
+          ? '<polyline points="20 6 9 17 4 12"/>'
+          : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
+      </svg>
+    </div>
+    <div class="tinfo">
+      <div class="tname">${i.nombre||'Incentivo'}
+        <span class="bdg ${logrado?'bc':'bk'}" style="background:${logrado?'#E6F4EA':'#FEE2E2'};color:${logrado?'#1B5E20':'#B71C1C'}">${logrado?'✓ Logrado':'✗ No logrado'}</span>
+      </div>
+      <div class="tmeta">${esSemanal?'Semanal':'Diario'} · ${dIni}→${dFin}</div>
+      <div class="tmeta">${viajes}/${i.meta} viajes · Cerrado: ${i.fechaCierre||'—'}</div>
+    </div>
+    <div class="tamt ${logrado?'g':''}" style="${!logrado?'color:var(--g400)':''}">${monto>0?CLP2(monto):'—'}</div>
+  </div>`;
+}
+
+function renderIncentivosViajes(){
+  const elA = document.getElementById('inc-cards-list');
+  const elH = document.getElementById('inc-historial-list');
+  if(!elA) return;
+
+  const activos = INCENTIVOS.filter(i => !i.cerrado)
+    .sort((a,b) => incDatetime(a.fechaIni,a.horaIni) - incDatetime(b.fechaIni,b.horaIni));
+
+  if(!activos.length){
+    elA.innerHTML = '<div class="inc-empty"><div class="inc-empty-ico">⭐</div><div class="inc-empty-txt">Sin incentivos activos</div></div>';
+  } else {
+    elA.innerHTML = activos.map(i => buildIncCard(i,'viajes')).join('');
+  }
+
+  if(!elH) return;
+  const historial = INCENTIVOS.filter(i => i.cerrado)
+    .sort((a,b) => (b.fechaCierre||b.fechaFin||'').localeCompare(a.fechaCierre||a.fechaFin||''));
+
+  if(!historial.length){
+    elH.innerHTML = '<div class="inc-empty"><div class="inc-empty-ico">📋</div><div class="inc-empty-txt">Sin incentivos cerrados aún</div></div>';
+    return;
+  }
+  // Render as trow list like Pagos historial
+  elH.innerHTML = '<div style="background:#fff;border:1px solid var(--g200);border-radius:16px;margin:0 16px 12px;overflow:hidden">'
+    + historial.map(i => incRowHTML(i)).join('')
+    + '</div>';
+}
+
+// ── Ganancias → Incentivos ──────────────────────────────
+let incGanPeriod = 'semana';
+let incGanDia = null;
+let chIncMonto = null, chIncViajes = null;
+
+window.setIncGanPeriod = function(p, btn){
+  incGanPeriod = p;
+  document.querySelectorAll('#inc-gan-psel .pbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const nav = document.getElementById('inc-gan-dia-nav');
+  nav.style.display = p==='dia' ? 'block' : 'none';
+  if(p==='dia' && !incGanDia){ incGanDia=today(); document.getElementById('inc-gan-dia-date').value=incGanDia; }
+  renderIncentivosGanancias();
+};
+
+window.navIncGanDia = function(d){
+  const dt = new Date((incGanDia||today())+'T12:00:00');
+  dt.setDate(dt.getDate()+d);
+  incGanDia = dt.toISOString().slice(0,10);
+  document.getElementById('inc-gan-dia-date').value = incGanDia;
+  renderIncentivosGanancias();
+};
+
+window.pickIncGanDia = function(v){
+  incGanDia = v || today();
+  document.getElementById('inc-gan-dia-date').value = incGanDia;
+  renderIncentivosGanancias();
+};
+
+function incGanFiltrar(){
+  const cerrados = INCENTIVOS.filter(i => i.cerrado);
+  const ref = incGanDia || today();
+  const now = new Date(today()+'T23:59:59');
+  if(incGanPeriod==='hoy'){
+    return cerrados.filter(i => i.fechaCierre === today());
+  } else if(incGanPeriod==='dia'){
+    return cerrados.filter(i => i.fechaCierre === ref);
+  } else if(incGanPeriod==='semana'){
+    const lun = new Date(today()+'T12:00:00');
+    lun.setDate(lun.getDate() - ((lun.getDay()+6)%7));
+    const lunStr = lun.toISOString().slice(0,10);
+    return cerrados.filter(i => (i.fechaCierre||'') >= lunStr);
+  } else if(incGanPeriod==='mes'){
+    const mesStr = today().slice(0,7);
+    return cerrados.filter(i => (i.fechaCierre||'').startsWith(mesStr));
+  }
+  return cerrados;
+}
+
+function renderIncentivosGanancias(){
+  const el = document.getElementById('inc-pagos-list');
+  if(!el) return;
+
+  // filtrados = period-aware slice, used for summary AND charts AND list
+  const filtrados = incGanFiltrar()
+    .sort((a,b) => (b.fechaCierre||b.fechaFin||'').localeCompare(a.fechaCierre||a.fechaFin||''));
+
+  // Summary (period-aware)
+  const total = filtrados.reduce((s,i) => s+(i.montoCobrado||0), 0);
+  const logrados = filtrados.filter(i => incViajesEnRango(i) >= (i.meta||0)).length;
+  const totEl = document.getElementById('inc-gan-total');
+  const cntEl = document.getElementById('inc-gan-count');
+  const logEl = document.getElementById('inc-gan-logrados');
+  if(totEl) totEl.textContent = CLP2(total);
+  if(cntEl) cntEl.textContent = filtrados.length;
+  if(logEl) logEl.textContent = logrados + ' logrado' + (logrados!==1?'s':'');
+
+  // Charts use filtrados (last 10 of period), reversed so oldest→newest left→right
+  const chartData = filtrados.slice(0,10).reverse();
+  const labels = chartData.map(i => (i.fechaCierre||i.fechaFin||'').slice(5).split('-').reverse().join('/'));
+  const montos = chartData.map(i => i.montoCobrado||0);
+  const viajesData = chartData.map(i => incViajesEnRango(i));
+  const metasData = chartData.map(i => i.meta||0);
+  const barColors = chartData.map(i => incViajesEnRango(i) >= (i.meta||0) ? 'rgba(0,166,81,.75)' : 'rgba(225,25,0,.6)');
+
+  const ctxM = document.getElementById('ch-inc-monto');
+  if(ctxM){
+    if(chIncMonto) chIncMonto.destroy();
+    chIncMonto = new Chart(ctxM, {
+      type:'bar',
+      data:{
+        labels,
+        datasets:[{label:'Cobrado', data:montos, backgroundColor:barColors, borderRadius:6}]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{display:false},title:{display:true,text:'Monto cobrado (período seleccionado)',font:{size:12,weight:'700'}}},
+        scales:{y:{ticks:{callback:v=>'$'+v.toLocaleString('es-CL')},grid:{color:'rgba(0,0,0,.05)'}},x:{grid:{display:false}}}
+      }
+    });
+  }
+
+  const ctxV = document.getElementById('ch-inc-viajes');
+  if(ctxV){
+    if(chIncViajes) chIncViajes.destroy();
+    chIncViajes = new Chart(ctxV, {
+      type:'bar',
+      data:{
+        labels,
+        datasets:[
+          {label:'Viajes hechos', data:viajesData, backgroundColor:'rgba(39,110,241,.7)', borderRadius:6},
+          {label:'Meta', data:metasData, backgroundColor:'rgba(0,0,0,.1)', borderRadius:6}
+        ]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{display:true,position:'bottom'},title:{display:true,text:'Viajes vs meta (período seleccionado)',font:{size:12,weight:'700'}}},
+        scales:{y:{grid:{color:'rgba(0,0,0,.05)'}},x:{grid:{display:false}}}
+      }
+    });
+  }
+
+  // List (period-aware, last 10, trow style like Pagos)
+  if(!filtrados.length){
+    el.innerHTML = '<div class="inc-empty"><div class="inc-empty-ico">💸</div><div class="inc-empty-txt">Sin incentivos en este período</div></div>';
+    return;
+  }
+  el.innerHTML = '<div style="background:#fff;border:1px solid var(--g200);border-radius:16px;margin:0 16px 12px;overflow:hidden">'
+    + filtrados.slice(0,10).map(i => incRowHTML(i)).join('')
+    + '</div>';
+}
+
+// ── Modal crear/editar ──────────────────────────────────
+window.openModalIncentivo = function(){
+  document.getElementById('minc-title').textContent = 'Nuevo incentivo';
+  document.getElementById('minc-id').value = '';
+  document.getElementById('minc-tipo').value = 'semanal';
+  document.querySelectorAll('#minc-tipo-opts .popt').forEach((b,i)=>b.classList.toggle('on',i===0));
+  document.getElementById('minc-extra-wrap').style.display = 'block';
+  const dt = today();
+  document.getElementById('minc-fecha-ini').value = dt;
+  document.getElementById('minc-fecha-fin').value = dt;
+  document.getElementById('minc-hora-ini').value = '00:00';
+  document.getElementById('minc-hora-fin').value = '23:59';
+  document.getElementById('minc-meta').value = '';
+  document.getElementById('minc-premio').value = '';
+  document.getElementById('minc-extra-viajes').value = '';
+  document.getElementById('minc-extra-premio').value = '';
+  document.getElementById('modal-incentivo').classList.add('open');
+};
+
+window.selIncTipo = function(el, tipo){
+  document.querySelectorAll('#minc-tipo-opts .popt').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('minc-tipo').value = tipo;
+  document.getElementById('minc-extra-wrap').style.display = tipo === 'semanal' ? 'block' : 'none';
+};
+
+window.editIncentivo = function(fid){
+  const inc = INCENTIVOS.find(i => i._fid === fid);
+  if(!inc) return;
+  document.getElementById('minc-title').textContent = 'Editar incentivo';
+  document.getElementById('minc-id').value = fid;
+  document.getElementById('minc-tipo').value = inc.tipo;
+  document.querySelectorAll('#minc-tipo-opts .popt').forEach((b,i)=>b.classList.toggle('on',(i===0&&inc.tipo==='semanal')||(i===1&&inc.tipo==='diario')));
+  document.getElementById('minc-extra-wrap').style.display = inc.tipo==='semanal' ? 'block' : 'none';
+  document.getElementById('minc-fecha-ini').value = inc.fechaIni||'';
+  document.getElementById('minc-fecha-fin').value = inc.fechaFin||'';
+  document.getElementById('minc-hora-ini').value = inc.horaIni||'';
+  document.getElementById('minc-hora-fin').value = inc.horaFin||'';
+  document.getElementById('minc-meta').value = inc.meta||'';
+  document.getElementById('minc-premio').value = inc.premio||'';
+  document.getElementById('minc-extra-viajes').value = inc.extraViajes||'';
+  document.getElementById('minc-extra-premio').value = inc.extraPremio||'';
+  document.getElementById('modal-incentivo').classList.add('open');
+};
+
+window.saveIncentivo = async function(){
+  const fid = document.getElementById('minc-id').value;
+  const tipo = document.getElementById('minc-tipo').value;
+  const meta = parseInt(document.getElementById('minc-meta').value)||0;
+  const premio = parseInt((document.getElementById('minc-premio').value||'0').replace(/[.$]/g,'').replace(',','.'))||0;
+  const extraViajes = parseInt(document.getElementById('minc-extra-viajes').value)||0;
+  const extraPremio = parseInt((document.getElementById('minc-extra-premio').value||'0').replace(/[.$]/g,'').replace(',','.'))||0;
+  if(!meta){ toast('Ingresa la meta de viajes'); return; }
+  if(!premio){ toast('Ingresa el premio'); return; }
+  const fechaIni = document.getElementById('minc-fecha-ini').value;
+  const fechaFin = document.getElementById('minc-fecha-fin').value;
+  const horaIni = document.getElementById('minc-hora-ini').value;
+  const horaFin = document.getElementById('minc-hora-fin').value;
+  // Auto-name
+  const dIni = fechaIni.slice(5).split('-').reverse().join('/');
+  const dFin = fechaFin.slice(5).split('-').reverse().join('/');
+  const nombre = tipo === 'diario'
+    ? `Diario ${dIni} ${horaIni}-${horaFin}`
+    : `Semanal ${dIni}-${dFin}`;
+  const data = { tipo, nombre, fechaIni, fechaFin, horaIni, horaFin, meta, premio, extraViajes, extraPremio, cerrado:false };
+  try{
+    if(fid){ await updateDoc(doc(db,'incentivos',fid),data); toast('Incentivo actualizado'); }
+    else { await addDoc(collection(db,'incentivos'),data); toast('Incentivo creado'); }
+    closeM('modal-incentivo');
+  }catch(e){ toast('Error: '+e.message); }
+};
+
+window.abrirCerrarIncentivo = function(fid){
+  const inc = INCENTIVOS.find(i => i._fid === fid);
+  if(!inc) return;
+  document.getElementById('mci-id').value = fid;
+  const viajes = incViajesEnRango(inc);
+  const montoPropuesto = viajes >= (inc.meta + (inc.extraViajes||0))
+    ? inc.premio + (inc.extraPremio||0)
+    : viajes >= inc.meta ? inc.premio : inc.premio;
+  document.getElementById('mci-monto').value = montoPropuesto;
+  document.getElementById('mci-fecha').value = today();
+  document.getElementById('modal-cerrar-incentivo').classList.add('open');
+};
+
+window.cerrarIncentivo = async function(conPago){
+  const fid = document.getElementById('mci-id').value;
+  const fecha = document.getElementById('mci-fecha').value || today();
+  const monto = parseInt((document.getElementById('mci-monto').value||'0').replace(/[$.,]/g,''))||0;
+  try{
+    // Always save fechaCierre from the field regardless of pago
+    const updateData = { cerrado:true, fechaCierre:fecha, montoCobrado: (conPago && monto>0) ? monto : 0 };
+    await updateDoc(doc(db,'incentivos',fid), updateData);
+    if(conPago && monto > 0){
+      await addDoc(collection(db,'wallet_pagos'),{
+        monto, fecha, hora:'12:00',
+        desc:'Incentivo Uber', tipo:'tk'
+      });
+      toast('Incentivo cerrado y pago registrado: ' + CLP2(monto));
+    } else {
+      toast('Incentivo cerrado el ' + fecha.split('-').reverse().join('/'));
+    }
+    closeM('modal-cerrar-incentivo');
+  }catch(e){ toast('Error: '+e.message); }
 };
 
 window.addEventListener('online',()=>setSyncStatus('online','Sincronizado'));
