@@ -1413,22 +1413,18 @@ function checkInicioProcesoBanner(){
     banner.style.display='block';
     document.getElementById('inicio-proceso-lbl').textContent=(p.tipo||'UberX')+' · iniciado '+p.horaIni;
     document.getElementById('inicio-proceso-meta').textContent='Fecha: '+p.fecha+(p.kv?' · vacío '+p.kv+' km':'')+(p.kj?' · viaje '+p.kj+' km':'');
-    // Cronómetro calculado desde hora de inicio del viaje
+    // Cronómetro desde ts (timestamp al presionar En Proceso) — segundos reales
     function tick(){
       const el=document.getElementById('inicio-proceso-timer');
       if(!el) return;
-      // Calcular segundos desde horaIni (hora Chile)
-      const nowCL=new Intl.DateTimeFormat('en-CA',{timeZone:CL_TZ,hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
-      const [nh,nm]=nowCL.split(':').map(Number);
-      const [sh,sm]=(p.horaIni||'00:00').split(':').map(Number);
-      let diffMin=(nh*60+nm)-(sh*60+sm);
-      if(diffMin<0) diffMin+=1440;
-      const secs=diffMin*60;
+      const ts=p.ts||Date.now();
+      const secs=Math.floor((Date.now()-ts)/1000);
       const h=Math.floor(secs/3600);
       const m=Math.floor((secs%3600)/60);
-      el.textContent=h>0
-        ?(h+':'+String(m).padStart(2,'0')+':00')
-        :(String(m).padStart(2,'0')+':00');
+      const s=secs%60;
+      const mm=String(m).padStart(2,'0');
+      const ss=String(s).padStart(2,'0');
+      el.textContent=h>0?(h+':'+mm+':'+ss):(mm+':'+ss);
     }
     tick();
     if(_inicioProcTimer) clearInterval(_inicioProcTimer);
@@ -1465,6 +1461,9 @@ function checkProcesoBanner(){
 
 window.guardarProceso=function(){
   const dt=nowDatetimeCL();
+  const existing=localStorage.getItem(PROCESO_KEY);
+  let tsOrig=Date.now();
+  try{if(existing){const ex=JSON.parse(existing);if(ex.ts) tsOrig=ex.ts;}}catch(e){}
   const proceso={
     fecha:document.getElementById('v-fecha').value||dt.fecha,
     horaIni:document.getElementById('v-hora-ini').value||dt.hora,
@@ -1472,7 +1471,7 @@ window.guardarProceso=function(){
     kj:document.getElementById('v-kj').value||'',
     tipo:document.getElementById('v-tipo').value,
     pago:payState.v,
-    ts:Date.now()
+    ts:tsOrig
   };
   localStorage.setItem(PROCESO_KEY,JSON.stringify(proceso));
   // Limpiar formulario listo para siguiente acción
@@ -1485,6 +1484,9 @@ window.guardarProceso=function(){
 
 window.guardarProcesoModal=function(){
   const dt=nowDatetimeCL();
+  const existing=localStorage.getItem(PROCESO_KEY);
+  let tsOrig=Date.now();
+  try{if(existing){const ex=JSON.parse(existing);if(ex.ts) tsOrig=ex.ts;}}catch(e){}
   const proceso={
     fecha:document.getElementById('m-fecha').value||dt.fecha,
     horaIni:document.getElementById('m-hora-ini').value||dt.hora,
@@ -1492,7 +1494,7 @@ window.guardarProcesoModal=function(){
     kj:document.getElementById('m-kj').value||'',
     tipo:document.getElementById('m-tipo').value,
     pago:payState.m,
-    ts:Date.now()
+    ts:tsOrig
   };
   localStorage.setItem(PROCESO_KEY,JSON.stringify(proceso));
   closeM('modal-viaje');
