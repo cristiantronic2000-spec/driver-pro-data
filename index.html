@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -113,56 +114,56 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 .cal-wrap{padding:0 16px;margin-bottom:4px}
 /* UN único grid de 7 cols que contiene header + días */
 .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-.cdname{text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:6px 2px;text-transform:uppercase}
+.cdname{text-align:center;font-size:10px;font-weight:700;color:var(–g400);padding:6px 2px;text-transform:uppercase}
 .cday{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;position:relative;font-size:13px;font-weight:700;transition:all .15s;min-width:0}
-.cday.worked{background:var(--black);color:#fff}
-.cday.planned{background:var(--g100);border:2px dashed var(--g400)}
-.cday.today{outline:2px solid var(--blue)}
+.cday.worked{background:var(–black);color:#fff}
+.cday.planned{background:var(–g100);border:2px dashed var(–g400)}
+.cday.today{outline:2px solid var(–blue)}
 .cday.empty{opacity:0;pointer-events:none}
-.cdot{width:5px;height:5px;border-radius:50%;background:var(--green);position:absolute;bottom:3px}
+.cdot{width:5px;height:5px;border-radius:50%;background:var(–green);position:absolute;bottom:3px}
 /* ─────────────────────────────────────────────────────── */
 
-.pbar{height:6px;background:var(--g100);border-radius:3px;overflow:hidden;margin-top:6px}
-.pfill{height:100%;border-radius:3px;background:var(--green);transition:width .5s}
-.empty{text-align:center;padding:40px 24px;color:var(--g400)}
+.pbar{height:6px;background:var(–g100);border-radius:3px;overflow:hidden;margin-top:6px}
+.pfill{height:100%;border-radius:3px;background:var(–green);transition:width .5s}
+.empty{text-align:center;padding:40px 24px;color:var(–g400)}
 .etxt{font-size:15px;font-weight:600}
 .esub{font-size:13px;margin-top:4px}
-.pdfcard{background:var(--g50);border-radius:14px;padding:14px 16px;margin:0 16px 10px;position:relative}
-.pdfweek{font-size:12px;color:var(--g600);font-weight:600;margin-bottom:4px}
+.pdfcard{background:var(–g50);border-radius:14px;padding:14px 16px;margin:0 16px 10px;position:relative}
+.pdfweek{font-size:12px;color:var(–g600);font-weight:600;margin-bottom:4px}
 .pdfamt{font-size:20px;font-weight:900;margin-bottom:10px}
-.pdfrow{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--g200)}
+.pdfrow{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(–g200)}
 .pdfrow:last-child{border:none}
-.pdflbl{color:var(--g600)}
+.pdflbl{color:var(–g600)}
 .pdfval{font-weight:700}
-.pdfval.r{color:var(--red)}
-.pdfval.g{color:var(--green)}
+.pdfval.r{color:var(–red)}
+.pdfval.g{color:var(–green)}
 .pdf-actions{display:flex;gap:6px;margin-top:10px}
-.pdf-actions button{flex:1;padding:8px;border-radius:10px;border:none;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer}
+.pdf-actions button{flex:1;padding:8px;border-radius:10px;border:none;font-size:12px;font-weight:700;font-family:var(–font);cursor:pointer}
 .stsec{padding:0 20px}
-.sttit{font-size:13px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;margin:20px 0 12px}
-.strow{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--g100)}
+.sttit{font-size:13px;font-weight:700;color:var(–g400);text-transform:uppercase;letter-spacing:.05em;margin:20px 0 12px}
+.strow{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(–g100)}
 .strow:last-child{border:none}
 .stlbl{font-size:15px;font-weight:600}
-.stinput{text-align:right;border:1.5px solid var(--g200);border-radius:8px;padding:6px 10px;font-size:15px;font-weight:700;font-family:var(--font);outline:none;background:#fff;color:var(--black)}
+.stinput{text-align:right;border:1.5px solid var(–g200);border-radius:8px;padding:6px 10px;font-size:15px;font-weight:700;font-family:var(–font);outline:none;background:#fff;color:var(–black)}
 .copts{display:flex;gap:8px;margin-bottom:16px}
 .copt{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .15s}
-.copt.on{border-color:var(--black)}
+.copt.on{border-color:var(–black)}
 .notelist{max-height:200px;overflow-y:auto}
-.noteitem{padding:10px 0;border-bottom:1px solid var(--g100);font-size:13px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.noteitem{padding:10px 0;border-bottom:1px solid var(–g100);font-size:13px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .noteitem:last-child{border:none}
-.notedt{font-size:11px;color:var(--g400);margin-bottom:2px;font-weight:600}
-.notedel{background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;line-height:1}
-[id^="zbox-"]{transition:background .2s,border-color .2s,outline .15s}
-[id^="zbox-"]:active{opacity:.7}
+.notedt{font-size:11px;color:var(–g400);margin-bottom:2px;font-weight:600}
+.notedel{background:none;border:none;color:var(–red);font-size:18px;cursor:pointer;line-height:1}
+[id^=“zbox-”]{transition:background .2s,border-color .2s,outline .15s}
+[id^=“zbox-”]:active{opacity:.7}
 .date-picker-wrap{display:flex;align-items:center;justify-content:center;padding:10px 20px 4px;gap:10px}
-.date-pick-btn{flex:1;padding:10px 14px;background:var(--g50);border:1.5px solid var(--g200);border-radius:12px;font-size:15px;font-weight:700;font-family:var(--font);color:var(--black);text-align:center;cursor:pointer;outline:none;-webkit-appearance:none}
-.date-pick-btn:focus{border-color:var(--black)}
-.date-today-btn{padding:10px 14px;background:var(--black);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;white-space:nowrap}
-.sync-bar{display:flex;align-items:center;gap:6px;padding:4px 20px 2px;font-size:11px;font-weight:600;color:var(--g400)}
-.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--g400);flex-shrink:0}
-.sync-dot.online{background:var(--green)}
-.sync-dot.syncing{background:var(--amber);animation:pulse .8s infinite}
-.sync-dot.error{background:var(--red)}
+.date-pick-btn{flex:1;padding:10px 14px;background:var(–g50);border:1.5px solid var(–g200);border-radius:12px;font-size:15px;font-weight:700;font-family:var(–font);color:var(–black);text-align:center;cursor:pointer;outline:none;-webkit-appearance:none}
+.date-pick-btn:focus{border-color:var(–black)}
+.date-today-btn{padding:10px 14px;background:var(–black);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;font-family:var(–font);cursor:pointer;white-space:nowrap}
+.sync-bar{display:flex;align-items:center;gap:6px;padding:4px 20px 2px;font-size:11px;font-weight:600;color:var(–g400)}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(–g400);flex-shrink:0}
+.sync-dot.online{background:var(–green)}
+.sync-dot.syncing{background:var(–amber);animation:pulse .8s infinite}
+.sync-dot.error{background:var(–red)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 @keyframes pulseGreen{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
 .leaflet-div-icon{background:none!important;border:none!important;}
@@ -170,21 +171,21 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 #splash{position:fixed;inset:0;background:#000;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .4s}
 #splash.hide{opacity:0;pointer-events:none}
 #splash img{width:80px;height:80px}
-#splash-lbl{color:rgba(255,255,255,.5);font-size:13px;font-weight:600;font-family:var(--font)}
+#splash-lbl{color:rgba(255,255,255,.5);font-size:13px;font-weight:600;font-family:var(–font)}
 
 /* ── ZONA SEARCH BAR ─────────────────────────────────── */
 .zone-search-wrap{margin:8px 16px 4px;position:relative}
-.zone-search-input{width:100%;padding:12px 44px 12px 14px;border:1.5px solid var(--g200);border-radius:12px;font-size:14px;font-family:var(--font);font-weight:500;outline:none;background:#fff;color:var(--black);transition:border-color .15s}
-.zone-search-input:focus{border-color:var(--black)}
+.zone-search-input{width:100%;padding:12px 44px 12px 14px;border:1.5px solid var(–g200);border-radius:12px;font-size:14px;font-family:var(–font);font-weight:500;outline:none;background:#fff;color:var(–black);transition:border-color .15s}
+.zone-search-input:focus{border-color:var(–black)}
 .zone-search-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center}
-.zone-search-result{margin:4px 16px 8px;background:var(--g50);border-radius:12px;padding:12px 14px;font-size:13px;display:none}
+.zone-search-result{margin:4px 16px 8px;background:var(–g50);border-radius:12px;padding:12px 14px;font-size:13px;display:none}
 .zone-search-result.show{display:block}
 .zsr-zona{font-size:15px;font-weight:800;margin-bottom:4px}
 .zsr-tipo{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
-.zsr-coords{font-size:11px;color:var(--g400);margin-top:4px}
+.zsr-coords{font-size:11px;color:var(–g400);margin-top:4px}
 
 /* ── BILLETERA ───────────────────────────────────────── */
-.wallet-hero{background:var(--green);margin:12px 16px;border-radius:18px;padding:20px;color:#fff}
+.wallet-hero{background:var(–green);margin:12px 16px;border-radius:18px;padding:20px;color:#fff}
 .wallet-hero .wamt{font-size:36px;font-weight:900;letter-spacing:-1px;line-height:1.1}
 .wallet-hero .wlbl{font-size:12px;color:rgba(255,255,255,.7);font-weight:600;margin-top:2px}
 .wallet-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.2);border-radius:10px;margin-top:14px;overflow:hidden}
@@ -192,27 +193,28 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 .wsval{font-size:15px;font-weight:800}
 .wslbl{font-size:9px;color:rgba(255,255,255,.6);margin-top:1px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
 .wallet-shortcut{margin:0 16px 4px;display:flex;gap:8px}
-.wallet-shortcut button{flex:1;padding:12px 8px;background:#fff;border:1.5px solid var(--g200);border-radius:12px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;color:var(--black);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
-.wallet-shortcut button:active{background:var(--g50)}
-.wbal-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--g100)}
+.wallet-shortcut button{flex:1;padding:12px 8px;background:#fff;border:1.5px solid var(–g200);border-radius:12px;font-size:13px;font-weight:700;font-family:var(–font);cursor:pointer;color:var(–black);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.wallet-shortcut button:active{background:var(–g50)}
+.wbal-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(–g100)}
 .wbal-row:last-child{border:none}
-.wbal-lbl{font-size:14px;color:var(--g600)}
+.wbal-lbl{font-size:14px;color:var(–g600)}
 .wbal-amt{font-size:15px;font-weight:800}
-.wbal-amt.pos{color:var(--green)}
-.wbal-amt.neg{color:var(--red)}
-.wal-pay-row{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--g100)}
+.wbal-amt.pos{color:var(–green)}
+.wbal-amt.neg{color:var(–red)}
+.wal-pay-row{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(–g100)}
 .wal-pay-row:last-child{border:none}
 .wal-tipo{font-size:13px;font-weight:700}
-.wal-meta{font-size:11px;color:var(--g400);margin-top:1px}
-.wal-monto{font-size:15px;font-weight:800;color:var(--green)}
+.wal-meta{font-size:11px;color:var(–g400);margin-top:1px}
+.wal-monto{font-size:15px;font-weight:800;color:var(–green)}
 /* ─────────────────────────────────────────────────── */
-.zone-submap-wrap{margin:0 16px 10px;border-radius:14px;overflow:hidden;border:1px solid var(--g200)}
+.zone-submap-wrap{margin:0 16px 10px;border-radius:14px;overflow:hidden;border:1px solid var(–g200)}
 .zone-submap{height:200px;width:100%}
 .zone-note-add{display:flex;gap:8px;align-items:center;margin:0 16px 10px}
-.zone-note-add input{flex:1;padding:10px 14px;border:1.5px solid var(--g200);border-radius:12px;font-size:14px;font-family:var(--font);outline:none;background:#fff;transition:border-color .15s}
-.zone-note-add input:focus{border-color:var(--black)}
-.zone-note-add button{padding:10px 14px;background:var(--black);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;white-space:nowrap}
+.zone-note-add input{flex:1;padding:10px 14px;border:1.5px solid var(–g200);border-radius:12px;font-size:14px;font-family:var(–font);outline:none;background:#fff;transition:border-color .15s}
+.zone-note-add input:focus{border-color:var(–black)}
+.zone-note-add button{padding:10px 14px;background:var(–black);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;font-family:var(–font);cursor:pointer;white-space:nowrap}
 </style>
+
 </head>
 <body>
 
@@ -225,6 +227,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 <div class="pages">
 
 <!-- INICIO -->
+
 <div class="page active" id="page-inicio">
   <div style="height:4px"></div>
   <div class="sync-bar"><div class="sync-dot syncing" id="sync-dot"></div><span id="sync-lbl">Conectando...</span></div>
@@ -276,6 +279,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
   </div>
 
   <!-- Botones de acción rápida -->
+
   <div style="padding:0 16px;display:flex;flex-direction:column;gap:8px;margin-bottom:4px">
     <button onclick="openModalWallet()" style="width:100%;padding:14px 16px;background:#fff;color:var(--black);border:1.5px solid var(--g200);border-radius:14px;font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -292,6 +296,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 </div>
 
 <!-- BILLETERA -->
+
 <div class="page" id="page-billetera">
   <div class="ph"><div class="pt">Billetera</div></div>
   <div class="stabs" id="btabs">
@@ -301,6 +306,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
   </div>
 
   <!-- TAB: EFECTIVO -->
+
   <div id="bsub-efectivo">
     <div style="height:12px"></div>
     <!-- Hero verde billetera -->
@@ -317,41 +323,45 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       </div>
     </div>
 
-    <!-- Monto inicial del día -->
-    <div style="margin:0 16px 12px;background:var(--g50);border-radius:14px;padding:14px 16px">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-        <div>
-          <div style="font-size:13px;font-weight:700">Efectivo inicial en billetera</div>
-          <div style="font-size:11px;color:var(--g400);margin-top:2px">Con cuánto efectivo empezaste el día</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <input type="number" id="w-inicial-input" inputmode="numeric" placeholder="0"
-            style="width:100px;padding:8px 10px;border:1.5px solid var(--g200);border-radius:10px;font-size:15px;font-weight:700;font-family:var(--font);text-align:right;outline:none">
-          <button onclick="guardarMontoinicial()" style="padding:8px 14px;background:var(--black);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer">OK</button>
-        </div>
-      </div>
+```
+<!-- Monto inicial del día -->
+<div style="margin:0 16px 12px;background:var(--g50);border-radius:14px;padding:14px 16px">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+    <div>
+      <div style="font-size:13px;font-weight:700">Efectivo inicial en billetera</div>
+      <div style="font-size:11px;color:var(--g400);margin-top:2px">Con cuánto efectivo empezaste el día</div>
     </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <input type="number" id="w-inicial-input" inputmode="numeric" placeholder="0"
+        style="width:100px;padding:8px 10px;border:1.5px solid var(--g200);border-radius:10px;font-size:15px;font-weight:700;font-family:var(--font);text-align:right;outline:none">
+      <button onclick="guardarMontoinicial()" style="padding:8px 14px;background:var(--black);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer">OK</button>
+    </div>
+  </div>
+</div>
 
-    <!-- Totales del día -->
-    <div style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden">
-      <div style="padding:12px 16px 8px;font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.04em">Hoy</div>
-      <div class="wbal-row"><span class="wbal-lbl">Total pagado (post-SII)</span><span class="wbal-amt" id="w-viajes-bruto">$0</span></div>
-      <div class="wbal-row"><span class="wbal-lbl">💵 Efectivo de viajes (en mano)</span><span class="wbal-amt pos" id="w-viajes-ef">$0</span></div>
-      <div class="wbal-row"><span class="wbal-lbl">🏦 Transferencia de viajes</span><span class="wbal-amt pos" id="w-viajes-tr">$0</span></div>
-      <div class="wbal-row"><span class="wbal-lbl">Pagos registrados en billetera</span><span class="wbal-amt pos" id="w-pagos-ef">$0</span></div>
-      <div class="wbal-row"><span class="wbal-lbl" style="font-weight:700">Diferencia cobrado vs registrado</span><span class="wbal-amt" id="w-diff-ef">$0</span></div>
-      <div class="wbal-row" style="font-weight:800;border-top:1.5px solid var(--g200)"><span class="wbal-lbl">Disponible para retiro en Uber</span><span class="wbal-amt pos" id="w-retiro-row">$0</span></div>
-    </div>
+<!-- Totales del día -->
+<div style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden">
+  <div style="padding:12px 16px 8px;font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.04em">Hoy</div>
+  <div class="wbal-row"><span class="wbal-lbl">Total pagado (post-SII)</span><span class="wbal-amt" id="w-viajes-bruto">$0</span></div>
+  <div class="wbal-row"><span class="wbal-lbl">💵 Efectivo de viajes (en mano)</span><span class="wbal-amt pos" id="w-viajes-ef">$0</span></div>
+  <div class="wbal-row"><span class="wbal-lbl">🏦 Transferencia de viajes</span><span class="wbal-amt pos" id="w-viajes-tr">$0</span></div>
+  <div class="wbal-row"><span class="wbal-lbl">Pagos registrados en billetera</span><span class="wbal-amt pos" id="w-pagos-ef">$0</span></div>
+  <div class="wbal-row"><span class="wbal-lbl" style="font-weight:700">Diferencia cobrado vs registrado</span><span class="wbal-amt" id="w-diff-ef">$0</span></div>
+  <div class="wbal-row" style="font-weight:800;border-top:1.5px solid var(--g200)"><span class="wbal-lbl">Disponible para retiro en Uber</span><span class="wbal-amt pos" id="w-retiro-row">$0</span></div>
+</div>
 
-    <!-- Lista pagos del día + botón agregar -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px;margin-bottom:8px">
-      <div class="slbl" style="padding:0;margin:0">Pagos de hoy</div>
-      <button onclick="openModalWallet()" style="padding:7px 14px;background:var(--black);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer">+ Agregar</button>
-    </div>
-    <div id="w-pagos-list"></div>
+<!-- Lista pagos del día + botón agregar -->
+<div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px;margin-bottom:8px">
+  <div class="slbl" style="padding:0;margin:0">Pagos de hoy</div>
+  <button onclick="openModalWallet()" style="padding:7px 14px;background:var(--black);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer">+ Agregar</button>
+</div>
+<div id="w-pagos-list"></div>
+```
+
   </div>
 
   <!-- TAB: MOVIMIENTOS -->
+
   <div id="bsub-movimientos" style="display:none">
     <div class="snav">
       <button class="sbtn" onclick="navDate('wmov',-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
@@ -370,6 +380,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
   </div>
 
   <!-- TAB: PAGOS -->
+
   <div id="bsub-pagos" style="display:none">
     <!-- Selector de fecha -->
     <div class="snav">
@@ -403,6 +414,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 </div>
 
 <!-- VIAJES -->
+
 <div class="page" id="page-viajes">
   <div class="ph"><div class="pt">Viajes</div></div>
   <div class="stabs" id="vtabs">
@@ -413,52 +425,55 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
   <div id="vsub-agregar">
     <div style="height:12px"></div>
 
-    <!-- Banner viaje en proceso -->
-    <div id="proceso-banner" style="display:none;margin:0 16px 12px;background:#000;border-radius:14px;padding:14px 16px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div>
-          <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.05em">VIAJE EN PROCESO</div>
-          <div style="font-size:15px;font-weight:800;color:#fff;margin-top:2px" id="proceso-lbl">—</div>
-        </div>
-        <div style="display:flex;gap:6px">
-          <button onclick="cargarProceso()" style="padding:8px 14px;background:#fff;color:#000;border:none;border-radius:10px;font-size:13px;font-weight:800;font-family:var(--font);cursor:pointer">Completar</button>
-          <button onclick="descartarProceso()" style="padding:8px 10px;background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer">✕</button>
-        </div>
-      </div>
-      <div style="font-size:12px;color:rgba(255,255,255,.5)" id="proceso-meta">—</div>
+```
+<!-- Banner viaje en proceso -->
+<div id="proceso-banner" style="display:none;margin:0 16px 12px;background:#000;border-radius:14px;padding:14px 16px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <div>
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.05em">VIAJE EN PROCESO</div>
+      <div style="font-size:15px;font-weight:800;color:#fff;margin-top:2px" id="proceso-lbl">—</div>
     </div>
+    <div style="display:flex;gap:6px">
+      <button onclick="cargarProceso()" style="padding:8px 14px;background:#fff;color:#000;border:none;border-radius:10px;font-size:13px;font-weight:800;font-family:var(--font);cursor:pointer">Completar</button>
+      <button onclick="descartarProceso()" style="padding:8px 10px;background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer">✕</button>
+    </div>
+  </div>
+  <div style="font-size:12px;color:rgba(255,255,255,.5)" id="proceso-meta">—</div>
+</div>
 
-    <div style="padding:0 16px">
-      <!-- Fecha + hora inicio -->
-      <div class="fgrid">
-        <div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" id="v-fecha"></div>
-        <div class="fg"><label class="fl">Hora inicio</label><input class="fi" type="time" id="v-hora-ini"></div>
-      </div>
-      <!-- Hora fin (opcional, se rellena al terminar) -->
-      <div class="fg"><label class="fl">Hora fin <span style="font-weight:500;color:var(--g400)">(al terminar)</span></label>
-        <input class="fi" type="time" id="v-hora-fin" placeholder="--:--">
-      </div>
-      <div class="fg"><label class="fl">Monto cobrado (CLP)</label><input class="fi" type="number" id="v-monto" placeholder="1.735" inputmode="numeric"></div>
-      <div class="fgrid">
-        <div class="fg"><label class="fl">Km en vacío</label><input class="fi" type="number" id="v-kv" placeholder="2.7" inputmode="decimal" step="0.1"></div>
-        <div class="fg"><label class="fl">Km del viaje</label><input class="fi" type="number" id="v-kj" placeholder="1.6" inputmode="decimal" step="0.1"></div>
-      </div>
-      <div class="fg"><label class="fl">Tipo</label>
-        <select class="fi" id="v-tipo"><option>UberX</option><option>Prioridad UberX</option><option>Uber Comfort</option><option>Uber Pet</option><option>Uber Envíos</option><option>Cancelación</option></select>
-      </div>
-      <div class="fg"><label class="fl">Método de pago</label>
-        <div class="popts" id="v-popts">
-          <button class="popt on" onclick="selPay('v',this,'ef')">Efectivo</button>
-          <button class="popt" onclick="selPay('v',this,'tk')">Tarjeta</button>
-          <button class="popt" onclick="selPay('v',this,'tr')">Transfer.</button>
-        </div>
-      </div>
-      <!-- Botones -->
-      <div style="display:flex;gap:10px;margin-bottom:8px">
-        <button class="bs" style="flex:1" onclick="guardarProceso()">⏳ En Proceso</button>
-        <button class="bp" style="flex:2" onclick="addViajeSimple()">✓ Guardar viaje</button>
-      </div>
+<div style="padding:0 16px">
+  <!-- Fecha + hora inicio -->
+  <div class="fgrid">
+    <div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" id="v-fecha"></div>
+    <div class="fg"><label class="fl">Hora inicio</label><input class="fi" type="time" id="v-hora-ini"></div>
+  </div>
+  <!-- Hora fin (opcional, se rellena al terminar) -->
+  <div class="fg"><label class="fl">Hora fin <span style="font-weight:500;color:var(--g400)">(al terminar)</span></label>
+    <input class="fi" type="time" id="v-hora-fin" placeholder="--:--">
+  </div>
+  <div class="fg"><label class="fl">Monto cobrado (CLP)</label><input class="fi" type="text" id="v-monto" placeholder="1735" inputmode="decimal"></div>
+  <div class="fgrid">
+    <div class="fg"><label class="fl">Km en vacío</label><input class="fi" type="number" id="v-kv" placeholder="2.7" inputmode="decimal" step="0.1"></div>
+    <div class="fg"><label class="fl">Km del viaje</label><input class="fi" type="number" id="v-kj" placeholder="1.6" inputmode="decimal" step="0.1"></div>
+  </div>
+  <div class="fg"><label class="fl">Tipo</label>
+    <select class="fi" id="v-tipo"><option>UberX</option><option>Prioridad UberX</option><option>Uber Comfort</option><option>Uber Pet</option><option>Uber Envíos</option><option>Cancelación</option></select>
+  </div>
+  <div class="fg"><label class="fl">Método de pago</label>
+    <div class="popts" id="v-popts">
+      <button class="popt on" onclick="selPay('v',this,'ef')">Efectivo</button>
+      <button class="popt" onclick="selPay('v',this,'tk')">Tarjeta</button>
+      <button class="popt" onclick="selPay('v',this,'tr')">Transfer.</button>
     </div>
+  </div>
+  <!-- Botones -->
+  <div style="display:flex;gap:10px;margin-bottom:8px">
+    <button class="bs" style="flex:1" onclick="guardarProceso()">⏳ En Proceso</button>
+    <button class="bp" style="flex:2" onclick="addViajeSimple()">✓ Guardar viaje</button>
+  </div>
+</div>
+```
+
   </div>
   <div id="vsub-hoy" style="display:none">
     <div id="v-hoy-list"></div>
@@ -478,6 +493,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 </div>
 
 <!-- GANANCIAS -->
+
 <div class="page" id="page-ganancias">
   <div class="ph"><div class="pt">Ganancias</div></div>
   <div class="stabs" id="gtabs">
@@ -543,6 +559,17 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
         <button class="pbtn" onclick="setPagosAppPeriod('semana',this)">Semana</button>
         <button class="pbtn" onclick="setPagosAppPeriod('mes',this)">Mes</button>
         <button class="pbtn" onclick="setPagosAppPeriod('anio',this)">Año</button>
+        <button class="pbtn" onclick="setPagosAppPeriod('dia',this)">Día</button>
+      </div>
+      <div id="pagos-app-dia-nav" style="display:none">
+        <div class="snav">
+          <button class="sbtn" onclick="navPagosAppDia(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <div style="flex:1;text-align:center">
+            <input type="date" class="date-pick-btn" id="pagos-app-dia-date" onchange="pickPagosAppDia(this.value)" style="border:none;background:none;font-size:16px;font-weight:800;text-align:center;padding:0;width:auto">
+          </div>
+          <button class="sbtn" onclick="navPagosAppDia(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+        </div>
+        <div style="text-align:center;padding-bottom:4px"><button class="date-today-btn" style="font-size:12px;padding:6px 16px" onclick="pickPagosAppDia('')">Hoy</button></div>
       </div>
       <div class="card"><div class="chwrap"><canvas id="ch-pag"></canvas></div></div>
       <div class="pbreak">
@@ -567,6 +594,17 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
         <button class="pbtn" onclick="setPagosPeriod('semana',this)">Semana</button>
         <button class="pbtn" onclick="setPagosPeriod('mes',this)">Mes</button>
         <button class="pbtn" onclick="setPagosPeriod('anio',this)">Año</button>
+        <button class="pbtn" onclick="setPagosPeriod('dia',this)">Día</button>
+      </div>
+      <div id="pagos-des-dia-nav" style="display:none">
+        <div class="snav">
+          <button class="sbtn" onclick="navPagosDesDia(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <div style="flex:1;text-align:center">
+            <input type="date" class="date-pick-btn" id="pagos-des-dia-date" onchange="pickPagosDesDia(this.value)" style="border:none;background:none;font-size:16px;font-weight:800;text-align:center;padding:0;width:auto">
+          </div>
+          <button class="sbtn" onclick="navPagosDesDia(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+        </div>
+        <div style="text-align:center;padding-bottom:4px"><button class="date-today-btn" style="font-size:12px;padding:6px 16px" onclick="pickPagosDesDia('')">Hoy</button></div>
       </div>
       <div class="card"><div class="chwrap"><canvas id="ch-pag-des"></canvas></div></div>
       <div id="pagos-desglose-rows" style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden"></div>
@@ -582,9 +620,11 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       <button class="pbtn" onclick="setCombPeriod('dia',this)">Día</button>
     </div>
     <div class="snav" id="comb-nav" style="display:none">
-      <button class="sbtn" onclick="navComb(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-      <span class="snlbl" id="comb-nav-lbl"></span>
-      <button class="sbtn" onclick="navComb(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <button class="sbtn" onclick="navCombDia(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div style="flex:1;text-align:center">
+        <input type="date" class="date-pick-btn" id="comb-dia-date" onchange="pickCombDia(this.value)" style="border:none;background:none;font-size:16px;font-weight:800;text-align:center;padding:0;width:auto">
+      </div>
+      <button class="sbtn" onclick="navCombDia(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
     <div class="card"><div class="chwrap"><canvas id="ch-comb"></canvas></div></div>
     <div class="mgrid">
@@ -608,9 +648,11 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 </div>
 
 <!-- MAPA -->
+
 <!-- page-mapa content moved to xsub-mapa -->
 
 <!-- MÁS -->
+
 <div class="page" id="page-mas">
   <div class="ph"><div class="pt">Más</div></div>
   <div class="stabs" id="xtabs">
@@ -653,7 +695,8 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       </div>
       <!-- Formulario de cierre, oculto por defecto -->
       <div id="cierre-form-wrap" style="display:none;background:var(--g50);border-radius:14px;padding:16px;margin-bottom:16px">
-        <div class="fg"><label class="fl">Km totales hoy</label><input class="fi" type="number" id="c-km" placeholder="180" inputmode="numeric"></div>
+        <div class="fg"><label class="fl">Fecha del cierre</label><input class="fi" type="date" id="c-fecha" onchange="onCierreFechaChange(this.value)"></div>
+        <div class="fg"><label class="fl">Km totales</label><input class="fi" type="number" id="c-km" placeholder="180" inputmode="numeric"></div>
         <div class="fg"><label class="fl">Horas trabajadas</label><input class="fi" type="number" id="c-hrs" placeholder="8.5" inputmode="decimal" step="0.5"></div>
         <div class="fg"><label class="fl">Rendimiento (km/litro)</label><input class="fi" type="number" id="c-rend" placeholder="16" inputmode="decimal" step="0.1"></div>
         <div class="fg"><label class="fl">¿Cargaste bencina hoy?</label>
@@ -841,12 +884,13 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 </div>
 
 <!-- MODALS -->
+
 <div class="mbg" id="modal-viaje" onclick="closeMBg(event,'modal-viaje')">
   <div class="modal">
     <div class="mhdl"></div>
     <div class="mtit" id="mv-title">Agregar viaje</div>
     <input type="hidden" id="mv-id">
-    <div class="fg"><label class="fl">Monto cobrado (CLP)</label><input class="fi" type="number" id="m-monto" inputmode="numeric" placeholder="1735"></div>
+    <div class="fg"><label class="fl">Monto cobrado (CLP)</label><input class="fi" type="text" id="m-monto" inputmode="decimal" placeholder="1735"></div>
     <div class="fgrid">
       <div class="fg"><label class="fl">Km en vacío</label><input class="fi" type="number" id="m-kv" inputmode="decimal" step="0.1" placeholder="2.7"></div>
       <div class="fg"><label class="fl">Km del viaje</label><input class="fi" type="number" id="m-kj" inputmode="decimal" step="0.1" placeholder="1.6"></div>
@@ -976,6 +1020,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 </div>
 
 <!-- MODAL PAGO BILLETERA -->
+
 <div class="mbg" id="modal-wallet" onclick="closeMBg(event,'modal-wallet')">
   <div class="modal">
     <div class="mhdl"></div>
@@ -988,7 +1033,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       </div>
     </div>
     <input type="hidden" id="mw-tipo" value="ef">
-    <div class="fg"><label class="fl">Monto recibido (CLP)</label><input class="fi" type="number" id="mw-monto" inputmode="numeric" placeholder="5000"></div>
+    <div class="fg"><label class="fl">Monto recibido (CLP)</label><input class="fi" type="text" id="mw-monto" inputmode="decimal" placeholder="5000"></div>
     <div class="fgrid">
       <div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" id="mw-fecha"></div>
       <div class="fg"><label class="fl">Hora</label><input class="fi" type="time" id="mw-hora"></div>
@@ -1002,6 +1047,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 </div>
 
 <!-- MODAL DETALLE DÍA CALENDARIO -->
+
 <div class="mbg" id="modal-calday" onclick="closeMBg(event,'modal-calday')">
   <div class="modal">
     <div class="mhdl"></div>
@@ -1104,7 +1150,7 @@ window.navDate=function(key,dir){
 
 function initDatePickers(){
   const t=today();
-  ['hist','gan','resumen','wmov','wpag'].forEach(k=>{
+  ['hist','gan','resumen','wmov','wpag','combDia'].forEach(k=>{
     selectedDates[k]=t;
     const el=document.getElementById(k+'-date');
     if(el){el.value=t;el.max=t;}
@@ -1367,18 +1413,22 @@ function checkInicioProcesoBanner(){
     banner.style.display='block';
     document.getElementById('inicio-proceso-lbl').textContent=(p.tipo||'UberX')+' · iniciado '+p.horaIni;
     document.getElementById('inicio-proceso-meta').textContent='Fecha: '+p.fecha+(p.kv?' · vacío '+p.kv+' km':'')+(p.kj?' · viaje '+p.kj+' km':'');
-    // Cronómetro
+    // Cronómetro calculado desde hora de inicio del viaje
     function tick(){
       const el=document.getElementById('inicio-proceso-timer');
       if(!el) return;
-      const ts=p.ts||Date.now();
-      const secs=Math.floor((Date.now()-ts)/1000);
+      // Calcular segundos desde horaIni (hora Chile)
+      const nowCL=new Intl.DateTimeFormat('en-CA',{timeZone:CL_TZ,hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
+      const [nh,nm]=nowCL.split(':').map(Number);
+      const [sh,sm]=(p.horaIni||'00:00').split(':').map(Number);
+      let diffMin=(nh*60+nm)-(sh*60+sm);
+      if(diffMin<0) diffMin+=1440;
+      const secs=diffMin*60;
       const h=Math.floor(secs/3600);
       const m=Math.floor((secs%3600)/60);
-      const s=secs%60;
       el.textContent=h>0
-        ?(h+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'))
-        :(String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'));
+        ?(h+':'+String(m).padStart(2,'0')+':00')
+        :(String(m).padStart(2,'0')+':00');
     }
     tick();
     if(_inicioProcTimer) clearInterval(_inicioProcTimer);
@@ -1485,7 +1535,7 @@ window.descartarProceso=function(){
 };
 
 window.addViajeSimple=async function(){
-  const monto=parseFloat(document.getElementById('v-monto').value)||0;
+  const monto=parseFloat((document.getElementById('v-monto').value||'').replace(',','.'))||0;
   if(!monto){toast('Ingresa el monto');return;}
   const dt=nowDatetimeCL();
   const horaIni=document.getElementById('v-hora-ini').value||dt.hora;
@@ -1541,7 +1591,7 @@ window.saveViajeModal=async function(){
     hora:horaIni,
     ...(horaFin&&{horaFin}),
     ...(durMin!==null&&{durMin}),
-    monto:parseFloat(document.getElementById('m-monto').value)||0,
+    monto:parseFloat((document.getElementById('m-monto').value||'').replace(',','.'))||0,
     kv:parseFloat(document.getElementById('m-kv').value)||0,
     kj:parseFloat(document.getElementById('m-kj').value)||0,
     tipo:document.getElementById('m-tipo').value,
@@ -1575,18 +1625,19 @@ window.editViaje=function(fid){
 };
 
 window.saveCierreHoy=async function(){
+  const fechaCierre=document.getElementById('c-fecha').value||today();
   const km=parseFloat(document.getElementById('c-km').value)||0;
   const rend=parseFloat(document.getElementById('c-rend').value)||CONFIG.rend;
   const pli=parseFloat(document.getElementById('c-pli').value)||CONFIG.bencina;
   const data={km,hrs:parseFloat(document.getElementById('c-hrs').value)||0,rend,pli};
-  const hoy=vByDate(today());
+  const hoy=vByDate(fechaCierre);
   const kmEstimado=kmDesdeViajes(hoy);
   const litsReal=rend>0?km/rend:0;
   const combReal=litsReal*pli;
   const diffKm=km-kmEstimado;
   const netoFinal=calcNeto(hoy,false)-combReal;
   try{
-    await setDoc(doc(db,'cierres',today()),{...data,lit:parseFloat(litsReal.toFixed(2)),kmDiff:Math.round(diffKm)});
+    await setDoc(doc(db,'cierres',fechaCierre),{...data,lit:parseFloat(litsReal.toFixed(2)),kmDiff:Math.round(diffKm)});
     // Mostrar resultado en el diff box
     const detEl=document.getElementById('cierre-diff');
     if(detEl){
@@ -2012,11 +2063,12 @@ window.setPagosTab=function(tab,btn){
 
 function renderPagos(){renderPagosApp();}
 
-function vByPeriod(p){
+function vByPeriod(p,diaDate){
   if(p==='hoy') return VIAJES.filter(v=>v.fecha===today());
   if(p==='ayer'){const d=new Date(today()+'T12:00:00');d.setDate(d.getDate()-1);const ay=d.toISOString().slice(0,10);return VIAJES.filter(v=>v.fecha===ay);}
   if(p==='semana'){const d=new Date();d.setDate(d.getDate()-6);return VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=d);}
   if(p==='mes'){const d=new Date();d.setDate(d.getDate()-29);return VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=d);}
+  if(p==='dia'){const f=diaDate||today();return VIAJES.filter(v=>v.fecha===f);}
   const inicio=new Date(new Date().getFullYear(),0,1);
   return VIAJES.filter(v=>new Date(v.fecha+'T12:00:00')>=inicio);
 }
@@ -2024,11 +2076,34 @@ function vByPeriod(p){
 window.setPagosPeriod=function(p,btn){
   pagosPeriod=p;
   document.getElementById('pagos-psel').querySelectorAll('.pbtn').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');renderPagosDesglose();
+  btn.classList.add('on');
+  const nav=document.getElementById('pagos-des-dia-nav');
+  if(nav) nav.style.display=p==='dia'?'block':'none';
+  if(p==='dia'){
+    const inp=document.getElementById('pagos-des-dia-date');
+    if(inp){inp.value=selectedDates.pagosDesDia||today();inp.max=today();}
+  }
+  renderPagosDesglose();
+};
+
+window.navPagosDesDia=function(dir){
+  const cur=selectedDates.pagosDesDia||today();
+  const d=new Date(cur+'T12:00:00');d.setDate(d.getDate()+dir);
+  if(d>new Date()) return;
+  const val=d.toISOString().slice(0,10);
+  selectedDates.pagosDesDia=val;
+  const inp=document.getElementById('pagos-des-dia-date');if(inp) inp.value=val;
+  renderPagosDesglose();
+};
+
+window.pickPagosDesDia=function(val){
+  selectedDates.pagosDesDia=val||today();
+  const inp=document.getElementById('pagos-des-dia-date');if(inp) inp.value=selectedDates.pagosDesDia;
+  renderPagosDesglose();
 };
 
 function renderPagosDesglose(){
-  const viajes=vByPeriod(pagosPeriod);
+  const viajes=vByPeriod(pagosPeriod,selectedDates.pagosDesDia||today());
   const ef=viajes.filter(v=>v.pago==='ef').reduce((a,v)=>a+v.monto,0);
   const tk=viajes.filter(v=>v.pago==='tk').reduce((a,v)=>a+v.monto,0);
   const tr=viajes.filter(v=>v.pago==='tr').reduce((a,v)=>a+v.monto,0);
@@ -2050,11 +2125,34 @@ function renderPagosDesglose(){
 window.setPagosAppPeriod=function(p,btn){
   pagosAppPeriod=p;
   document.getElementById('pagos-app-psel').querySelectorAll('.pbtn').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');renderPagosApp();
+  btn.classList.add('on');
+  const nav=document.getElementById('pagos-app-dia-nav');
+  if(nav) nav.style.display=p==='dia'?'block':'none';
+  if(p==='dia'){
+    const inp=document.getElementById('pagos-app-dia-date');
+    if(inp){inp.value=selectedDates.pagosAppDia||today();inp.max=today();}
+  }
+  renderPagosApp();
+};
+
+window.navPagosAppDia=function(dir){
+  const cur=selectedDates.pagosAppDia||today();
+  const d=new Date(cur+'T12:00:00');d.setDate(d.getDate()+dir);
+  if(d>new Date()) return;
+  const val=d.toISOString().slice(0,10);
+  selectedDates.pagosAppDia=val;
+  const inp=document.getElementById('pagos-app-dia-date');if(inp) inp.value=val;
+  renderPagosApp();
+};
+
+window.pickPagosAppDia=function(val){
+  selectedDates.pagosAppDia=val||today();
+  const inp=document.getElementById('pagos-app-dia-date');if(inp) inp.value=selectedDates.pagosAppDia;
+  renderPagosApp();
 };
 
 function renderPagosApp(){
-  const viajes=vByPeriod(pagosAppPeriod);
+  const viajes=vByPeriod(pagosAppPeriod,selectedDates.pagosAppDia||today());
   const ef=viajes.filter(v=>v.pago==='ef').reduce((a,v)=>a+v.monto,0);
   const tk=viajes.filter(v=>v.pago==='tk').reduce((a,v)=>a+v.monto,0);
   const tr=viajes.filter(v=>v.pago==='tr').reduce((a,v)=>a+v.monto,0);
@@ -2073,26 +2171,31 @@ window.setCombPeriod=function(p,btn){
   combPeriod=p;combDayOffset=0;
   document.getElementById('comb-psel').querySelectorAll('.pbtn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
-  const nav=document.getElementById('comb-nav');if(nav) nav.style.display=p==='hoy'?'flex':'none';
+  const nav=document.getElementById('comb-nav');if(nav) nav.style.display=p==='dia'?'flex':'none';
   renderCombustible();
 };
 
-window.navComb=function(dir){
-  combDayOffset+=dir;if(combDayOffset>0) combDayOffset=0;renderCombustible();
+window.navCombDia=function(dir){
+  const t=todayCL();
+  const cur=selectedDates.combDia||t;
+  const d=new Date(cur+'T12:00:00');
+  d.setDate(d.getDate()+dir);
+  if(d>new Date()) return;
+  const val=d.toISOString().slice(0,10);
+  selectedDates.combDia=val;
+  const inp=document.getElementById('comb-dia-date');if(inp) inp.value=val;
+  renderCombustible();
+};
+
+window.pickCombDia=function(val){
+  selectedDates.combDia=val||todayCL();
+  renderCombustible();
 };
 
 function getCombFechas(){
   const t=todayCL();
   if(combPeriod==='hoy'){
-    // Mostrar el día navegado + 3 días anteriores para comparación
-    const base=new Date(t+'T12:00:00');
-    base.setDate(base.getDate()+combDayOffset);
-    const hasta=base.toISOString().slice(0,10);
-    const desde=new Date(base);desde.setDate(desde.getDate()-3);
-    const desdeStr=desde.toISOString().slice(0,10);
-    const lbl=combDayOffset===0?'Últimos 4 días':fmtD(hasta)+' y anteriores';
-    const navLbl=document.getElementById('comb-nav-lbl');if(navLbl) navLbl.textContent=lbl;
-    return [desdeStr,hasta];
+    return [t,t];
   }
   if(combPeriod==='ayer'){
     const ay=new Date(t+'T12:00:00');ay.setDate(ay.getDate()-1);
@@ -2116,7 +2219,7 @@ function getCombFechas(){
 
 function resetCombFiltro(){
   combPeriod='hoy';combDayOffset=0;
-  const nav=document.getElementById('comb-nav');if(nav) nav.style.display='flex';
+  const nav=document.getElementById('comb-nav');if(nav) nav.style.display='none';
   const psel=document.getElementById('comb-psel');if(psel) psel.querySelectorAll('.pbtn').forEach((b,i)=>{b.classList.toggle('on',i===0);});
   renderCombustible();
 }
@@ -2342,7 +2445,8 @@ window.toggleCierreForm=function(){
   const open=wrap.style.display==='none'||wrap.style.display==='';
   wrap.style.display=open?'block':'none';
   if(open){
-    // Pre-rellenar si hay cierre guardado
+    const cFechaEl=document.getElementById('c-fecha');
+    if(cFechaEl){cFechaEl.value=today();cFechaEl.max=today();}
     const c=CIERRES[today()];
     if(c){
       if(c.km) document.getElementById('c-km').value=c.km;
@@ -2352,6 +2456,25 @@ window.toggleCierreForm=function(){
       document.getElementById('c-rend').value=CONFIG.rend||16;
     }
     wrap.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+};
+
+// Recargar campos del cierre al cambiar la fecha del form rápido
+window.onCierreFechaChange=function(val){
+  const c=CIERRES[val];
+  if(c){
+    if(c.km) document.getElementById('c-km').value=c.km;
+    if(c.hrs) document.getElementById('c-hrs').value=c.hrs;
+    if(c.rend) document.getElementById('c-rend').value=c.rend;
+    const benState2=c.lit>0;
+    document.getElementById('ben-fields').style.display=benState2?'block':'none';
+    document.querySelectorAll('#cierre-form-wrap .popt').forEach((b,i)=>b.classList.toggle('on',(i===0&&benState2)||(i===1&&!benState2)));
+    if(c.lit) document.getElementById('c-lit').value=c.lit;
+    if(c.pli) document.getElementById('c-pli').value=c.pli;
+  } else {
+    ['c-km','c-hrs','c-lit'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('c-rend').value=CONFIG.rend||16;
+    document.getElementById('c-pli').value=CONFIG.bencina||1200;
   }
 };
 
@@ -3398,7 +3521,7 @@ window.saveWalletPago=async function(){
   const fid=document.getElementById('mw-id').value;
   const dt=nowDatetimeCL();
   const data={
-    monto:parseFloat(document.getElementById('mw-monto').value)||0,
+    monto:parseFloat((document.getElementById('mw-monto').value||'0').replace(',','.'))||0,
     fecha:document.getElementById('mw-fecha').value||dt.fecha,
     hora:document.getElementById('mw-hora').value||dt.hora,
     desc:document.getElementById('mw-desc').value.trim(),
@@ -3419,5 +3542,6 @@ startListeners();
 setTimeout(hideSplash,5000);
 initDatePickers();
 </script>
+
 </body>
 </html>
