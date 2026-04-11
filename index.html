@@ -114,56 +114,56 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 .cal-wrap{padding:0 16px;margin-bottom:4px}
 /* UN único grid de 7 cols que contiene header + días */
 .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-.cdname{text-align:center;font-size:10px;font-weight:700;color:var(–g400);padding:6px 2px;text-transform:uppercase}
+.cdname{text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:6px 2px;text-transform:uppercase}
 .cday{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;position:relative;font-size:13px;font-weight:700;transition:all .15s;min-width:0}
-.cday.worked{background:var(–black);color:#fff}
-.cday.planned{background:var(–g100);border:2px dashed var(–g400)}
-.cday.today{outline:2px solid var(–blue)}
+.cday.worked{background:var(--black);color:#fff}
+.cday.planned{background:var(--g100);border:2px dashed var(--g400)}
+.cday.today{outline:2px solid var(--blue)}
 .cday.empty{opacity:0;pointer-events:none}
-.cdot{width:5px;height:5px;border-radius:50%;background:var(–green);position:absolute;bottom:3px}
+.cdot{width:5px;height:5px;border-radius:50%;background:var(--green);position:absolute;bottom:3px}
 /* ─────────────────────────────────────────────────────── */
 
-.pbar{height:6px;background:var(–g100);border-radius:3px;overflow:hidden;margin-top:6px}
-.pfill{height:100%;border-radius:3px;background:var(–green);transition:width .5s}
-.empty{text-align:center;padding:40px 24px;color:var(–g400)}
+.pbar{height:6px;background:var(--g100);border-radius:3px;overflow:hidden;margin-top:6px}
+.pfill{height:100%;border-radius:3px;background:var(--green);transition:width .5s}
+.empty{text-align:center;padding:40px 24px;color:var(--g400)}
 .etxt{font-size:15px;font-weight:600}
 .esub{font-size:13px;margin-top:4px}
-.pdfcard{background:var(–g50);border-radius:14px;padding:14px 16px;margin:0 16px 10px;position:relative}
-.pdfweek{font-size:12px;color:var(–g600);font-weight:600;margin-bottom:4px}
+.pdfcard{background:var(--g50);border-radius:14px;padding:14px 16px;margin:0 16px 10px;position:relative}
+.pdfweek{font-size:12px;color:var(--g600);font-weight:600;margin-bottom:4px}
 .pdfamt{font-size:20px;font-weight:900;margin-bottom:10px}
-.pdfrow{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(–g200)}
+.pdfrow{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--g200)}
 .pdfrow:last-child{border:none}
-.pdflbl{color:var(–g600)}
+.pdflbl{color:var(--g600)}
 .pdfval{font-weight:700}
-.pdfval.r{color:var(–red)}
-.pdfval.g{color:var(–green)}
+.pdfval.r{color:var(--red)}
+.pdfval.g{color:var(--green)}
 .pdf-actions{display:flex;gap:6px;margin-top:10px}
-.pdf-actions button{flex:1;padding:8px;border-radius:10px;border:none;font-size:12px;font-weight:700;font-family:var(–font);cursor:pointer}
+.pdf-actions button{flex:1;padding:8px;border-radius:10px;border:none;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer}
 .stsec{padding:0 20px}
-.sttit{font-size:13px;font-weight:700;color:var(–g400);text-transform:uppercase;letter-spacing:.05em;margin:20px 0 12px}
-.strow{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(–g100)}
+.sttit{font-size:13px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;margin:20px 0 12px}
+.strow{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--g100)}
 .strow:last-child{border:none}
 .stlbl{font-size:15px;font-weight:600}
-.stinput{text-align:right;border:1.5px solid var(–g200);border-radius:8px;padding:6px 10px;font-size:15px;font-weight:700;font-family:var(–font);outline:none;background:#fff;color:var(–black)}
+.stinput{text-align:right;border:1.5px solid var(--g200);border-radius:8px;padding:6px 10px;font-size:15px;font-weight:700;font-family:var(--font);outline:none;background:#fff;color:var(--black)}
 .copts{display:flex;gap:8px;margin-bottom:16px}
 .copt{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .15s}
-.copt.on{border-color:var(–black)}
+.copt.on{border-color:var(--black)}
 .notelist{max-height:200px;overflow-y:auto}
-.noteitem{padding:10px 0;border-bottom:1px solid var(–g100);font-size:13px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.noteitem{padding:10px 0;border-bottom:1px solid var(--g100);font-size:13px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .noteitem:last-child{border:none}
-.notedt{font-size:11px;color:var(–g400);margin-bottom:2px;font-weight:600}
-.notedel{background:none;border:none;color:var(–red);font-size:18px;cursor:pointer;line-height:1}
+.notedt{font-size:11px;color:var(--g400);margin-bottom:2px;font-weight:600}
+.notedel{background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;line-height:1}
 [id^=“zbox-”]{transition:background .2s,border-color .2s,outline .15s}
 [id^=“zbox-”]:active{opacity:.7}
 .date-picker-wrap{display:flex;align-items:center;justify-content:center;padding:10px 20px 4px;gap:10px}
-.date-pick-btn{flex:1;padding:10px 14px;background:var(–g50);border:1.5px solid var(–g200);border-radius:12px;font-size:15px;font-weight:700;font-family:var(–font);color:var(–black);text-align:center;cursor:pointer;outline:none;-webkit-appearance:none}
-.date-pick-btn:focus{border-color:var(–black)}
-.date-today-btn{padding:10px 14px;background:var(–black);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;font-family:var(–font);cursor:pointer;white-space:nowrap}
-.sync-bar{display:flex;align-items:center;gap:6px;padding:4px 20px 2px;font-size:11px;font-weight:600;color:var(–g400)}
-.sync-dot{width:7px;height:7px;border-radius:50%;background:var(–g400);flex-shrink:0}
-.sync-dot.online{background:var(–green)}
-.sync-dot.syncing{background:var(–amber);animation:pulse .8s infinite}
-.sync-dot.error{background:var(–red)}
+.date-pick-btn{flex:1;padding:10px 14px;background:var(--g50);border:1.5px solid var(--g200);border-radius:12px;font-size:15px;font-weight:700;font-family:var(--font);color:var(--black);text-align:center;cursor:pointer;outline:none;-webkit-appearance:none}
+.date-pick-btn:focus{border-color:var(--black)}
+.date-today-btn{padding:10px 14px;background:var(--black);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;white-space:nowrap}
+.sync-bar{display:flex;align-items:center;gap:6px;padding:4px 20px 2px;font-size:11px;font-weight:600;color:var(--g400)}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--g400);flex-shrink:0}
+.sync-dot.online{background:var(--green)}
+.sync-dot.syncing{background:var(--amber);animation:pulse .8s infinite}
+.sync-dot.error{background:var(--red)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 @keyframes pulseGreen{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
 .leaflet-div-icon{background:none!important;border:none!important;}
@@ -171,21 +171,21 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 #splash{position:fixed;inset:0;background:#000;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .4s}
 #splash.hide{opacity:0;pointer-events:none}
 #splash img{width:80px;height:80px}
-#splash-lbl{color:rgba(255,255,255,.5);font-size:13px;font-weight:600;font-family:var(–font)}
+#splash-lbl{color:rgba(255,255,255,.5);font-size:13px;font-weight:600;font-family:var(--font)}
 
 /* ── ZONA SEARCH BAR ─────────────────────────────────── */
 .zone-search-wrap{margin:8px 16px 4px;position:relative}
-.zone-search-input{width:100%;padding:12px 44px 12px 14px;border:1.5px solid var(–g200);border-radius:12px;font-size:14px;font-family:var(–font);font-weight:500;outline:none;background:#fff;color:var(–black);transition:border-color .15s}
-.zone-search-input:focus{border-color:var(–black)}
+.zone-search-input{width:100%;padding:12px 44px 12px 14px;border:1.5px solid var(--g200);border-radius:12px;font-size:14px;font-family:var(--font);font-weight:500;outline:none;background:#fff;color:var(--black);transition:border-color .15s}
+.zone-search-input:focus{border-color:var(--black)}
 .zone-search-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center}
-.zone-search-result{margin:4px 16px 8px;background:var(–g50);border-radius:12px;padding:12px 14px;font-size:13px;display:none}
+.zone-search-result{margin:4px 16px 8px;background:var(--g50);border-radius:12px;padding:12px 14px;font-size:13px;display:none}
 .zone-search-result.show{display:block}
 .zsr-zona{font-size:15px;font-weight:800;margin-bottom:4px}
 .zsr-tipo{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
-.zsr-coords{font-size:11px;color:var(–g400);margin-top:4px}
+.zsr-coords{font-size:11px;color:var(--g400);margin-top:4px}
 
 /* ── BILLETERA ───────────────────────────────────────── */
-.wallet-hero{background:var(–green);margin:12px 16px;border-radius:18px;padding:20px;color:#fff}
+.wallet-hero{background:var(--green);margin:12px 16px;border-radius:18px;padding:20px;color:#fff}
 .wallet-hero .wamt{font-size:36px;font-weight:900;letter-spacing:-1px;line-height:1.1}
 .wallet-hero .wlbl{font-size:12px;color:rgba(255,255,255,.7);font-weight:600;margin-top:2px}
 .wallet-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.2);border-radius:10px;margin-top:14px;overflow:hidden}
@@ -193,26 +193,26 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 .wsval{font-size:15px;font-weight:800}
 .wslbl{font-size:9px;color:rgba(255,255,255,.6);margin-top:1px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
 .wallet-shortcut{margin:0 16px 4px;display:flex;gap:8px}
-.wallet-shortcut button{flex:1;padding:12px 8px;background:#fff;border:1.5px solid var(–g200);border-radius:12px;font-size:13px;font-weight:700;font-family:var(–font);cursor:pointer;color:var(–black);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
-.wallet-shortcut button:active{background:var(–g50)}
-.wbal-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(–g100)}
+.wallet-shortcut button{flex:1;padding:12px 8px;background:#fff;border:1.5px solid var(--g200);border-radius:12px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;color:var(--black);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.wallet-shortcut button:active{background:var(--g50)}
+.wbal-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--g100)}
 .wbal-row:last-child{border:none}
-.wbal-lbl{font-size:14px;color:var(–g600)}
+.wbal-lbl{font-size:14px;color:var(--g600)}
 .wbal-amt{font-size:15px;font-weight:800}
-.wbal-amt.pos{color:var(–green)}
-.wbal-amt.neg{color:var(–red)}
-.wal-pay-row{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(–g100)}
+.wbal-amt.pos{color:var(--green)}
+.wbal-amt.neg{color:var(--red)}
+.wal-pay-row{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--g100)}
 .wal-pay-row:last-child{border:none}
 .wal-tipo{font-size:13px;font-weight:700}
-.wal-meta{font-size:11px;color:var(–g400);margin-top:1px}
-.wal-monto{font-size:15px;font-weight:800;color:var(–green)}
+.wal-meta{font-size:11px;color:var(--g400);margin-top:1px}
+.wal-monto{font-size:15px;font-weight:800;color:var(--green)}
 /* ─────────────────────────────────────────────────── */
-.zone-submap-wrap{margin:0 16px 10px;border-radius:14px;overflow:hidden;border:1px solid var(–g200)}
+.zone-submap-wrap{margin:0 16px 10px;border-radius:14px;overflow:hidden;border:1px solid var(--g200)}
 .zone-submap{height:200px;width:100%}
 .zone-note-add{display:flex;gap:8px;align-items:center;margin:0 16px 10px}
-.zone-note-add input{flex:1;padding:10px 14px;border:1.5px solid var(–g200);border-radius:12px;font-size:14px;font-family:var(–font);outline:none;background:#fff;transition:border-color .15s}
-.zone-note-add input:focus{border-color:var(–black)}
-.zone-note-add button{padding:10px 14px;background:var(–black);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;font-family:var(–font);cursor:pointer;white-space:nowrap}
+.zone-note-add input{flex:1;padding:10px 14px;border:1.5px solid var(--g200);border-radius:12px;font-size:14px;font-family:var(--font);outline:none;background:#fff;transition:border-color .15s}
+.zone-note-add input:focus{border-color:var(--black)}
+.zone-note-add button{padding:10px 14px;background:var(--black);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;white-space:nowrap}
 </style>
 
 </head>
@@ -323,21 +323,18 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       </div>
     </div>
 
-```
 <!-- Monto inicial del día -->
 <div style="margin:0 16px 12px;background:var(--g50);border-radius:14px;padding:14px 16px">
   <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
     <div>
       <div style="font-size:13px;font-weight:700">Efectivo inicial en billetera</div>
       <div style="font-size:11px;color:var(--g400);margin-top:2px">Con cuánto efectivo empezaste el día</div>
-</div>
-<div style="display:flex;align-items:center;gap:8px">
-  <input type="number" id="w-inicial-input" inputmode="numeric" placeholder="0"
-    style="width:100px;padding:8px 10px;border:1.5px solid var(--g200);border-radius:10px;font-size:15px;font-weight:700;font-family:var(--font);text-align:right;outline:none">
-  <button onclick="guardarMontoinicial()" style="padding:8px 14px;background:var(--black);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer">OK</button>
-</div>
-```
-
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <input type="number" id="w-inicial-input" inputmode="numeric" placeholder="0"
+        style="width:100px;padding:8px 10px;border:1.5px solid var(--g200);border-radius:10px;font-size:15px;font-weight:700;font-family:var(--font);text-align:right;outline:none">
+      <button onclick="guardarMontoinicial()" style="padding:8px 14px;background:var(--black);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer">OK</button>
+    </div>
   </div>
 </div>
 
