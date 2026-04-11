@@ -330,16 +330,19 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <div>
       <div style="font-size:13px;font-weight:700">Efectivo inicial en billetera</div>
       <div style="font-size:11px;color:var(--g400);margin-top:2px">Con cuánto efectivo empezaste el día</div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <input type="number" id="w-inicial-input" inputmode="numeric" placeholder="0"
-        style="width:100px;padding:8px 10px;border:1.5px solid var(--g200);border-radius:10px;font-size:15px;font-weight:700;font-family:var(--font);text-align:right;outline:none">
-      <button onclick="guardarMontoinicial()" style="padding:8px 14px;background:var(--black);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer">OK</button>
-    </div>
+</div>
+<div style="display:flex;align-items:center;gap:8px">
+  <input type="number" id="w-inicial-input" inputmode="numeric" placeholder="0"
+    style="width:100px;padding:8px 10px;border:1.5px solid var(--g200);border-radius:10px;font-size:15px;font-weight:700;font-family:var(--font);text-align:right;outline:none">
+  <button onclick="guardarMontoinicial()" style="padding:8px 14px;background:var(--black);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer">OK</button>
+</div>
+```
+
   </div>
 </div>
 
 <!-- Totales del día -->
+
 <div style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden">
   <div style="padding:12px 16px 8px;font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.04em">Hoy</div>
   <div class="wbal-row"><span class="wbal-lbl">Total pagado (post-SII)</span><span class="wbal-amt" id="w-viajes-bruto">$0</span></div>
@@ -351,12 +354,12 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
 </div>
 
 <!-- Lista pagos del día + botón agregar -->
+
 <div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px;margin-bottom:8px">
   <div class="slbl" style="padding:0;margin:0">Pagos de hoy</div>
   <button onclick="openModalWallet()" style="padding:7px 14px;background:var(--black);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer">+ Agregar</button>
 </div>
 <div id="w-pagos-list"></div>
-```
 
   </div>
 
@@ -425,8 +428,8 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
   <div id="vsub-agregar">
     <div style="height:12px"></div>
 
-```
 <!-- Banner viaje en proceso -->
+
 <div id="proceso-banner" style="display:none;margin:0 16px 12px;background:#000;border-radius:14px;padding:14px 16px">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
     <div>
@@ -472,7 +475,6 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <button class="bp" style="flex:2" onclick="addViajeSimple()">✓ Guardar viaje</button>
   </div>
 </div>
-```
 
   </div>
   <div id="vsub-hoy" style="display:none">
