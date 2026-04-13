@@ -2086,6 +2086,8 @@ function renderInicio(){
   const quedo=hoy.length>0?Math.max(0,recibo-combCosto+incHoy):incHoy;
 
   document.getElementById('h-quedo').textContent=CLP(quedo);
+  // Solo viajes completados (no cancelaciones)
+  const hoyCompletados = hoy.filter(v => v.tipo !== 'Cancelación');
   // Mostrar incentivos + viajes en detalle debajo del total
   const incLblEl = document.getElementById('h-inc-lbl');
   if(incLblEl){
@@ -2097,8 +2099,6 @@ function renderInicio(){
   }
   document.getElementById('h-bruto').textContent=CLP(bruto);
   document.getElementById('h-recibo').textContent=CLP(recibo);
-  // Solo viajes completados (no cancelaciones)
-  const hoyCompletados = hoy.filter(v => v.tipo !== 'Cancelación');
   document.getElementById('h-viajes').textContent=hoyCompletados.length;
 
   // Barra meta diaria
@@ -3819,7 +3819,7 @@ function renderWallet(){
 
 function renderWalletEfectivo(){
   const fecha=today();
-  const{inicial,totalPagos,enBilletera,enBilleteraEf,enBilleteraTr,enBilleteraTk,viajesEf,viajesTr,totalPagado,disponibleRetiro,diff,pagos}=walletCalc(fecha);
+  const{inicial,totalPagos,totalPagosEf,totalPagosTr,totalPagosTk,enBilletera,enBilleteraEf,enBilleteraTr,enBilleteraTk,viajesEf,viajesTr,totalPagado,disponibleRetiro,diff,pagos}=walletCalc(fecha);
 
   // Hero
   document.getElementById('w-billetera').textContent=CLP(enBilletera);
