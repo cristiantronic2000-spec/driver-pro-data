@@ -275,6 +275,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     </div>
     <div class="hamt" id="h-quedo">$0</div>
     <div class="hlbl">total generado hoy</div>
+    <div id="h-inc-lbl" style="display:none;font-size:13px;color:#4ade80;font-weight:700;margin-top:2px"></div>
     <div id="h-comb-est" style="display:none;font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;font-weight:600"></div>
     <div class="hstats">
       <div class="hstat"><div class="hsval" id="h-bruto">$0</div><div class="hslbl">Bruto</div></div>
@@ -394,7 +395,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       <div style="font-size:11px;color:var(--g400);margin-top:2px">Con cuánto efectivo empezaste el día</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
-      <input type="number" id="w-inicial-input" inputmode="numeric" placeholder="0"
+      <input type="number" id="w-inicial-input" inputmode="decimal" placeholder="0" pattern="[0-9]*"
         style="width:100px;padding:8px 10px;border:1.5px solid var(--g200);border-radius:10px;font-size:15px;font-weight:700;font-family:var(--font);text-align:right;outline:none">
       <button onclick="guardarMontoinicial()" style="padding:8px 14px;background:var(--black);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer">OK</button>
     </div>
@@ -518,8 +519,8 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
   </div>
   <div class="fg"><label class="fl">Monto cobrado (CLP)</label><input class="fi" type="text" id="v-monto" placeholder="1735" inputmode="decimal"></div>
   <div class="fgrid">
-    <div class="fg"><label class="fl">Km en vacío</label><input class="fi" type="number" id="v-kv" placeholder="2.7" inputmode="decimal" step="0.1"></div>
-    <div class="fg"><label class="fl">Km del viaje</label><input class="fi" type="number" id="v-kj" placeholder="1.6" inputmode="decimal" step="0.1"></div>
+    <div class="fg"><label class="fl">Km en vacío</label><input class="fi" type="text" id="v-kv" placeholder="2.7" inputmode="decimal"></div>
+    <div class="fg"><label class="fl">Km del viaje</label><input class="fi" type="text" id="v-kj" placeholder="1.6" inputmode="decimal"></div>
   </div>
   <div class="fg"><label class="fl">Tipo</label>
     <select class="fi" id="v-tipo"><option>UberX</option><option>Prioridad UberX</option><option>Uber Comfort</option><option>Uber Pet</option><option>Uber Envíos</option><option>Cancelación</option></select>
@@ -638,7 +639,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       <div class="mbox"><div class="mlbl">SII descontado</div><div class="mval cr" id="g-sii">$0</div><div class="msub" id="g-sii-pct">15.25% sobre bruto</div></div>
       <div class="mbox"><div class="mlbl">Total pagado</div><div class="mval" id="g-recibo">$0</div><div class="msub">bruto − SII</div></div>
       <div class="mbox"><div class="mlbl">Combustible</div><div class="mval cr" id="g-comb">$0</div><div class="msub">descontado</div></div>
-      <div class="mbox" style="background:var(--black);border-radius:14px;padding:14px;grid-column:span 2"><div class="mlbl" style="color:rgba(255,255,255,.6)">Me quedo</div><div class="mval" style="color:#fff" id="g-neto">$0</div><div class="msub" style="color:rgba(255,255,255,.5)">total pagado − combustible</div></div>
+      <div class="mbox" style="background:var(--black);border-radius:14px;padding:14px;grid-column:span 2"><div class="mlbl" style="color:rgba(255,255,255,.6)">Me quedo</div><div class="mval" style="color:#fff" id="g-neto">$0</div><div id="g-inc-sub" style="font-size:12px;color:#4ade80;font-weight:700;margin-top:3px;display:none"></div><div class="msub" style="color:rgba(255,255,255,.5)">total pagado − combustible</div></div>
       <div class="mbox"><div class="mlbl">Viajes</div><div class="mval" id="g-viajes">0</div></div>
       <div class="mbox"><div class="mlbl">Por hora</div><div class="mval" id="g-hora">$—</div></div>
     </div>
@@ -1040,8 +1041,8 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <input type="hidden" id="mv-id">
     <div class="fg"><label class="fl">Monto cobrado (CLP)</label><input class="fi" type="text" id="m-monto" inputmode="decimal" placeholder="1735"></div>
     <div class="fgrid">
-      <div class="fg"><label class="fl">Km en vacío</label><input class="fi" type="number" id="m-kv" inputmode="decimal" step="0.1" placeholder="2.7"></div>
-      <div class="fg"><label class="fl">Km del viaje</label><input class="fi" type="number" id="m-kj" inputmode="decimal" step="0.1" placeholder="1.6"></div>
+      <div class="fg"><label class="fl">Km en vacío</label><input class="fi" type="text" id="m-kv" inputmode="decimal" placeholder="2.7"></div>
+      <div class="fg"><label class="fl">Km del viaje</label><input class="fi" type="text" id="m-kj" inputmode="decimal" placeholder="1.6"></div>
     </div>
     <div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" id="m-fecha"></div>
     <div class="fgrid">
@@ -1098,7 +1099,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <!-- Meta principal -->
     <div class="fgrid">
       <div class="fg"><label class="fl">Meta (viajes)</label><input class="fi" type="number" id="minc-meta" placeholder="50" inputmode="numeric"></div>
-      <div class="fg"><label class="fl">Premio ($)</label><input class="fi" type="text" id="minc-premio" placeholder="24000" inputmode="numeric"></div>
+      <div class="fg"><label class="fl">Premio ($)</label><input class="fi" type="text" id="minc-premio" placeholder="24000" inputmode="decimal"></div>
     </div>
 
     <!-- Extra (solo semanal) -->
@@ -1106,7 +1107,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       <div style="font-size:12px;font-weight:700;color:var(--g600);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">Viajes extra (opcional)</div>
       <div class="fgrid">
         <div class="fg"><label class="fl">+Viajes extra</label><input class="fi" type="number" id="minc-extra-viajes" placeholder="10" inputmode="numeric"></div>
-        <div class="fg"><label class="fl">+Premio extra ($)</label><input class="fi" type="text" id="minc-extra-premio" placeholder="7000" inputmode="numeric"></div>
+        <div class="fg"><label class="fl">+Premio extra ($)</label><input class="fi" type="text" id="minc-extra-premio" placeholder="7000" inputmode="decimal"></div>
       </div>
     </div>
 
@@ -1137,7 +1138,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     </div>
     <div class="fg">
       <label class="fl">Monto recibido ($) — opcional</label>
-      <input class="fi" type="text" id="mci-monto" placeholder="24000" inputmode="numeric">
+      <input class="fi" type="text" id="mci-monto" placeholder="24000" inputmode="decimal">
     </div>
     <button class="bp bgreen" onclick="cerrarIncentivo(true)">✓ Registrar y cerrar</button>
     <div style="height:10px"></div>
@@ -1428,11 +1429,13 @@ function refreshAll(){
       const vsub=vtab?vtab.getAttribute('onclick').match(/'v','([^']+)'/)?.[1]:'hoy';
       if(vsub==='hoy') renderVHoy();
       if(vsub==='historial') renderVHist();
+      if(vsub==='incentivos') renderIncentivosViajes();
     }
     if(pid==='page-ganancias'){
       const gsub=document.querySelector('#gtabs .stab.on');
       const gname=gsub?gsub.getAttribute('onclick').match(/'g','([^']+)'/)?.[1]:'resumen';
       if(gname==='historial') renderGHist();
+      if(gname==='incentivos') renderIncentivosGanancias();
     }
     if(pid==='page-billetera') renderWallet();
   }
@@ -1796,8 +1799,8 @@ window.addViajeSimple=async function(){
     horaFin:horaFin||null,
     durMin:durMin,
     monto,
-    kv:parseFloat(document.getElementById('v-kv').value)||0,
-    kj:parseFloat(document.getElementById('v-kj').value)||0,
+    kv:parseDecimal(document.getElementById('v-kv').value),
+    kj:parseDecimal(document.getElementById('v-kj').value),
     tipo:document.getElementById('v-tipo').value,
     pago:payState.v
   };
@@ -1834,8 +1837,8 @@ window.saveViajeModal=async function(){
     ...(horaFin&&{horaFin}),
     ...(durMin!==null&&{durMin}),
     monto:parseFloat((document.getElementById('m-monto').value||'').replace(',','.'))||0,
-    kv:parseFloat(document.getElementById('m-kv').value)||0,
-    kj:parseFloat(document.getElementById('m-kj').value)||0,
+    kv:parseDecimal(document.getElementById('m-kv').value),
+    kj:parseDecimal(document.getElementById('m-kj').value),
     tipo:document.getElementById('m-tipo').value,
     pago:payState.m
   };
@@ -2083,6 +2086,15 @@ function renderInicio(){
   const quedo=hoy.length>0?Math.max(0,recibo-combCosto+incHoy):incHoy;
 
   document.getElementById('h-quedo').textContent=CLP(quedo);
+  // Mostrar incentivos + viajes en detalle debajo del total
+  const incLblEl = document.getElementById('h-inc-lbl');
+  if(incLblEl){
+    const partsLbl = [];
+    if(hoyCompletados.length > 0) partsLbl.push(hoyCompletados.length + ' viajes');
+    if(incHoy > 0) partsLbl.push('+' + CLP(incHoy) + ' incentivos');
+    if(partsLbl.length > 0){ incLblEl.textContent = partsLbl.join(' · '); incLblEl.style.display='block'; }
+    else { incLblEl.style.display='none'; }
+  }
   document.getElementById('h-bruto').textContent=CLP(bruto);
   document.getElementById('h-recibo').textContent=CLP(recibo);
   // Solo viajes completados (no cancelaciones)
@@ -2185,9 +2197,24 @@ function renderGan(){
   const siiEl=document.getElementById('g-sii');if(siiEl) siiEl.textContent=CLP(siiMonto);
   const siiPct=document.getElementById('g-sii-pct');if(siiPct) siiPct.textContent=CONFIG.sii+'% sobre bruto';
   document.getElementById('g-recibo').textContent=CLP(m.recibo);
-  document.getElementById('g-neto').textContent=CLP(m.quedo);
+  // Incentivos cobrados en el período
+  const viajesP = vPeriod();
+  const fechasP = [...new Set(viajesP.map(v=>v.fecha))];
+  let incP = 0;
+  if(period==='hoy') incP = INCENTIVOS.filter(i=>i.cerrado&&i.fechaCierre===today()).reduce((a,i)=>a+(i.montoCobrado||0),0);
+  else if(period==='ayer'){const ay=(()=>{const d=new Date(today()+'T12:00:00');d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);})();incP=INCENTIVOS.filter(i=>i.cerrado&&i.fechaCierre===ay).reduce((a,i)=>a+(i.montoCobrado||0),0);}
+  else if(period==='semana'){const {lunStr}=resumenSemanaStr();const domStr=(()=>{const d=new Date(lunStr+'T12:00:00');d.setDate(d.getDate()+6);return d.toISOString().slice(0,10);})();incP=INCENTIVOS.filter(i=>i.cerrado&&(i.fechaCierre||'')>=lunStr&&(i.fechaCierre||'')<=domStr).reduce((a,i)=>a+(i.montoCobrado||0),0);}
+  else if(period==='mes'){const mesStr=today().slice(0,7);incP=INCENTIVOS.filter(i=>i.cerrado&&(i.fechaCierre||'').startsWith(mesStr)).reduce((a,i)=>a+(i.montoCobrado||0),0);}
+  else if(period==='dia'){const dia=selectedDates.resumen||today();incP=INCENTIVOS.filter(i=>i.cerrado&&i.fechaCierre===dia).reduce((a,i)=>a+(i.montoCobrado||0),0);}
+  const quedoneto = m.quedo + incP;
+  document.getElementById('g-neto').textContent=CLP(quedoneto);
+  const gIncSub = document.getElementById('g-inc-sub');
+  if(gIncSub){
+    if(incP>0){gIncSub.textContent='+'+CLP(incP)+' incentivos';gIncSub.style.display='block';}
+    else{gIncSub.style.display='none';}
+  }
   document.getElementById('g-viajes').textContent=m.viajes;
-  document.getElementById('g-hora').textContent=(m.hrs>0&&m.quedo>0)?CLP(m.quedo/m.hrs)+'/hr':'$—';
+  document.getElementById('g-hora').textContent=(m.hrs>0&&quedoneto>0)?CLP(quedoneto/m.hrs)+'/hr':'$—';
   document.getElementById('g-comb').textContent=CLP(m.ben);
 
   const labels=[],data=[];
@@ -2241,12 +2268,23 @@ function renderGan(){
     // mes: resaltar la semana que contiene hoy si cae en este mes
     return i===data.length-1?'#000':'#e0e0e0';
   });
+  let ganSelectedIdx = bgColors.indexOf('#000');
+  const ganTickColors = () => labels.map((_,i) => i===ganSelectedIdx ? '#000' : '#9e9e9e');
   charts.gan=new Chart(document.getElementById('ch-gan'),{
     type:'bar',
     data:{labels,datasets:[{data,backgroundColor:bgColors,borderRadius:6,borderSkipped:false}]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>CLP(ctx.raw)}}},
-      scales:{x:{grid:{display:false},ticks:{color:'#9e9e9e',font:{size:11,weight:'700'}}},y:{display:false}}}
+      onClick:(_,els)=>{
+        if(!els.length) return;
+        const idx=els[0].index;
+        ganSelectedIdx=idx;
+        const newColors=labels.map((_,i)=>i===idx?'#000':'#e0e0e0');
+        charts.gan.data.datasets[0].backgroundColor=newColors;
+        charts.gan.options.scales.x.ticks.color= (ctx) => ctx.index===idx?'#000':'#9e9e9e';
+        charts.gan.update();
+      },
+      scales:{x:{grid:{display:false},ticks:{color:(ctx)=>ctx.index===ganSelectedIdx?'#000':'#9e9e9e',font:{size:11,weight:'700'}}},y:{display:false}}}
   });
 
   const gLast10=document.getElementById('g-last10');gLast10.innerHTML='';
@@ -2657,7 +2695,13 @@ function renderCombustible(){
       gData.push(0);
       gColors.push('#eeeeee');
     }
-    if(gData.some(v=>v>0)) charts.comb=new Chart(cvs,{type:'bar',data:{labels:gLabels,datasets:[{data:gData,backgroundColor:gColors,borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>CLP(ctx.raw)+(ctx.label.endsWith('~')?' (est.)':'')}}}  ,scales:{x:{grid:{display:false},ticks:{color:'#9e9e9e',font:{size:10,weight:'700'}}},y:{display:false}}}});
+    if(gData.some(v=>v>0)){
+      let combSelIdx=gColors.indexOf('#000');
+      charts.comb=new Chart(cvs,{type:'bar',data:{labels:gLabels,datasets:[{data:gData,backgroundColor:gColors,borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>CLP(ctx.raw)+(ctx.label.endsWith('~')?' (est.)':'')}}},
+        onClick:(_,els)=>{if(!els.length)return;const idx=els[0].index;combSelIdx=idx;charts.comb.data.datasets[0].backgroundColor=gLabels.map((_,i)=>i===idx?'#000':'#e0e0e0');charts.comb.options.scales.x.ticks.color=(ctx)=>ctx.index===idx?'#000':'#9e9e9e';charts.comb.update();},
+        scales:{x:{grid:{display:false},ticks:{color:(ctx)=>ctx.index===combSelIdx?'#000':'#9e9e9e',font:{size:10,weight:'700'}}},y:{display:false}}}});
+    }
   }
   const el=document.getElementById('comb-list');
   if(esHoy&&!hoyTieneCierre){
@@ -3775,7 +3819,7 @@ function renderWallet(){
 
 function renderWalletEfectivo(){
   const fecha=today();
-  const{inicial,totalPagos,enBilletera,enBilleteraEf,enBilleteraTr,viajesEf,viajesTr,totalPagado,disponibleRetiro,diff,pagos}=walletCalc(fecha);
+  const{inicial,totalPagos,enBilletera,enBilleteraEf,enBilleteraTr,enBilleteraTk,viajesEf,viajesTr,totalPagado,disponibleRetiro,diff,pagos}=walletCalc(fecha);
 
   // Hero
   document.getElementById('w-billetera').textContent=CLP(enBilletera);
@@ -3993,6 +4037,7 @@ function incEsVencido(inc){
 }
 
 function CLP2(n){ return '$'+Math.round(n).toLocaleString('es-CL'); }
+function parseDecimal(s){ return parseFloat((s||'0').toString().replace(',','.').replace(/[^0-9.]/g,''))||0; }
 
 function buildIncCard(inc, context){
   // context: 'inicio' | 'viajes'
@@ -4004,9 +4049,17 @@ function buildIncCard(inc, context){
   const extraPremio = inc.extraPremio || 0;
 
   const enExtra = viajes > meta;
-  const pct = totalMeta > 0 ? Math.min(viajes, meta) / meta * 100 : 0;
+  // Bar math: full bar represents totalMeta (or just meta if no extra)
+  // Green zone: 0 → markerPct (= meta/totalMeta * 100)
+  // Yellow zone: markerPct → 100
+  const markerPctCalc = extraViajes > 0 ? (meta / totalMeta * 100) : 100;
+  // Green fill: how far into the green zone (0..markerPctCalc)
+  const pct = totalMeta > 0
+    ? Math.min(viajes, meta) / totalMeta * 100   // fills green zone proportionally
+    : 0;
+  // Extra fill: how far into the yellow zone
   const pctExtra = (extraViajes > 0 && enExtra)
-    ? Math.min(viajes - meta, extraViajes) / extraViajes * 100
+    ? Math.min(viajes - meta, extraViajes) / extraViajes * (100 - markerPctCalc)
     : 0;
 
   const activo = incEsActivo(inc);
@@ -4029,14 +4082,14 @@ function buildIncCard(inc, context){
     : activo ? '● Activo'
     : '○ Próximo';
 
-  // Bar marker position (where meta is on bar if extra exists)
-  const markerPct = extraViajes > 0 ? (meta / totalMeta * 100) : 0;
-  const barMetaLabel = extraViajes > 0 ? `${meta}` : `${meta}`;
+  // Bar marker position
+  const markerPct = extraViajes > 0 ? markerPctCalc : 0;
+  const barMetaLabel = `${meta}`;
   const barEndLabel = extraViajes > 0 ? `+${extraViajes}` : '';
 
-  // Extra bar starts after marker
-  const extraBarLeft = extraViajes > 0 ? markerPct : 0;
-  const extraBarWidth = pctExtra * (100 - extraBarLeft) / 100;
+  // Extra bar: starts exactly at markerPct, width = pctExtra
+  const extraBarLeft = markerPct;
+  const extraBarWidth = pctExtra;
 
   const editBtn = context === 'viajes'
     ? `<button class="inc-btn-sm inc-edit" onclick="editIncentivo('${inc._fid}')">✏️</button>`
@@ -4304,51 +4357,40 @@ function renderIncentivosGanancias(){
   const ctxM = document.getElementById('ch-inc-monto');
   if(ctxM){
     if(chIncMonto) chIncMonto.destroy();
-    // Para cada incentivo en el período, mostrar viajes hechos en su rango vs su meta
     const labelsM = chartData.map(i => (i.fechaCierre||i.fechaFin||'').slice(5).split('-').reverse().join('/'));
-    const viajesHechos = chartData.map(i => incViajesEnRango(i));
-    const metaBase2 = chartData.map(i => i.meta||0);
-    const metaExtra2 = chartData.map(i => (i.meta||0)+(i.extraViajes||0));
-    const barCol = chartData.map(i => {
-      const v=incViajesEnRango(i);
-      return v>=(i.meta||0)+(i.extraViajes||0)?'rgba(0,166,81,.85)':v>=(i.meta||0)?'rgba(39,110,241,.7)':'rgba(225,25,0,.6)';
-    });
+    const montosBars = chartData.map(i => i.montoCobrado||0);
+    const barColM = chartData.map(i => incViajesEnRango(i)>=(i.meta||0)?'rgba(0,166,81,.8)':'rgba(225,25,0,.6)');
+    let incMontoSelIdx = labelsM.length-1;
     chIncMonto = new Chart(ctxM, {
       type:'bar',
-      data:{
-        labels: labelsM,
-        datasets:[
-          {label:'Viajes hechos', data:viajesHechos, backgroundColor:barCol, borderRadius:6},
-          {label:'Meta base', data:metaBase2, backgroundColor:'rgba(0,0,0,.1)', borderRadius:6},
-          {label:'Meta total', data:metaExtra2, type:'line', borderColor:'rgba(0,0,0,.3)', backgroundColor:'transparent', borderDash:[4,3], pointRadius:3, tension:0}
-        ]
-      },
-      options:{
-        responsive:true, maintainAspectRatio:false,
-        plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11,weight:'700'},padding:10}},
-          title:{display:true,text:'Viajes hechos vs meta (por incentivo)',font:{size:12,weight:'700'}}},
-        scales:{y:{grid:{color:'rgba(0,0,0,.05)'}},x:{grid:{display:false}}}
-      }
+      data:{labels:labelsM,datasets:[{label:'Cobrado',data:montosBars,backgroundColor:barColM,borderRadius:6}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},title:{display:true,text:'Monto cobrado por incentivo',font:{size:12,weight:'700'}}},
+        onClick:(_,els)=>{if(!els.length)return;const idx=els[0].index;incMontoSelIdx=idx;chIncMonto.options.scales.x.ticks.color=(ctx)=>ctx.index===idx?'#000':'#9e9e9e';chIncMonto.update();},
+        scales:{y:{ticks:{callback:v=>'$'+v.toLocaleString('es-CL')},grid:{color:'rgba(0,0,0,.05)'}},
+          x:{grid:{display:false},ticks:{color:(ctx)=>ctx.index===incMontoSelIdx?'#000':'#9e9e9e',font:{size:10,weight:'700'}}}}}
     });
   }
 
   const ctxV = document.getElementById('ch-inc-viajes');
   if(ctxV){
     if(chIncViajes) chIncViajes.destroy();
+    const labelsV = chartData.map(i => (i.fechaCierre||i.fechaFin||'').slice(5).split('-').reverse().join('/'));
+    const viajesH = chartData.map(i => incViajesEnRango(i));
+    const metasV = chartData.map(i => i.meta||0);
+    let incViajesSelIdx = labelsV.length-1;
     chIncViajes = new Chart(ctxV, {
       type:'bar',
-      data:{
-        labels,
-        datasets:[
-          {label:'Viajes hechos', data:viajesData, backgroundColor:'rgba(39,110,241,.7)', borderRadius:6},
-          {label:'Meta', data:metasData, backgroundColor:'rgba(0,0,0,.1)', borderRadius:6}
-        ]
-      },
-      options:{
-        responsive:true, maintainAspectRatio:false,
-        plugins:{legend:{display:true,position:'bottom'},title:{display:true,text:'Viajes vs meta (período seleccionado)',font:{size:12,weight:'700'}}},
-        scales:{y:{grid:{color:'rgba(0,0,0,.05)'}},x:{grid:{display:false}}}
-      }
+      data:{labels:labelsV,datasets:[
+        {label:'Viajes hechos',data:viajesH,backgroundColor:'rgba(39,110,241,.7)',borderRadius:6},
+        {label:'Meta',data:metasV,backgroundColor:'rgba(0,0,0,.1)',borderRadius:6}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11,weight:'700'},padding:10}},
+          title:{display:true,text:'Viajes vs meta',font:{size:12,weight:'700'}}},
+        onClick:(_,els)=>{if(!els.length)return;const idx=els[0].index;incViajesSelIdx=idx;chIncViajes.options.scales.x.ticks.color=(ctx)=>ctx.index===idx?'#000':'#9e9e9e';chIncViajes.update();},
+        scales:{y:{grid:{color:'rgba(0,0,0,.05)'}},
+          x:{grid:{display:false},ticks:{color:(ctx)=>ctx.index===incViajesSelIdx?'#000':'#9e9e9e',font:{size:10,weight:'700'}}}}}
     });
   }
 
