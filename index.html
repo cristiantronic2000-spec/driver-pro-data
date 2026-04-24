@@ -338,13 +338,13 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
   <!-- Botones de acción rápida -->
 
   <div style="padding:0 16px;display:flex;flex-direction:column;gap:8px;margin-bottom:4px">
-    <button onclick="openModalWallet()" style="width:100%;padding:14px 16px;background:#fff;color:var(--black);border:1.5px solid var(--g200);border-radius:14px;font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Agregar nuevo pago
-    </button>
     <button onclick="openM('modal-viaje')" style="width:100%;padding:14px 16px;background:var(--black);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Agregar viaje
+    </button>
+    <button onclick="openModalWallet()" style="width:100%;padding:14px 16px;background:#fff;color:var(--black);border:1.5px solid var(--g200);border-radius:14px;font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Agregar nuevo pago
     </button>
   </div>
   <div style="height:16px"></div>
@@ -726,9 +726,25 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
     <div class="psel" id="comb-psel">
       <button class="pbtn on" onclick="setCombPeriod('hoy',this)">Hoy</button>
       <button class="pbtn" onclick="setCombPeriod('ayer',this)">Ayer</button>
-      <button class="pbtn" onclick="setCombPeriod('7',this)">7 días</button>
-      <button class="pbtn" onclick="setCombPeriod('30',this)">30 días</button>
       <button class="pbtn" onclick="setCombPeriod('dia',this)">Día</button>
+      <button class="pbtn" onclick="setCombPeriod('semana',this)">Semana</button>
+      <button class="pbtn" onclick="setCombPeriod('mes',this)">Mes</button>
+    </div>
+    <div id="comb-semana-nav" style="display:none">
+      <div class="snav">
+        <button class="sbtn" onclick="navCombSemana(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <div style="flex:1;text-align:center"><span id="comb-semana-lbl" style="font-size:15px;font-weight:800"></span></div>
+        <button class="sbtn" onclick="navCombSemana(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+      <div style="text-align:center;padding-bottom:4px"><button class="date-today-btn" style="font-size:12px;padding:6px 16px" onclick="navCombSemanaHoy()">Esta semana</button></div>
+    </div>
+    <div id="comb-mes-nav" style="display:none">
+      <div class="snav">
+        <button class="sbtn" onclick="navCombMes(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <div style="flex:1;text-align:center"><span id="comb-mes-lbl" style="font-size:15px;font-weight:800"></span></div>
+        <button class="sbtn" onclick="navCombMes(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+      <div style="text-align:center;padding-bottom:4px"><button class="date-today-btn" style="font-size:12px;padding:6px 16px" onclick="navCombMesHoy()">Este mes</button></div>
     </div>
     <div class="snav" id="comb-nav" style="display:none">
       <button class="sbtn" onclick="navCombDia(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
@@ -744,6 +760,7 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       <div class="mbox"><div class="mlbl">Rendimiento prom.</div><div class="mval" id="comb-rend">0 km/L</div><div class="msub">promedio</div></div>
       <div class="mbox"><div class="mlbl">Costo por km</div><div class="mval" id="comb-xkm">$—</div><div class="msub">bencina/km</div></div>
       <div class="mbox"><div class="mlbl">Litros consumidos</div><div class="mval" id="comb-litros">0 L</div><div class="msub">km÷rendimiento</div></div>
+      <div class="mbox"><div class="mlbl">Promedio diario</div><div class="mval cr" id="comb-prom-dia">$—</div><div class="msub" id="comb-prom-dia-sub">por día trabajado</div></div>
     </div>
     <div class="slbl">Detalle por día</div>
     <div id="comb-list"></div>
@@ -1175,7 +1192,13 @@ html,body{height:100%;overflow:hidden;background:#fff;font-family:var(--font);co
       <div class="fg"><label class="fl">Inicio</label><input class="fi" type="time" id="t-ini" value="08:00"></div>
       <div class="fg"><label class="fl">Término</label><input class="fi" type="time" id="t-fin" value="18:00"></div>
     </div>
-    <div class="fg"><label class="fl">Colación (ej: 14:00-15:00)</label><input class="fi" type="text" id="t-col" placeholder="opcional"></div>
+    <div class="fg">
+      <label class="fl">Colación <span style="font-weight:500;color:var(--g400)">(opcional)</span></label>
+      <div class="fgrid">
+        <div><label class="fl" style="font-size:10px">Inicio colación</label><input class="fi" type="time" id="t-col-ini" placeholder="--:--"></div>
+        <div><label class="fl" style="font-size:10px">Fin colación</label><input class="fi" type="time" id="t-col-fin" placeholder="--:--"></div>
+      </div>
+    </div>
     <div class="fg"><label class="fl">Nota</label><input class="fi" type="text" id="t-nota" placeholder="Ej: turno mañana completo"></div>
     <button class="bp" onclick="saveTurnoModal()">Guardar turno</button>
     <div style="height:8px"></div>
@@ -1332,7 +1355,7 @@ let calY=new Date().getFullYear(),calM=new Date().getMonth();
 let selCell=null,selZC='none';
 let charts={};
 let pendingDeleteFn=null;
-let pagosPeriod='hoy',pagosAppPeriod='hoy',combPeriod='7',combDayOffset=0;
+let pagosPeriod='hoy',pagosAppPeriod='hoy',combPeriod='hoy',combDayOffset=0;
 const MONTHS=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const ZONE_NAMES=['El Monte','Talagante','Isla de Maipo','Lonquen','Penaflor'];
 
@@ -1414,7 +1437,7 @@ function startListeners(){
     renderIncentivosViajes();
     renderIncentivosGanancias();
   });
-  onSnapshot(doc(db,'config','main'),(snap)=>{if(snap.exists()){CONFIG={...CONFIG,...snap.data()};document.getElementById('cfg-rend').value=CONFIG.rend;document.getElementById('cfg-ben').value=CONFIG.bencina;document.getElementById('cfg-fondo').value=CONFIG.fondo;document.getElementById('cfg-meta').value=CONFIG.meta;document.getElementById('cfg-sii').value=CONFIG.sii||15.25;const cmdEl=document.getElementById('cfg-meta-dia');if(cmdEl) cmdEl.value=CONFIG.metaDia||20;const cmdeEl=document.getElementById('cfg-meta-dia-extra');if(cmdeEl) cmdeEl.value=CONFIG.metaDiaExtra||5;}});
+  onSnapshot(doc(db,'config','main'),(snap)=>{if(snap.exists()){CONFIG={...CONFIG,...snap.data()};document.getElementById('cfg-rend').value=CONFIG.rend;document.getElementById('cfg-ben').value=CONFIG.bencina;document.getElementById('cfg-fondo').value=CONFIG.fondo;document.getElementById('cfg-meta').value=CONFIG.meta;document.getElementById('cfg-sii').value=CONFIG.sii||15.25;const cmdEl=document.getElementById('cfg-meta-dia');if(cmdEl) cmdEl.value=CONFIG.metaDia||20;const cmdeEl=document.getElementById('cfg-meta-dia-extra');if(cmdeEl) cmdeEl.value=CONFIG.metaDiaExtra||5;refreshAll();}});
 }
 
 function refreshAll(){
@@ -1928,8 +1951,9 @@ window.editCierre=function(fecha){
 window.openTurnoModal=function(){
   document.getElementById('mt-title').textContent='Planificar turno';
   document.getElementById('mt-id').value='';document.getElementById('t-fecha').value=today();
-  document.getElementById('t-ini').value='08:00';document.getElementById('t-fin').value='18:00';
-  document.getElementById('t-col').value='';document.getElementById('t-nota').value='';
+  document.getElementById('t-ini').value='10:00';document.getElementById('t-fin').value='20:30';
+  document.getElementById('t-col-ini').value='';document.getElementById('t-col-fin').value='';
+  document.getElementById('t-nota').value='';
   document.getElementById('modal-turno').classList.add('open');
 };
 
@@ -1937,7 +1961,7 @@ window.saveTurnoModal=async function(){
   const fid=document.getElementById('mt-id').value;
   const fecha=document.getElementById('t-fecha').value;
   if(!fecha){toast('Selecciona una fecha');return;}
-  const data={fecha,ini:document.getElementById('t-ini').value,fin:document.getElementById('t-fin').value,col:document.getElementById('t-col').value,nota:document.getElementById('t-nota').value};
+  const data={fecha,ini:document.getElementById('t-ini').value,fin:document.getElementById('t-fin').value,colIni:document.getElementById('t-col-ini').value||'',colFin:document.getElementById('t-col-fin').value||'',nota:document.getElementById('t-nota').value};
   try{
     if(fid){await updateDoc(doc(db,'turnos',fid),data);toast('Turno actualizado');}
     else{await addDoc(collection(db,'turnos'),data);toast('Turno guardado');}
@@ -1951,7 +1975,20 @@ window.editTurno=function(fid){
   document.getElementById('mt-title').textContent='Editar turno';
   document.getElementById('mt-id').value=fid;document.getElementById('t-fecha').value=t.fecha;
   document.getElementById('t-ini').value=t.ini;document.getElementById('t-fin').value=t.fin;
-  document.getElementById('t-col').value=t.col||'';document.getElementById('t-nota').value=t.nota||'';
+  // Soporte nuevo colIni/colFin y legacy col
+  if(t.colIni||t.colFin){
+    document.getElementById('t-col-ini').value=t.colIni||'';
+    document.getElementById('t-col-fin').value=t.colFin||'';
+  } else if(t.col){
+    // Migrar legacy: "HH:MM-HH:MM" → dos campos
+    const p=t.col.split('-');
+    document.getElementById('t-col-ini').value=p[0]||'';
+    document.getElementById('t-col-fin').value=p[1]||'';
+  } else {
+    document.getElementById('t-col-ini').value='';
+    document.getElementById('t-col-fin').value='';
+  }
+  document.getElementById('t-nota').value=t.nota||'';
   document.getElementById('modal-turno').classList.add('open');
 };
 
@@ -2091,10 +2128,7 @@ function renderInicio(){
   // Mostrar incentivos + viajes en detalle debajo del total
   const incLblEl = document.getElementById('h-inc-lbl');
   if(incLblEl){
-    const partsLbl = [];
-    if(hoyCompletados.length > 0) partsLbl.push(hoyCompletados.length + ' viajes');
-    if(incHoy > 0) partsLbl.push('+' + CLP(incHoy) + ' incentivos');
-    if(partsLbl.length > 0){ incLblEl.textContent = partsLbl.join(' · '); incLblEl.style.display='block'; }
+    if(incHoy > 0){ incLblEl.textContent = '+' + CLP(incHoy) + ' incentivos cobrados'; incLblEl.style.display='block'; }
     else { incLblEl.style.display='none'; }
   }
   document.getElementById('h-bruto').textContent=CLP(bruto);
@@ -2120,10 +2154,10 @@ function renderInicio(){
   const midEl=document.getElementById('h-meta-mid');
   const maxEl=document.getElementById('h-meta-max');
 
-  if(fillEl) fillEl.style.width=pctBase+'%';
+  if(fillEl) fillEl.style.width=(pctBase * markerLeft / 100)+'%';
   if(extraFill){
-    extraFill.style.left=extraLeft+'%';
-    extraFill.style.width=extraWidth+'%';
+    extraFill.style.left=markerLeft+'%';
+    extraFill.style.width=(pctExtra * (100 - markerLeft) / 100)+'%';
   }
   if(markerEl){
     markerEl.style.display=metaExtra>0?'block':'none';
@@ -2206,11 +2240,11 @@ function renderGan(){
   else if(period==='semana'){const {lunStr}=resumenSemanaStr();const domStr=(()=>{const d=new Date(lunStr+'T12:00:00');d.setDate(d.getDate()+6);return d.toISOString().slice(0,10);})();incP=INCENTIVOS.filter(i=>i.cerrado&&(i.fechaCierre||'')>=lunStr&&(i.fechaCierre||'')<=domStr).reduce((a,i)=>a+(i.montoCobrado||0),0);}
   else if(period==='mes'){const mesStr=today().slice(0,7);incP=INCENTIVOS.filter(i=>i.cerrado&&(i.fechaCierre||'').startsWith(mesStr)).reduce((a,i)=>a+(i.montoCobrado||0),0);}
   else if(period==='dia'){const dia=selectedDates.resumen||today();incP=INCENTIVOS.filter(i=>i.cerrado&&i.fechaCierre===dia).reduce((a,i)=>a+(i.montoCobrado||0),0);}
-  const quedoneto = m.quedo + incP;
+  const quedoneto = m.quedo + (viajes.length > 0 ? incP : 0);
   document.getElementById('g-neto').textContent=CLP(quedoneto);
   const gIncSub = document.getElementById('g-inc-sub');
   if(gIncSub){
-    if(incP>0){gIncSub.textContent='+'+CLP(incP)+' incentivos';gIncSub.style.display='block';}
+    if(incP>0 && viajes.length>0){gIncSub.textContent='+'+CLP(incP)+' incentivos';gIncSub.style.display='block';}
     else{gIncSub.style.display='none';}
   }
   document.getElementById('g-viajes').textContent=m.viajes;
@@ -2574,11 +2608,74 @@ function renderPagosApp(){
   document.getElementById('fondo-meta').textContent='Meta: '+CLP(CONFIG.meta)+' ('+pct+'%)';
 }
 
+let combSemanaOffset=0;
+let combMesOffset=0;
+
+function combSemanaStr(){
+  const lunes=lunesDe(todayCL());
+  const d=new Date(lunes+'T12:00:00');
+  d.setDate(d.getDate()+combSemanaOffset*7);
+  const lunStr=d.toISOString().slice(0,10);
+  const dom=new Date(d);dom.setDate(dom.getDate()+6);
+  const domStr=dom.toISOString().slice(0,10);
+  const fmt=s=>s.slice(5).split('-').reverse().join('/');
+  return{lunStr,domStr,label:fmt(lunStr)+' → '+fmt(domStr)};
+}
+
+function combMesStr(){
+  const now=new Date();
+  const m=now.getMonth()+combMesOffset;
+  const d=new Date(now.getFullYear(),m,1);
+  const mesY=d.getFullYear();const mesM=d.getMonth();
+  const priStr=mesY+'-'+String(mesM+1).padStart(2,'0')+'-01';
+  const ultDia=new Date(mesY,mesM+1,0).getDate();
+  const ultStr=mesY+'-'+String(mesM+1).padStart(2,'0')+'-'+String(ultDia).padStart(2,'0');
+  const MESES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  return{priStr,ultStr,label:MESES[mesM]+' '+mesY};
+}
+
+window.navCombSemana=function(dir){
+  combSemanaOffset+=dir;
+  const{label}=combSemanaStr();
+  const lbl=document.getElementById('comb-semana-lbl');if(lbl) lbl.textContent=label;
+  renderCombustible();
+};
+window.navCombSemanaHoy=function(){
+  combSemanaOffset=0;
+  const{label}=combSemanaStr();
+  const lbl=document.getElementById('comb-semana-lbl');if(lbl) lbl.textContent=label;
+  renderCombustible();
+};
+window.navCombMes=function(dir){
+  combMesOffset+=dir;
+  const{label}=combMesStr();
+  const lbl=document.getElementById('comb-mes-lbl');if(lbl) lbl.textContent=label;
+  renderCombustible();
+};
+window.navCombMesHoy=function(){
+  combMesOffset=0;
+  const{label}=combMesStr();
+  const lbl=document.getElementById('comb-mes-lbl');if(lbl) lbl.textContent=label;
+  renderCombustible();
+};
+
 window.setCombPeriod=function(p,btn){
   combPeriod=p;combDayOffset=0;
   document.getElementById('comb-psel').querySelectorAll('.pbtn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
   const nav=document.getElementById('comb-nav');if(nav) nav.style.display=p==='dia'?'flex':'none';
+  const semNav=document.getElementById('comb-semana-nav');if(semNav) semNav.style.display=p==='semana'?'block':'none';
+  const mesNav=document.getElementById('comb-mes-nav');if(mesNav) mesNav.style.display=p==='mes'?'block':'none';
+  if(p==='semana'){
+    combSemanaOffset=0;
+    const {label}=combSemanaStr();
+    const lbl=document.getElementById('comb-semana-lbl');if(lbl) lbl.textContent=label;
+  }
+  if(p==='mes'){
+    combMesOffset=0;
+    const {label}=combMesStr();
+    const lbl=document.getElementById('comb-mes-lbl');if(lbl) lbl.textContent=label;
+  }
   renderCombustible();
 };
 
@@ -2613,6 +2710,15 @@ function getCombFechas(){
     const d=selectedDates.combDia||t;
     return [d,d];
   }
+  if(combPeriod==='semana'){
+    const {lunStr,domStr}=combSemanaStr();
+    return [lunStr,domStr];
+  }
+  if(combPeriod==='mes'){
+    const {priStr,ultStr}=combMesStr();
+    return [priStr,ultStr];
+  }
+  // legacy fallback
   if(combPeriod==='7'){
     const d=new Date(t+'T12:00:00');d.setDate(d.getDate()-6);
     return [d.toISOString().slice(0,10),t];
@@ -2627,6 +2733,8 @@ function getCombFechas(){
 function resetCombFiltro(){
   combPeriod='hoy';combDayOffset=0;
   const nav=document.getElementById('comb-nav');if(nav) nav.style.display='none';
+  const semNav=document.getElementById('comb-semana-nav');if(semNav) semNav.style.display='none';
+  const mesNav=document.getElementById('comb-mes-nav');if(mesNav) mesNav.style.display='none';
   const psel=document.getElementById('comb-psel');if(psel) psel.querySelectorAll('.pbtn').forEach((b,i)=>{b.classList.toggle('on',i===0);});
   renderCombustible();
 }
@@ -2662,12 +2770,19 @@ function renderCombustible(){
   }
   const rendProm=rendCount>0?(rendSum/rendCount):(parseFloat(CONFIG.rend)||16);
   const costXkm=totalKm>0?totalCosto/totalKm:0;
+  // Promedio diario: días con cierre real + hoy si es estimado
+  const diasConDatos = allCierres.filter(([,c])=>c.km>0).length + (esHoy&&!hoyTieneCierre&&hayViajesHoy?1:0);
+  const promDia = diasConDatos>0 ? totalCosto/diasConDatos : 0;
   const tag=esEstimado?' (est.)':'';
   document.getElementById('comb-total').textContent=CLP(totalCosto)+tag;
   document.getElementById('comb-km').textContent=Math.round(totalKm)+' km'+tag;
   document.getElementById('comb-rend').textContent=rendProm.toFixed(1)+' km/L';
   document.getElementById('comb-xkm').textContent=costXkm>0?CLP(costXkm)+'/km':'$—';
   document.getElementById('comb-litros').textContent=totalLitros.toFixed(1)+' L'+tag;
+  const promDiaEl=document.getElementById('comb-prom-dia');
+  const promDiaSubEl=document.getElementById('comb-prom-dia-sub');
+  if(promDiaEl) promDiaEl.textContent=promDia>0?CLP(promDia)+(esEstimado?' ~':''):'$—';
+  if(promDiaSubEl) promDiaSubEl.textContent=diasConDatos>0?diasConDatos+' día'+(diasConDatos!==1?'s':'')+(esEstimado?' (hoy est.)':''):'sin datos';
   if(charts.comb) charts.comb.destroy();
   const cvs=document.getElementById('ch-comb');
   if(cvs){
@@ -2898,8 +3013,39 @@ window.onCierreFechaChange=function(val){
 function calcMins(t){
   const p1=t.ini.split(':'),p2=t.fin.split(':');
   let tot=(parseInt(p2[0])*60+parseInt(p2[1]))-(parseInt(p1[0])*60+parseInt(p1[1]));
-  if(t.col){const p=t.col.split('-');if(p.length===2){const c1=p[0].split(':'),c2=p[1].split(':');tot-=(parseInt(c2[0])*60+parseInt(c2[1]))-(parseInt(c1[0])*60+parseInt(c1[1]));}}
+  if(tot<0) tot+=1440;
+  // Soporte nuevo: colIni/colFin (campos time separados)
+  if(t.colIni&&t.colFin){
+    const c1=t.colIni.split(':'),c2=t.colFin.split(':');
+    const colMin=(parseInt(c2[0])*60+parseInt(c2[1]))-(parseInt(c1[0])*60+parseInt(c1[1]));
+    if(colMin>0) tot-=colMin;
+  } else if(t.col){
+    // Compatibilidad legacy: "HH:MM-HH:MM"
+    const p=t.col.split('-');
+    if(p.length===2){const c1=p[0].split(':'),c2=p[1].split(':');tot-=(parseInt(c2[0])*60+parseInt(c2[1]))-(parseInt(c1[0])*60+parseInt(c1[1]));}
+  }
   return Math.max(0,tot);
+}
+
+function colMins(t){
+  if(t.colIni&&t.colFin){
+    const c1=t.colIni.split(':'),c2=t.colFin.split(':');
+    return Math.max(0,(parseInt(c2[0])*60+parseInt(c2[1]))-(parseInt(c1[0])*60+parseInt(c1[1])));
+  }
+  if(t.col){const p=t.col.split('-');if(p.length===2){const c1=p[0].split(':'),c2=p[1].split(':');return Math.max(0,(parseInt(c2[0])*60+parseInt(c2[1]))-(parseInt(c1[0])*60+parseInt(c1[1])));}}
+  return 0;
+}
+
+function turnoMins(t){
+  const p1=t.ini.split(':'),p2=t.fin.split(':');
+  let tot=(parseInt(p2[0])*60+parseInt(p2[1]))-(parseInt(p1[0])*60+parseInt(p1[1]));
+  if(tot<0) tot+=1440;
+  return Math.max(0,tot);
+}
+
+function fmtMins(m){
+  const h=Math.floor(m/60),min=m%60;
+  return h>0?(h+'h'+(min>0?' '+min+'min':'')):(min+'min');
 }
 
 function renderTurnos(){
@@ -2907,11 +3053,18 @@ function renderTurnos(){
   if(!TURNOS.length){el.innerHTML='<div class="empty"><div class="etxt">Sin turnos planificados</div></div>';return;}
   el.innerHTML='';
   TURNOS.slice(0,12).forEach(t=>{
+    const tTurno=turnoMins(t);
+    const tCol=colMins(t);
+    const tNeto=calcMins(t);
+    // Tiempo efectivo de viajes ese día
+    const vsD=vByDate(t.fecha);
+    const tEfectivo=vsD.reduce((a,v)=>a+(parseInt(v.durMin)||0),0);
     const row=document.createElement('div');row.className='trow';
     row.innerHTML='<div class="tico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>'
       +'<div class="tinfo">'
       +'<div class="tname">'+fmtD(t.fecha)+(t.nota?' · '+t.nota:'')+'</div>'
-      +'<div class="tmeta">'+t.ini+'–'+t.fin+' · '+calcMins(t)+' min efectivos</div>'
+      +'<div class="tmeta">'+t.ini+'–'+t.fin+(tCol>0?' · col. '+fmtMins(tCol):'')+'</div>'
+      +(tEfectivo>0?'<div class="tmeta" style="color:var(--green)">⚡ Efectivo: '+fmtMins(tEfectivo)+' / Turno: '+fmtMins(tNeto)+'</div>':'<div class="tmeta">Turno: '+fmtMins(tNeto)+'</div>')
       +'</div>'
       +'<div class="tactions">'
       +'<button class="tacbtn tacedit">✏️</button>'
@@ -2969,10 +3122,29 @@ window.calClick=function(ds){
     html+='<div class="slbl" style="padding:0;margin:0 0 8px;font-size:11px">TURNO</div>';
     turnos.forEach(t=>{
       const ini=t.ini||'—';const fin=t.fin||'—';
+      const tTurno=turnoMins(t);
+      const tCol=colMins(t);
+      const tNeto=calcMins(t);
+      // Tiempo efectivo desde durMin de viajes
+      const vsT=vByDate(t.fecha);
+      const tEfectivo=vsT.reduce((a,v)=>a+(parseInt(v.durMin)||0),0);
       const nota=t.nota?'<div style="font-size:12px;color:var(--g600);margin-top:3px">'+t.nota+'</div>':'';
+      const colStr=(t.colIni&&t.colFin)?(t.colIni+' → '+t.colFin):t.col||'';
       html+='<div style="background:var(--g50);border-radius:12px;padding:12px 14px;margin-bottom:6px">'
-        +'<div style="font-size:15px;font-weight:800">'+ini+' → '+fin+'</div>'
-        +(t.col?'<div style="font-size:12px;color:var(--g600);margin-top:2px">'+t.col+'</div>':'')
+        +'<div style="font-size:15px;font-weight:800;margin-bottom:8px">'+ini+' → '+fin+'</div>'
+        // Grid tiempos 3 columnas
+        +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:'+(colStr?'8':'0')+'px">'
+        +'<div style="background:#fff;border-radius:8px;padding:8px;text-align:center">'
+        +'<div style="font-size:'+(tEfectivo>0?'15':'13')+'px;font-weight:800;color:'+(tEfectivo>0?'var(--green)':'var(--g400)')+'">'+( tEfectivo>0?fmtMins(tEfectivo):'—')+'</div>'
+        +'<div style="font-size:9px;color:var(--g400);font-weight:700;margin-top:2px;text-transform:uppercase">Tmp Efectivo</div></div>'
+        +'<div style="background:#fff;border-radius:8px;padding:8px;text-align:center">'
+        +'<div style="font-size:15px;font-weight:800">'+fmtMins(tNeto)+'</div>'
+        +'<div style="font-size:9px;color:var(--g400);font-weight:700;margin-top:2px;text-transform:uppercase">Tmp Turno</div></div>'
+        +'<div style="background:#fff;border-radius:8px;padding:8px;text-align:center">'
+        +'<div style="font-size:15px;font-weight:800">'+(tTurno>0?(tTurno/60).toFixed(1)+'h':'—')+'</div>'
+        +'<div style="font-size:9px;color:var(--g400);font-weight:700;margin-top:2px;text-transform:uppercase">Tmp H Día</div></div>'
+        +'</div>'
+        +(colStr?'<div style="font-size:12px;color:var(--g600)">🍽 Colación: '+colStr+(tCol>0?' ('+fmtMins(tCol)+')':'')+'</div>':'')
         +nota+'</div>';
     });
     html+='</div>';
