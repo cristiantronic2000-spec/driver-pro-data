@@ -608,6 +608,50 @@
         }
     }
 
+    /* ── Loader ball 23: bolitas saltando en fila, indica "la IA está hablando"
+       junto al botón de mutear del chat ────────────────────────────────── */
+    .loader-ball-23 {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        width: 34px;
+        height: 34px;
+        flex-shrink: 0
+    }
+
+    .loader-ball-23 div {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--black);
+        animation: ldrball23bounce .9s ease-in-out infinite
+    }
+
+    .loader-ball-23 div:nth-child(1) { animation-delay: 0s }
+    .loader-ball-23 div:nth-child(2) { animation-delay: .1s }
+    .loader-ball-23 div:nth-child(3) { animation-delay: .2s }
+    .loader-ball-23 div:nth-child(4) { animation-delay: .3s }
+    .loader-ball-23 div:nth-child(5) { animation-delay: .4s }
+    .loader-ball-23 div:nth-child(6) { animation-delay: .3s }
+    .loader-ball-23 div:nth-child(7) { animation-delay: .2s }
+    .loader-ball-23 div:nth-child(8) { animation-delay: .1s }
+    .loader-ball-23 div:nth-child(9) { animation-delay: 0s }
+
+    @keyframes ldrball23bounce {
+
+        0%,
+        100% {
+            transform: translateY(0);
+            opacity: .35
+        }
+
+        50% {
+            transform: translateY(-7px);
+            opacity: 1
+        }
+    }
+
     /* ── Loader 01: línea de carga (splash inicial) ───────────────────────── */
     .ldr01-splash {
         position: relative;
@@ -1548,8 +1592,8 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 14px;
-        height: 14px;
+        width: 24px;
+        height: 24px;
         flex-shrink: 0
     }
 
@@ -1557,7 +1601,7 @@
         animation: ldr91move .8s linear infinite;
         display: block;
         content: "⠋";
-        font-size: 15px;
+        font-size: 26px;
         line-height: 1
     }
 
@@ -3278,10 +3322,7 @@
                         </div>
                         <div style="padding:16px;margin-top:8px;display:flex;gap:8px">
                             <button class="bp" style="flex:1" onclick="openTurnoModal()">+ Planificar turno</button>
-                            <button class="bs" style="flex:1" onclick="openBatchPlanModal()">📅 Por lotes</button>
-                        </div>
-                        <div style="padding:0 16px;margin-top:0">
-                            <button class="bs" style="width:100%;color:var(--red)" onclick="openBatchDeleteModal()">🗑 Eliminar por lotes</button>
+                            <button class="bs" style="flex:1" onclick="openLotesModal('crear')">📅 Lotes</button>
                         </div>
                         <!-- Turnos planificados -->
                         <div class="slbl">Turnos planificados</div>
@@ -3876,6 +3917,9 @@
                             Borrar
                         </button>
                         <div style="flex:1"></div>
+                        <div id="ia-hablando-anim" class="loader-ball-23" style="display:none" title="El asistente está hablando">
+                            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                        </div>
                         <button id="ia-voz-toggle-btn" onclick="toggleVozRespuestaIA()" style="border:none;background:var(--g50);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0" title="Leer respuestas en voz alta">
                             <svg id="ia-voz-toggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--g600)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
@@ -3954,6 +3998,22 @@
                             <span style="font-size:13px">Tomar en cuenta días festivos</span>
                             <input type="checkbox" id="pred-cfg-feriados">
                         </label>
+                        <div style="font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;margin:12px 0 6px;padding-top:8px;border-top:1px solid var(--g200)">Factores por tipo de día (×)</div>
+                        <div style="font-size:11px;color:var(--g400);margin-bottom:8px">Ajusta el estimado multiplicándolo según sea un día normal, fin de semana o feriado. Usa 1 para no aplicar ajuste.</div>
+                        <div class="fgrid" style="gap:8px">
+                            <div class="fg">
+                                <label class="fl" style="font-size:10px">Día normal</label>
+                                <input class="fi" type="number" step="0.05" min="0.1" max="3" id="pred-cfg-factor-normal" value="1">
+                            </div>
+                            <div class="fg">
+                                <label class="fl" style="font-size:10px">Fin de semana</label>
+                                <input class="fi" type="number" step="0.05" min="0.1" max="3" id="pred-cfg-factor-finde" value="1">
+                            </div>
+                            <div class="fg">
+                                <label class="fl" style="font-size:10px">Feriado</label>
+                                <input class="fi" type="number" step="0.05" min="0.1" max="3" id="pred-cfg-factor-feriado" value="1">
+                            </div>
+                        </div>
                         <button class="bp" style="margin-top:10px" onclick="guardarPredConfig()">Guardar configuración</button>
                     </div>
                     <div id="pred-contenido" style="padding:0 16px"></div>
@@ -4046,6 +4106,16 @@
                             </div>
                             <label class="ia-switch">
                                 <input type="checkbox" id="ia-pref-viajes" onchange="guardarPrefsIA()">
+                                <span class="ia-switch-slider"></span>
+                            </label>
+                        </div>
+                        <div class="strow">
+                            <div>
+                                <div class="stlbl">Horas activas</div>
+                                <div style="font-size:12px;color:var(--g400)">Horas de turno vs. horas activas y eficiencia, semana a semana</div>
+                            </div>
+                            <label class="ia-switch">
+                                <input type="checkbox" id="ia-pref-horas-activas" onchange="guardarPrefsIA()">
                                 <span class="ia-switch-slider"></span>
                             </label>
                         </div>
@@ -4535,90 +4605,94 @@
         </div>
     </div>
 
-    <div class="mbg" id="modal-batch-plan" onclick="closeMBg(event,'modal-batch-plan')">
+    <div class="mbg" id="modal-batch-lotes" onclick="closeMBg(event,'modal-batch-lotes')">
         <div class="modal">
             <div class="mhdl"></div>
-            <div class="mtit">📅 Planificar por lotes</div>
-            <div class="fg">
-                <label class="fl">Selecciona los días</label>
-                <div id="batch-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:4px">
-                    <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">L</div>
-                    <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">M</div>
-                    <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">M</div>
-                    <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">J</div>
-                    <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">V</div>
-                    <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">S</div>
-                    <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">D</div>
-                </div>
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
-                    <button onclick="batchCalNav(-1)" style="width:36px;height:36px;background:var(--g100);border:none;border-radius:50%;cursor:pointer;font-size:18px;font-family:var(--font)">‹</button>
-                    <span id="batch-mes-lbl" style="font-size:14px;font-weight:800"></span>
-                    <button onclick="batchCalNav(1)" style="width:36px;height:36px;background:var(--g100);border:none;border-radius:50%;cursor:pointer;font-size:18px;font-family:var(--font)">›</button>
-                </div>
+            <div class="mtit">🗓 Turnos por lotes</div>
+            <div class="psel" id="lotes-subsel" style="margin:0 0 14px">
+                <button class="pbtn on" id="lotes-sel-crear" onclick="setLoteTab('crear',this)">Crear</button>
+                <button class="pbtn" id="lotes-sel-eliminar" onclick="setLoteTab('eliminar',this)">Eliminar</button>
             </div>
-            <div id="batch-selected-lbl" style="font-size:12px;color:var(--g400);margin-bottom:12px;min-height:16px">Toca los días para seleccionarlos</div>
-            <div class="fgrid">
-                <div class="fg">
-                    <label class="fl">Inicio turno</label>
-                    <input class="fi" type="time" id="batch-ini" value="08:00">
-                </div>
-                <div class="fg">
-                    <label class="fl">Término turno</label>
-                    <input class="fi" type="time" id="batch-fin" value="18:00">
-                </div>
-            </div>
-            <div class="fg">
-                <label class="fl">
-                    Colación 
-                    <span style="font-weight:500;color:var(--g400)">(opcional)</span>
-                </label>
-                <div class="fgrid">
-                    <div>
-                        <label class="fl" style="font-size:10px">Inicio colación</label>
-                        <input class="fi" type="time" id="batch-col-ini" placeholder="--:--">
-                    </div>
-                    <div>
-                        <label class="fl" style="font-size:10px">Fin colación</label>
-                        <input class="fi" type="time" id="batch-col-fin" placeholder="--:--">
-                    </div>
-                </div>
-            </div>
-            <div class="fg">
-                <label class="fl">Nota (aplica a todos)</label>
-                <input class="fi" type="text" id="batch-nota" placeholder="Ej: turno completo">
-            </div>
-            <button class="bp" onclick="saveBatchTurnos()">Guardar turnos</button>
-            <div style="height:8px"></div>
-            <button class="bs" onclick="closeM('modal-batch-plan')">Cancelar</button>
-        </div>
-    </div>
 
-    <div class="mbg" id="modal-batch-delete" onclick="closeMBg(event,'modal-batch-delete')">
-        <div class="modal">
-            <div class="mhdl"></div>
-            <div class="mtit" style="color:var(--red)">🗑 Eliminar por lotes</div>
-            <div class="fg">
-                <label class="fl">Selecciona los días con turno a eliminar</label>
-                <div id="batchdel-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:4px">
-                    <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">L</div>
-                    <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">M</div>
-                    <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">M</div>
-                    <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">J</div>
-                    <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">V</div>
-                    <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">S</div>
-                    <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">D</div>
+            <!-- Crear por lotes -->
+            <div id="lote-tab-crear">
+                <div class="fg">
+                    <label class="fl">Selecciona los días</label>
+                    <div id="batch-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:4px">
+                        <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">L</div>
+                        <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">M</div>
+                        <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">M</div>
+                        <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">J</div>
+                        <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">V</div>
+                        <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">S</div>
+                        <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">D</div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+                        <button onclick="batchCalNav(-1)" style="width:36px;height:36px;background:var(--g100);border:none;border-radius:50%;cursor:pointer;font-size:18px;font-family:var(--font)">‹</button>
+                        <span id="batch-mes-lbl" style="font-size:14px;font-weight:800"></span>
+                        <button onclick="batchCalNav(1)" style="width:36px;height:36px;background:var(--g100);border:none;border-radius:50%;cursor:pointer;font-size:18px;font-family:var(--font)">›</button>
+                    </div>
                 </div>
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
-                    <button onclick="batchDelCalNav(-1)" style="width:36px;height:36px;background:var(--g100);border:none;border-radius:50%;cursor:pointer;font-size:18px;font-family:var(--font)">‹</button>
-                    <span id="batchdel-mes-lbl" style="font-size:14px;font-weight:800"></span>
-                    <button onclick="batchDelCalNav(1)" style="width:36px;height:36px;background:var(--g100);border:none;border-radius:50%;cursor:pointer;font-size:18px;font-family:var(--font)">›</button>
+                <div id="batch-selected-lbl" style="font-size:12px;color:var(--g400);margin-bottom:12px;min-height:16px">Toca los días para seleccionarlos</div>
+                <div class="fgrid">
+                    <div class="fg">
+                        <label class="fl">Inicio turno</label>
+                        <input class="fi" type="time" id="batch-ini" value="08:00">
+                    </div>
+                    <div class="fg">
+                        <label class="fl">Término turno</label>
+                        <input class="fi" type="time" id="batch-fin" value="18:00">
+                    </div>
                 </div>
+                <div class="fg">
+                    <label class="fl">
+                        Colación 
+                        <span style="font-weight:500;color:var(--g400)">(opcional)</span>
+                    </label>
+                    <div class="fgrid">
+                        <div>
+                            <label class="fl" style="font-size:10px">Inicio colación</label>
+                            <input class="fi" type="time" id="batch-col-ini" placeholder="--:--">
+                        </div>
+                        <div>
+                            <label class="fl" style="font-size:10px">Fin colación</label>
+                            <input class="fi" type="time" id="batch-col-fin" placeholder="--:--">
+                        </div>
+                    </div>
+                </div>
+                <div class="fg">
+                    <label class="fl">Nota (aplica a todos)</label>
+                    <input class="fi" type="text" id="batch-nota" placeholder="Ej: turno completo">
+                </div>
+                <button class="bp" onclick="saveBatchTurnos()">Guardar turnos</button>
             </div>
-            <div style="font-size:11px;color:var(--g400);margin-bottom:8px">Los días marcados en negro ya tienen un turno planificado</div>
-            <div id="batchdel-selected-lbl" style="font-size:12px;color:var(--g400);margin-bottom:12px;min-height:16px">Toca los días para seleccionarlos</div>
-            <button class="bp" style="background:var(--red)" onclick="deleteBatchTurnos()">Eliminar turnos seleccionados</button>
+
+            <!-- Eliminar por lotes -->
+            <div id="lote-tab-eliminar" style="display:none">
+                <div class="fg">
+                    <label class="fl">Selecciona los días con turno a eliminar</label>
+                    <div id="batchdel-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:4px">
+                        <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">L</div>
+                        <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">M</div>
+                        <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">M</div>
+                        <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">J</div>
+                        <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">V</div>
+                        <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">S</div>
+                        <div style="text-align:center;font-size:10px;font-weight:700;color:var(--g400);padding:2px">D</div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+                        <button onclick="batchDelCalNav(-1)" style="width:36px;height:36px;background:var(--g100);border:none;border-radius:50%;cursor:pointer;font-size:18px;font-family:var(--font)">‹</button>
+                        <span id="batchdel-mes-lbl" style="font-size:14px;font-weight:800"></span>
+                        <button onclick="batchDelCalNav(1)" style="width:36px;height:36px;background:var(--g100);border:none;border-radius:50%;cursor:pointer;font-size:18px;font-family:var(--font)">›</button>
+                    </div>
+                </div>
+                <div style="font-size:11px;color:var(--g400);margin-bottom:8px">Los días marcados en negro ya tienen un turno planificado</div>
+                <div id="batchdel-selected-lbl" style="font-size:12px;color:var(--g400);margin-bottom:12px;min-height:16px">Toca los días para seleccionarlos</div>
+                <button class="bp" style="background:var(--red)" onclick="deleteBatchTurnos()">Eliminar turnos seleccionados</button>
+            </div>
+
             <div style="height:8px"></div>
-            <button class="bs" onclick="closeM('modal-batch-delete')">Cancelar</button>
+            <button class="bs" onclick="closeM('modal-batch-lotes')">Cancelar</button>
         </div>
     </div>
     <div class="toast" id="toast"></div>
@@ -7296,6 +7370,7 @@
                 turnos: p.turnos !== false,
                 viajes: p.viajes !== false,
                 mapas: p.mapas !== false,
+                horasActivas: p.horasActivas !== false,
                 cortas: p.cortas !== false
             };
         } catch (e) {
@@ -7304,6 +7379,7 @@
                 turnos: true,
                 viajes: true,
                 mapas: true,
+                horasActivas: true,
                 cortas: true
             };
         }
@@ -7315,6 +7391,7 @@
             turnos: !!document.getElementById('ia-pref-turnos').checked,
             viajes: !!document.getElementById('ia-pref-viajes').checked,
             mapas: !!document.getElementById('ia-pref-mapas').checked,
+            horasActivas: !!document.getElementById('ia-pref-horas-activas').checked,
             cortas: !!document.getElementById('ia-pref-cortas').checked
         };
         localStorage.setItem(IA_PREFS_STORAGE, JSON.stringify(p));
@@ -7333,6 +7410,7 @@
         setChk('ia-pref-turnos', p.turnos);
         setChk('ia-pref-viajes', p.viajes);
         setChk('ia-pref-mapas', p.mapas);
+        setChk('ia-pref-horas-activas', p.horasActivas);
         setChk('ia-pref-cortas', p.cortas);
     }
 
@@ -7692,35 +7770,50 @@
                 horas_planificadas: Math.round((calcMins(t) / 60) * 10) / 10,
                 nota: t.nota || null
             }));
+        }
 
-            // Horas activas (mismo cálculo que la pestaña "Horas Activas"): turno vs tiempo
-            // efectivamente trabajado (con viajes), por semana, últimas 8 semanas.
-            const horasActivasSemanales = [];
-            for (let s = 7; s >= 0; s--) {
-                const d = new Date(lunHoy + 'T12:00:00');
-                d.setDate(d.getDate() - s * 7);
-                const lunS = d.toISOString().slice(0, 10);
-                const domD = new Date(d);
-                domD.setDate(domD.getDate() + 6);
-                const domS = domD.toISOString().slice(0, 10);
-                const turnosSem = TURNOS.filter(t => t.fecha >= lunS && t.fecha <= domS);
-                let hTurnoSem = 0,
-                    hEfSem = 0;
-                turnosSem.forEach(t => {
-                    hTurnoSem += calcMins(t) / 60;
-                });
-                VIAJES.filter(v => v.fecha >= lunS && v.fecha <= domS).forEach(v => {
-                    hEfSem += calcDurMinTurno(v) / 60;
-                });
-                horasActivasSemanales.push({
-                    semana_inicio: lunS,
-                    horas_turno: Math.round(hTurnoSem * 10) / 10,
-                    horas_activas_efectivas: Math.round(hEfSem * 10) / 10,
-                    horas_inactivas: Math.round(Math.max(0, hTurnoSem - hEfSem) * 10) / 10,
-                    eficiencia_pct: hTurnoSem > 0 ? Math.round(hEfSem / hTurnoSem * 100) : 0
-                });
+        // Horas activas: toggle independiente en preferencias. Calcula turno vs tiempo
+        // efectivamente trabajado (con viajes), por semana. Intenta primero con las
+        // últimas 4 semanas; si no hay datos en ese rango, amplía a las últimas 8.
+        if (prefs.horasActivas) {
+            const calcularHorasActivasSemanas = nSemanas => {
+                const arr = [];
+                for (let s = nSemanas - 1; s >= 0; s--) {
+                    const d = new Date(lunHoy + 'T12:00:00');
+                    d.setDate(d.getDate() - s * 7);
+                    const lunS = d.toISOString().slice(0, 10);
+                    const domD = new Date(d);
+                    domD.setDate(domD.getDate() + 6);
+                    const domS = domD.toISOString().slice(0, 10);
+                    const turnosSem = TURNOS.filter(t => t.fecha >= lunS && t.fecha <= domS);
+                    let hTurnoSem = 0,
+                        hEfSem = 0;
+                    turnosSem.forEach(t => {
+                        hTurnoSem += calcMins(t) / 60;
+                    });
+                    VIAJES.filter(v => v.fecha >= lunS && v.fecha <= domS).forEach(v => {
+                        hEfSem += calcDurMinTurno(v) / 60;
+                    });
+                    arr.push({
+                        semana_inicio: lunS,
+                        horas_turno: Math.round(hTurnoSem * 10) / 10,
+                        horas_activas_efectivas: Math.round(hEfSem * 10) / 10,
+                        horas_inactivas: Math.round(Math.max(0, hTurnoSem - hEfSem) * 10) / 10,
+                        eficiencia_pct: hTurnoSem > 0 ? Math.round(hEfSem / hTurnoSem * 100) : 0
+                    });
+                }
+                return arr;
+            };
+            let horasActivasSemanales = calcularHorasActivasSemanas(4);
+            const hayDatosEn4Semanas = horasActivasSemanales.some(s => s.horas_turno > 0 || s.horas_activas_efectivas > 0);
+            let ventanaUsada = 4;
+            if (!hayDatosEn4Semanas) {
+                // Sin datos en las últimas 4 semanas: ampliar a las últimas 8
+                horasActivasSemanales = calcularHorasActivasSemanas(8);
+                ventanaUsada = 8;
             }
-            ctx.horas_activas_ultimas_8_semanas = horasActivasSemanales;
+            ctx.horas_activas_por_semana = horasActivasSemanales;
+            ctx.horas_activas_ventana_semanas_usada = ventanaUsada;
         }
 
         // Incentivos: activos y últimos cerrados, cada uno con su propia meta y unidad
@@ -7766,17 +7859,21 @@
                     const diasConTurno = p.dias.filter(d => d.tieneTurno);
                     if (!diasConTurno.length)
                         return null;
-                    const totalNeto = diasConTurno.reduce((s, d) => s + (d.netoReal !== null ? d.netoReal : (d.hist ? d.hist.neto : 0)), 0);
+                    const totalNeto = diasConTurno.reduce((s, d) => s + predNetoBaseDia(d), 0);
+                    const totalIncentivo = diasConTurno.reduce((s, d) => s + (d.incentivoEstimado || 0), 0);
                     const totalHrsAct = diasConTurno.reduce((s, d) => s + (d.hist && d.hist.horasActivas ? d.hist.horasActivas : (d.horasPlan || 0)), 0);
                     return {
                         rango: p.fechas[0] + ' a ' + p.fechas[6],
-                        neto_estimado_total: Math.round(totalNeto),
+                        neto_estimado_total_SIN_incentivos: Math.round(totalNeto),
+                        incentivos_estimados_total: Math.round(totalIncentivo),
+                        neto_estimado_total_CON_incentivos: Math.round(totalNeto + totalIncentivo),
                         horas_activas_estimadas_total: Math.round(totalHrsAct * 10) / 10,
                         por_dia: diasConTurno.map(d => ({
                             fecha: d.fecha,
                             dia: d.dow,
                             ya_ocurrio: d.yaOcurrio,
-                            neto_real_o_estimado: Math.round(d.netoReal !== null ? d.netoReal : (d.hist ? d.hist.neto : 0)),
+                            neto_real_o_estimado_sin_incentivos: Math.round(predNetoBaseDia(d)),
+                            incentivo_estimado: Math.round(d.incentivoEstimado || 0),
                             es_real: d.netoReal !== null,
                             muestras_usadas: d.hist ? d.hist.muestras : 0
                         }))
@@ -7904,7 +8001,7 @@
                 'IMPORTANTE: no confundas conceptos distintos. "turnos_planificados" son los horarios de trabajo agendados (con hora_inicio_planificada, hora_fin_planificada y horas_planificadas), incluyendo turnos futuros (es_futuro:true) — úsalos para proyectar y predecir próximos días de trabajo. NO tienen relación con metas de viajes. "incentivos_activos" e "incentivos_cerrados_recientes" son metas de VIAJES con su propio premio en pesos (campo meta_viajes), cada incentivo es independiente y puede tener su propio rango de fechas/horas. "configuracion.meta_diaria_viajes" y "meta_mensual" son metas generales configuradas por el usuario, distintas de cualquier incentivo puntual. Si te preguntan por horas trabajadas, usa los campos de horas (turnos_historico, turnos_planificados); si preguntan por metas o incentivos, usa los campos de incentivos. Nunca mezcles un número de viajes con una cantidad de horas. ' +
                 'Para predicciones (ej: "cuánto voy a ganar este mes"), combina el ritmo de los días ya trabajados en el período con los turnos_planificados aún no cumplidos (es_futuro:true) para proyectar el resto del período. ' +
                 'Los campos "prediccion_semana_actual" y "prediccion_semana_siguiente" ya traen la proyección calculada por la app (misma que ve el usuario en la pestaña Predicciones), con desglose por día y si es dato real o estimado; úsalos como base cuando te pregunten por la semana actual o siguiente en vez de recalcular desde cero, y menciona la config activa en "configuracion_prediccion" (ventana de datos usada, si considera incentivos, fin/inicio de mes o feriados) si es relevante. ' +
-                'El campo "horas_activas_ultimas_8_semanas" trae, semana a semana, las horas de turno vs. las horas activas (con viajes reales) y la eficiencia %; úsalo para responder preguntas sobre horas trabajadas efectivas, tiempo inactivo o eficiencia. ' +
+                'El campo "horas_activas_por_semana" trae, semana a semana, las horas de turno vs. las horas activas (con viajes reales) y la eficiencia %; el campo "horas_activas_ventana_semanas_usada" indica si se usaron las últimas 4 semanas o, si no había datos en ese rango, se amplió a las últimas 8. Úsalo para responder preguntas sobre horas trabajadas efectivas, tiempo inactivo o eficiencia. ' +
                 'Usa montos en pesos chilenos (CLP) con separador de miles (ej: $45.000). ' + estiloRespuesta + 'Usa emojis con moderación. ' +
                 'Responde SIEMPRE en texto plano: nunca uses asteriscos para negrita/cursiva (**texto**) ni encabezados con #, el chat no renderiza markdown y se vería literalmente con los símbolos. Si necesitas dar énfasis, hazlo con las palabras, no con símbolos. ' +
                 'No inventes datos que no estén en el contexto; si falta información dilo con honestidad. ' +
@@ -8074,13 +8171,14 @@
     function setVozHeaderUI(hablando) {
         const icon = document.getElementById('ia-voz-toggle-icon');
         const btn = document.getElementById('ia-voz-toggle-btn');
+        const anim = document.getElementById('ia-hablando-anim');
+        if (anim)
+            anim.style.display = hablando ? 'inline-flex' : 'none';
         if (!btn)
             return;
-        if (hablando) {
-            btn.innerHTML = '<div class="ldr01-2" style="color:var(--black)"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>';
-        } else {
-            btn.innerHTML = vozToggleIconSVG(getVozRespuestaActiva());
-        }
+        // El botón de mutear siempre conserva su ícono; la animación de "hablando"
+        // se muestra aparte, al lado, sin ocupar el espacio del botón.
+        btn.innerHTML = vozToggleIconSVG(getVozRespuestaActiva());
     }
 
     window.toggleEscuchaIA = function() {
@@ -13013,14 +13111,21 @@
                 ventana: c.ventana || 'semanas', // 'semanas' | 'mes1' | 'mes2' | 'mes3'
                 incentivos: !!c.incentivos,
                 periodoMes: !!c.periodoMes,
-                feriados: !!c.feriados
+                feriados: !!c.feriados,
+                // Factores multiplicadores sobre el estimado, según tipo de día
+                factorNormal: (typeof c.factorNormal === 'number' && c.factorNormal > 0) ? c.factorNormal : 1,
+                factorFinde: (typeof c.factorFinde === 'number' && c.factorFinde > 0) ? c.factorFinde : 1,
+                factorFeriado: (typeof c.factorFeriado === 'number' && c.factorFeriado > 0) ? c.factorFeriado : 1
             };
         } catch (e) {
             return {
                 ventana: 'semanas',
                 incentivos: false,
                 periodoMes: false,
-                feriados: false
+                feriados: false,
+                factorNormal: 1,
+                factorFinde: 1,
+                factorFeriado: 1
             };
         }
     }
@@ -13095,6 +13200,15 @@
             chkP.checked = cfg.periodoMes;
         if (chkF)
             chkF.checked = cfg.feriados;
+        const fN = document.getElementById('pred-cfg-factor-normal');
+        const fS = document.getElementById('pred-cfg-factor-finde');
+        const fF = document.getElementById('pred-cfg-factor-feriado');
+        if (fN)
+            fN.value = cfg.factorNormal;
+        if (fS)
+            fS.value = cfg.factorFinde;
+        if (fF)
+            fF.value = cfg.factorFeriado;
     }
 
     window.setPredVentana = function(v, el) {
@@ -13110,9 +13224,19 @@
         c.incentivos = !!document.getElementById('pred-cfg-incentivos').checked;
         c.periodoMes = !!document.getElementById('pred-cfg-periodo').checked;
         c.feriados = !!document.getElementById('pred-cfg-feriados').checked;
+        const fN = document.getElementById('pred-cfg-factor-normal');
+        const fS = document.getElementById('pred-cfg-factor-finde');
+        const fF = document.getElementById('pred-cfg-factor-feriado');
+        c.factorNormal = fN ? (parseFloat(fN.value) || 1) : 1;
+        c.factorFinde = fS ? (parseFloat(fS.value) || 1) : 1;
+        c.factorFeriado = fF ? (parseFloat(fF.value) || 1) : 1;
         setPredConfig(c);
         renderPredicciones();
         toast('Configuración de predicción guardada');
+        // Cerrar el panel de configuración para no ocupar espacio innecesario
+        const panel = document.getElementById('pred-config-panel');
+        if (panel)
+            panel.style.display = 'none';
     };
 
     window.setSemanaPrediccion = function(offset) {
@@ -13269,6 +13393,10 @@
             }
             // Estimado de incentivo: solo se suma a días futuros (aún no ocurridos)
             const incentivoEstimado = (!yaOcurrio && cfg.incentivos) ? incentivoDia : 0;
+            // Factor multiplicador según tipo de día (normal / fin de semana / feriado)
+            const esFeriadoDia = esFeriadoCL(fecha);
+            const esFinde = idx === 5 || idx === 6; // Sáb=5, Dom=6
+            const factorDia = esFeriadoDia ? (cfg.factorFeriado || 1) : (esFinde ? (cfg.factorFinde || 1) : (cfg.factorNormal || 1));
             return {
                 fecha,
                 dow: DIAS[idx],
@@ -13280,7 +13408,8 @@
                 hist,
                 esFeriado: cfg.feriados && esFeriadoCL(fecha),
                 periodoMes: cfg.periodoMes ? periodoDelMes(fecha) : null,
-                incentivoEstimado
+                incentivoEstimado,
+                factorDia
             };
         });
         return {
@@ -13290,6 +13419,20 @@
             cfg,
             ventanaParams: vp
         };
+    }
+
+    // ── Helpers de estimado por día: separan "lo que me quedo" (neto de viajes,
+    // con el factor por tipo de día aplicado) de los incentivos, para no mezclar
+    // valores en la UI a menos que se indique explícitamente. ────────────────
+    function predNetoBaseDia(d) {
+        // Si el día ya ocurrió, se usa el neto real (sin aplicar factor, es un hecho)
+        if (d.netoReal !== null)
+            return d.netoReal;
+        const base = d.hist ? d.hist.neto : 0;
+        return base * (d.factorDia || 1);
+    }
+    function predNetoConIncentivo(d) {
+        return predNetoBaseDia(d) + (d.incentivoEstimado || 0);
     }
 
     function _predEmptyMsg(texto) {
@@ -13309,7 +13452,8 @@
         }
 
         const totalIncentivoEst = diasConTurno.reduce((s, d) => s + (d.incentivoEstimado || 0), 0);
-        const totalNetoEst = diasConTurno.reduce((s, d) => s + (d.netoReal !== null ? d.netoReal : (d.hist ? d.hist.neto : 0) + (d.incentivoEstimado || 0)), 0);
+        // "Lo que me quedo": neto de viajes con el factor por tipo de día aplicado, SIN incentivos
+        const totalNetoEst = diasConTurno.reduce((s, d) => s + predNetoBaseDia(d), 0);
         const totalHrsActEst = diasConTurno.reduce((s, d) => s + (d.hist && d.hist.horasActivas ? d.hist.horasActivas : (d.horasPlan || 0)), 0);
         const totalHrsPlan = diasConTurno.reduce((s, d) => s + (d.horasPlan || 0), 0);
         const conMuestras = diasConTurno.filter(d => d.hist).length;
@@ -13323,26 +13467,41 @@
             cfgBits.push('período del mes');
         if (pred.cfg.feriados)
             cfgBits.push('feriados');
+        if ((pred.cfg.factorNormal || 1) !== 1 || (pred.cfg.factorFinde || 1) !== 1 || (pred.cfg.factorFeriado || 1) !== 1)
+            cfgBits.push('factores por día (×' + (pred.cfg.factorNormal || 1) + ' / ×' + (pred.cfg.factorFinde || 1) + ' / ×' + (pred.cfg.factorFeriado || 1) + ')');
         const feriadosEnSemana = diasConTurno.filter(d => d.esFeriado);
 
         cont.innerHTML =
             '<div class="cflat" style="margin-bottom:12px">' +
-            '<div style="font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Ganancia neta estimada — ' + (pred.offset === 0 ? 'esta semana' : 'próxima semana') + '</div>' +
+            '<div style="font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Lo que me quedo (estimado, sin incentivos) — ' + (pred.offset === 0 ? 'esta semana' : 'próxima semana') + '</div>' +
             '<div style="font-size:28px;font-weight:900">' + CLP(totalNetoEst) + '</div>' +
-            '<div style="font-size:12px;color:var(--g400);margin-top:2px">Basado en ' + conMuestras + ' de ' + diasConTurno.length + ' días con historial · ' + totalHrsActEst.toFixed(1) + 'h activas est. de ' + totalHrsPlan.toFixed(1) + 'h planificadas' + (totalIncentivoEst > 0 ? ' · +' + CLP(totalIncentivoEst) + ' est. en incentivos' : '') + '</div>' +
+            '<div style="font-size:12px;color:var(--g400);margin-top:2px">Basado en ' + conMuestras + ' de ' + diasConTurno.length + ' días con historial · ' + totalHrsActEst.toFixed(1) + 'h activas est. de ' + totalHrsPlan.toFixed(1) + 'h planificadas' + '</div>' +
+            (totalIncentivoEst > 0 ?
+                '<div style="font-size:13px;font-weight:800;margin-top:10px;padding-top:10px;border-top:1px dashed var(--g200)">+ ' + CLP(totalIncentivoEst) + ' <span style="font-weight:600;color:var(--g400);font-size:12px">est. en incentivos (activador activado)</span></div>' +
+                '<div style="font-size:12px;color:var(--g600);margin-top:2px">Total con incentivos: <b>' + CLP(totalNetoEst + totalIncentivoEst) + '</b></div>' : '') +
             '<div style="font-size:11px;color:var(--g400);margin-top:6px">⚙ ' + cfgBits.join(' · ') + (feriadosEnSemana.length ? ' · 🎉 ' + feriadosEnSemana.length + ' feriado(s) en la semana' : '') + '</div>' +
             '</div>' +
-            '<div class="slbl">Estimado por día (vs. últimos ' + Math.max(...diasConTurno.map(d => d.hist ? d.hist.muestras : 0)) + ' iguales)</div>' +
+            '<div class="slbl">Estimado por día — lo que me quedo, sin incentivos (vs. últimos ' + Math.max(...diasConTurno.map(d => d.hist ? d.hist.muestras : 0)) + ' iguales)</div>' +
             '<div class="card" style="padding:12px;margin-bottom:16px"><div style="position:relative;height:200px"><canvas id="ch-pred-dias"></canvas></div></div>' +
             '<div class="slbl">Estimado por bloque horario</div>' +
             '<div class="card" style="padding:12px;margin-bottom:16px"><div style="position:relative;height:180px"><canvas id="ch-pred-horas"></canvas></div></div>' +
             '<div class="slbl">Horas efectivas estimadas vs. horas de turno</div>' +
             '<div class="card" style="padding:12px;margin-bottom:16px"><div style="position:relative;height:180px"><canvas id="ch-pred-hrs-vs-turno"></canvas></div></div>' +
             '<div class="slbl">Horas activas estimadas por día</div>' +
-            '<div class="card" style="padding:12px;margin-bottom:8px"><div style="position:relative;height:180px"><canvas id="ch-pred-horas-activas"></canvas></div></div>';
+            '<div class="card" style="padding:12px;margin-bottom:8px"><div style="position:relative;height:180px"><canvas id="ch-pred-horas-activas"></canvas></div></div>' +
+            '<div class="slbl">¿Cómo se calcula esto?</div>' +
+            '<div class="cflat" style="margin-bottom:16px;font-size:12px;line-height:1.7;color:var(--g600)">' +
+            'La predicción toma tus turnos planificados para la semana y, para cada día que aún no ocurre, busca días anteriores con el mismo día de la semana dentro de la ventana de datos elegida (últimas semanas, 1, 2 o 3 meses). ' +
+            'Con esos días históricos calcula el promedio de lo que ganaste bruto, lo que te quedó neto (ya descontando el % de SII y el gasto estimado en bencina) y las horas activas realmente trabajadas. ' +
+            'Si un día ya ocurrió, se usa el dato real registrado ese día en vez de un promedio. ' +
+            'Si activas "período del mes", se priorizan muestras del mismo tramo (inicio, quincena o fin de mes); si activas "feriados", se priorizan otros feriados como referencia para un día feriado. ' +
+            'Los factores por tipo de día multiplican el promedio histórico según si el día a predecir es normal, fin de semana o feriado — útil si sabes que, por ejemplo, los fines de semana rinden distinto a lo habitual. ' +
+            'Los incentivos pasados (si el activador está encendido) se calculan aparte, como el promedio diario cobrado en los últimos 90 días, y se muestran siempre por separado de "lo que me quedo" para no mezclar ambos conceptos: solo se suman al total si tú lo indicas activando ese casillero. ' +
+            'Mientras más días con historial tenga cada franja, más confiable es el estimado; los días con pocas o ninguna muestra se marcan como menos precisos.' +
+            '</div>';
 
         const labels = diasConTurno.map(d => (d.esFeriado ? '🎉' : d.dow) + ' ' + d.fecha.slice(8) + '/' + d.fecha.slice(5, 7));
-        const netoVals = diasConTurno.map(d => Math.round(d.netoReal !== null ? d.netoReal : (d.hist ? d.hist.neto : 0) + (d.incentivoEstimado || 0)));
+        const netoVals = diasConTurno.map(d => Math.round(predNetoBaseDia(d)));
         const esReal = diasConTurno.map(d => d.netoReal !== null);
 
         requestAnimationFrame(() => {
@@ -13537,7 +13696,8 @@
     // ── Compartir predicción como texto (semana actual o siguiente) ────────
     function textoResumenPrediccion(pred) {
         const diasConTurno = pred.dias.filter(d => d.tieneTurno);
-        const totalNeto = diasConTurno.reduce((s, d) => s + (d.netoReal !== null ? d.netoReal : (d.hist ? d.hist.neto : 0) + (d.incentivoEstimado || 0)), 0);
+        const totalNeto = diasConTurno.reduce((s, d) => s + predNetoBaseDia(d), 0);
+        const totalIncentivo = diasConTurno.reduce((s, d) => s + (d.incentivoEstimado || 0), 0);
         const cfgBits = [VENTANA_LABEL[pred.cfg.ventana] || VENTANA_LABEL.semanas];
         if (pred.cfg.incentivos)
             cfgBits.push('incentivos pasados');
@@ -13545,38 +13705,38 @@
             cfgBits.push('período del mes');
         if (pred.cfg.feriados)
             cfgBits.push('feriados');
+        if ((pred.cfg.factorNormal || 1) !== 1 || (pred.cfg.factorFinde || 1) !== 1 || (pred.cfg.factorFeriado || 1) !== 1)
+            cfgBits.push('factores por día (×' + (pred.cfg.factorNormal || 1) + ' normal / ×' + (pred.cfg.factorFinde || 1) + ' finde / ×' + (pred.cfg.factorFeriado || 1) + ' feriado)');
         let txt = '📊 Predicción Driver Pro — ' + (pred.offset === 0 ? 'semana actual' : 'semana siguiente') + '\n';
         txt += 'Rango: ' + pred.fechas[0] + ' a ' + pred.fechas[6] + '\n';
         txt += 'Configuración: ' + cfgBits.join(' · ') + '\n';
-        txt += 'Ganancia neta estimada total: ' + CLP(totalNeto) + '\n\n';
+        txt += 'Lo que me quedo estimado (sin incentivos): ' + CLP(totalNeto) + '\n';
+        if (totalIncentivo > 0) {
+            txt += 'Incentivos estimados: +' + CLP(totalIncentivo) + '\n';
+            txt += 'Total con incentivos: ' + CLP(totalNeto + totalIncentivo) + '\n';
+        }
+        txt += '\n';
         diasConTurno.forEach(d => {
-            const val = Math.round(d.netoReal !== null ? d.netoReal : (d.hist ? d.hist.neto : 0) + (d.incentivoEstimado || 0));
-            txt += (d.esFeriado ? '🎉 ' : '') + d.dow + ' ' + d.fecha + ': ' + CLP(val) + (d.netoReal !== null ? ' (real)' : ' (estimado, ' + (d.hist ? d.hist.muestras : 0) + ' muestras)') + '\n';
+            const val = Math.round(predNetoBaseDia(d));
+            txt += (d.esFeriado ? '🎉 ' : '') + d.dow + ' ' + d.fecha + ': ' + CLP(val) + (d.incentivoEstimado ? ' (+' + CLP(Math.round(d.incentivoEstimado)) + ' incentivo est.)' : '') + (d.netoReal !== null ? ' (real)' : ' (estimado, ' + (d.hist ? d.hist.muestras : 0) + ' muestras)') + '\n';
         });
         return txt;
     }
 
-    window.compartirPrediccion = async function() {
+    // Envía la predicción actual al chat de IA para que la analice, en vez de
+    // compartirla por fuera de la app.
+    window.compartirPrediccion = function() {
         const pred = window._predActualCalc || calcularPrediccionSemana(predSemanaOffset);
         const texto = textoResumenPrediccion(pred);
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: 'Predicción Driver Pro',
-                    text: texto
-                });
-                return;
-            } catch (e) {
-                if (e && e.name === 'AbortError')
-                    return;
+        const mensaje = 'Analiza esta predicción y dame tu opinión / recomendaciones:\n\n' + texto;
+        stab('a', 'chat', document.querySelector('#atabs .stab'));
+        setTimeout(() => {
+            const inp = document.getElementById('ia-input');
+            if (inp) {
+                inp.value = mensaje;
+                enviarMensajeIA();
             }
-        }
-        try {
-            await navigator.clipboard.writeText(texto);
-            toast('Predicción copiada — pégala donde quieras analizarla');
-        } catch (e) {
-            toast('No se pudo compartir ni copiar');
-        }
+        }, 50);
     };
 
     // ── Historial de predicciones guardadas (separado del historial de chats) ─
@@ -13602,7 +13762,8 @@
             toast('No hay predicción para guardar');
             return;
         }
-        const totalNeto = diasConTurno.reduce((s, d) => s + (d.netoReal !== null ? d.netoReal : (d.hist ? d.hist.neto : 0) + (d.incentivoEstimado || 0)), 0);
+        const totalNeto = diasConTurno.reduce((s, d) => s + predNetoBaseDia(d), 0);
+        const totalIncentivo = diasConTurno.reduce((s, d) => s + (d.incentivoEstimado || 0), 0);
         const arr = getPrediccionesGuardadas();
         arr.unshift({
             id: 'p' + Date.now(),
@@ -13611,6 +13772,7 @@
             rango: pred.fechas[0] + ' a ' + pred.fechas[6],
             cfg: pred.cfg,
             totalNeto: Math.round(totalNeto),
+            totalIncentivo: Math.round(totalIncentivo),
             texto: textoResumenPrediccion(pred)
         });
         setPrediccionesGuardadas(arr);
@@ -14481,11 +14643,11 @@
         }
     };
 
-    // ── Batch plan modal (planificar por lotes) ────────────
+    // ── Modal de turnos por lotes (Crear / Eliminar en un solo modal) ────────
     let batchCalOffset = 0;
     let batchSelectedDates = new Set();
 
-    window.openBatchPlanModal = function() {
+    window.openLotesModal = function(tab) {
         batchCalOffset = 0;
         batchSelectedDates = new Set();
         renderBatchCal();
@@ -14505,8 +14667,38 @@
         if (nt)
             nt.value = '';
         updateBatchSelectedLbl();
-        document.getElementById('modal-batch-plan').classList.add('open');
+        batchDelCalOffset = 0;
+        batchDelSelectedDates = new Set();
+        renderBatchDelCal();
+        updateBatchDelSelectedLbl();
+        setLoteTab(tab || 'crear', document.getElementById('lotes-sel-' + (tab || 'crear')));
+        document.getElementById('modal-batch-lotes').classList.add('open');
     };
+    // Compatibilidad con llamadas anteriores
+    window.openBatchPlanModal = function() { openLotesModal('crear'); };
+    window.openBatchDeleteModal = function() { openLotesModal('eliminar'); };
+
+    window.setLoteTab = function(tab, btn) {
+        document.querySelectorAll('#lotes-subsel .pbtn').forEach(b => b.classList.remove('on'));
+        if (btn)
+            btn.classList.add('on');
+        else {
+            const fallback = document.getElementById('lotes-sel-' + tab);
+            if (fallback)
+                fallback.classList.add('on');
+        }
+        const tCrear = document.getElementById('lote-tab-crear');
+        const tElim = document.getElementById('lote-tab-eliminar');
+        if (tCrear)
+            tCrear.style.display = tab === 'crear' ? 'block' : 'none';
+        if (tElim)
+            tElim.style.display = tab === 'eliminar' ? 'block' : 'none';
+        if (tab === 'crear')
+            renderBatchCal();
+        else
+            renderBatchDelCal();
+    };
+
     window.batchCalNav = function(dir) {
         batchCalOffset += dir;
         renderBatchCal();
@@ -14595,24 +14787,17 @@
                 saved++;
             }
         }
-        closeM('modal-batch-plan');
+        closeM('modal-batch-lotes');
         toast(saved + ' turno' + (saved !== 1 ? 's' : '') + ' planificado' + (saved !== 1 ? 's' : ''));
         batchSelectedDates = new Set();
         renderTurnos && renderTurnos();
         renderCal && renderCal();
     };
 
-    // ── Batch delete modal (eliminar por lotes) ─────────────
+    // ── Eliminar por lotes (segunda pestaña del mismo modal) ─────────────
     let batchDelCalOffset = 0;
     let batchDelSelectedDates = new Set();
 
-    window.openBatchDeleteModal = function() {
-        batchDelCalOffset = 0;
-        batchDelSelectedDates = new Set();
-        renderBatchDelCal();
-        updateBatchDelSelectedLbl();
-        document.getElementById('modal-batch-delete').classList.add('open');
-    };
     window.batchDelCalNav = function(dir) {
         batchDelCalOffset += dir;
         renderBatchDelCal();
@@ -14682,7 +14867,7 @@
                 } catch (e) {}
             }
         }
-        closeM('modal-batch-delete');
+        closeM('modal-batch-lotes');
         toast(borrados + ' turno' + (borrados !== 1 ? 's' : '') + ' eliminado' + (borrados !== 1 ? 's' : ''));
         batchDelSelectedDates = new Set();
         renderTurnos && renderTurnos();
