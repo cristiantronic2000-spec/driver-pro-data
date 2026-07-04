@@ -3457,8 +3457,8 @@
                                 <div style="font-size:11px;font-weight:700;color:var(--g400)" id="turno-horarios-title">Mes anterior</div>
                                 <span id="turno-horarios-badge" style="font-size:10px;font-weight:800;background:#E11900;color:#fff;padding:2px 7px;border-radius:20px;display:none">MES ANTERIOR</span>
                             </div>
-                            <div style="position:relative;height:180px">
-                                <canvas id="ch-turno-horarios" style="position:absolute;inset:0;width:100%;height:100%">
+                            <div style="position:relative;height:180px;width:100%;overflow:hidden">
+                                <canvas id="ch-turno-horarios" style="position:absolute;inset:0;max-width:100%;height:100%">
                                 </canvas>
                             </div>
                         </div>
@@ -3488,10 +3488,10 @@
                         <div id="turno-resumen-mes-tab" style="background:var(--g50);border-radius:14px;margin:0 16px 12px;overflow:hidden;padding:4px 0"></div>
                         <!-- Horarios de movimiento del mes seleccionado -->
                         <div class="slbl">Horarios de movimiento</div>
-                        <div class="card" style="margin:0 16px 12px;padding:12px">
+                        <div class="card" style="margin:0 16px 12px;padding:12px;overflow:hidden">
                             <div style="font-size:11px;font-weight:700;color:var(--g400);margin-bottom:6px" id="mes-heatmap-title">Este mes</div>
-                            <div style="position:relative;height:180px">
-                                <canvas id="ch-mes-horarios" style="position:absolute;inset:0;width:100%;height:100%">
+                            <div style="position:relative;height:180px;width:100%;overflow:hidden">
+                                <canvas id="ch-mes-horarios" style="position:absolute;inset:0;max-width:100%;height:100%">
                                 </canvas>
                             </div>
                         </div>
@@ -3522,10 +3522,10 @@
                         </div>
                         <div id="turno-dia-content" style="padding:0 16px 16px"></div>
                         <div class="slbl">Horarios de movimiento</div>
-                        <div class="card" style="margin:0 16px 12px;padding:12px">
+                        <div class="card" style="margin:0 16px 12px;padding:12px;overflow:hidden">
                             <div style="font-size:11px;font-weight:700;color:var(--g400);margin-bottom:6px" id="hoy-heatmap-title">Este día</div>
-                            <div style="position:relative;height:180px">
-                                <canvas id="ch-hoy-horarios" style="position:absolute;inset:0;width:100%;height:100%">
+                            <div style="position:relative;height:180px;width:100%;overflow:hidden">
+                                <canvas id="ch-hoy-horarios" style="position:absolute;inset:0;max-width:100%;height:100%">
                                 </canvas>
                             </div>
                         </div>
@@ -3553,10 +3553,10 @@
                         </div>
                         <div id="turno-semana-content" style="padding:0 16px 16px"></div>
                         <div class="slbl">Horarios de movimiento</div>
-                        <div class="card" style="margin:0 16px 12px;padding:12px">
+                        <div class="card" style="margin:0 16px 12px;padding:12px;overflow:hidden">
                             <div style="font-size:11px;font-weight:700;color:var(--g400);margin-bottom:6px" id="semana-heatmap-title">Esta semana</div>
-                            <div style="position:relative;height:180px">
-                                <canvas id="ch-semana-horarios" style="position:absolute;inset:0;width:100%;height:100%">
+                            <div style="position:relative;height:180px;width:100%;overflow:hidden">
+                                <canvas id="ch-semana-horarios" style="position:absolute;inset:0;max-width:100%;height:100%">
                                 </canvas>
                             </div>
                         </div>
@@ -3765,10 +3765,10 @@
                     </div>
                     <!-- Heatmap actividad -->
                     <div class="slbl">Mapa de calor — Actividad</div>
-                    <div class="card" style="padding:12px">
+                    <div class="card" style="padding:12px;overflow:hidden">
                         <div style="font-size:11px;font-weight:700;color:var(--g400);margin-bottom:6px;display:none" id="ha-m-heatmap-title"></div>
-                        <div style="position:relative;height:180px">
-                            <canvas id="ch-ha-m-heatmap" style="position:absolute;inset:0;width:100%;height:100%">
+                        <div style="position:relative;height:180px;width:100%;overflow:hidden">
+                            <canvas id="ch-ha-m-heatmap" style="position:absolute;inset:0;max-width:100%;height:100%">
                             </canvas>
                         </div>
                     </div>
@@ -3802,7 +3802,7 @@
                         </div>
                     </div>
                     <!-- sub-tabs del mapa -->
-                    <div class="stabs" id="mtabs" style="position:sticky;top:56px">
+                    <div class="stabs" id="mtabs" style="position:sticky;top:56px;background:#fff;z-index:9">
                         <button class="stab on" onclick="stab('m','mapa',this)">Mapa</button>
                         <button class="stab" onclick="stab('m','notas',this)">Mis notas</button>
                         <button class="stab" onclick="stab('m','buscar',this)">Buscar dirección</button>
@@ -4144,6 +4144,44 @@
                             <input type="checkbox" id="pred-cfg-tendencia">
                         </label>
                         <div style="font-size:11px;color:var(--g400);margin:-4px 0 4px">Si tu rendimiento viene subiendo o bajando últimamente, ajusta el estimado en esa dirección (máx. ±15%).</div>
+                        <!-- NUEVO: Promedio por tipo de día -->
+                        <label style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--g200);cursor:pointer">
+                            <div>
+                                <span style="font-size:13px">Usar promedios separados por tipo de día</span>
+                                <div style="font-size:11px;color:var(--g400);margin-top:2px">Entre semana, fin de semana y feriados se promedian por separado, en vez del promedio general. Ideal cuando tu rendimiento varía mucho según el tipo de día.</div>
+                            </div>
+                            <input type="checkbox" id="pred-cfg-tipoDia" style="margin-left:12px;flex-shrink:0">
+                        </label>
+                        <!-- NUEVO: Ponderar por franja horaria -->
+                        <label style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--g200);cursor:pointer">
+                            <div>
+                                <span style="font-size:13px">Ponderar según franja horaria del turno</span>
+                                <div style="font-size:11px;color:var(--g400);margin-top:2px">Si el turno está en una franja de alta demanda (8-10h, 18-20h), ajusta el estimado al alza (máx. +10%).</div>
+                            </div>
+                            <input type="checkbox" id="pred-cfg-franja" style="margin-left:12px;flex-shrink:0">
+                        </label>
+                        <!-- NUEVO: Mínimo de muestras -->
+                        <div style="padding:8px 0;border-top:1px solid var(--g200)">
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                                <span style="font-size:13px">Mínimo de muestras para estimar</span>
+                                <select id="pred-cfg-minMuestras" style="border:1.5px solid var(--g200);border-radius:8px;padding:5px 10px;font-size:13px;font-weight:700;font-family:var(--font);background:#fff;outline:none">
+                                    <option value="1">1 muestra</option>
+                                    <option value="2">2 muestras</option>
+                                    <option value="3" selected>3 muestras</option>
+                                    <option value="4">4 muestras</option>
+                                    <option value="5">5 muestras</option>
+                                </select>
+                            </div>
+                            <div style="font-size:11px;color:var(--g400)">Si un día tiene menos muestras que este mínimo, se marca como "sin historial suficiente" en vez de mostrar un estimado poco confiable.</div>
+                        </div>
+                        <!-- NUEVO: Excluir outliers -->
+                        <label style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--g200);cursor:pointer">
+                            <div>
+                                <span style="font-size:13px">Excluir días atípicos del promedio</span>
+                                <div style="font-size:11px;color:var(--g400);margin-top:2px">Descarta días con ganancias muy por encima o muy por debajo del promedio (outliers) para no sesgar el estimado.</div>
+                            </div>
+                            <input type="checkbox" id="pred-cfg-excluirOutliers" style="margin-left:12px;flex-shrink:0">
+                        </label>
                         <div style="font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;margin:12px 0 6px;padding-top:8px;border-top:1px solid var(--g200)">Modo de estimación</div>
                         <div style="font-size:11px;color:var(--g400);margin-bottom:8px">Desplaza el estimado usando la variabilidad histórica: conservador apunta más bajo, optimista más alto.</div>
                         <div class="psel" id="pred-config-modo" style="margin:0 0 4px">
@@ -4191,20 +4229,51 @@
                         </div>
                     </div>
                     <div class="stsec">
-                        <div class="sttit">Conexión</div>
-                        <div class="strow" id="ia-key-row-gemini" style="cursor:pointer" onclick="abrirConfigIA()">
-                            <div>
-                                <div class="stlbl">API Key de Gemini</div>
-                                <div style="font-size:12px;color:var(--g400)" id="ia-key-status-lbl">No configurada</div>
+                        <div class="sttit">Conexión — API Keys</div>
+                        <!-- GEMINI KEYS -->
+                        <div id="ia-key-row-gemini">
+                            <!-- Set activo selector -->
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0 4px">
+                                <div style="font-size:12px;color:var(--g600);font-weight:700">Set activo — Gemini</div>
+                                <div class="psel" id="ia-gemini-set-sel" style="margin:0;gap:4px">
+                                    <button class="pbtn on" style="min-width:40px;padding:5px 8px;font-size:12px" onclick="setGeminiActiveSet(1,this)">1</button>
+                                    <button class="pbtn" style="min-width:40px;padding:5px 8px;font-size:12px" onclick="setGeminiActiveSet(2,this)">2</button>
+                                    <button class="pbtn" style="min-width:40px;padding:5px 8px;font-size:12px" onclick="setGeminiActiveSet(3,this)">3</button>
+                                    <button class="pbtn" style="min-width:40px;padding:5px 8px;font-size:12px" onclick="setGeminiActiveSet(4,this)">4</button>
+                                </div>
                             </div>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--g400)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                            <!-- Active set row (always visible) -->
+                            <div class="strow" style="cursor:pointer" onclick="abrirConfigIASet(window._geminiActiveSet||1)">
+                                <div>
+                                    <div class="stlbl" id="ia-gemini-active-lbl">Set 1</div>
+                                    <div style="font-size:12px;color:var(--g400)" id="ia-gemini-active-info">No configurada</div>
+                                </div>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--g400)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                            </div>
+                            <!-- Expandable other sets -->
+                            <div id="ia-gemini-other-sets" style="display:none"></div>
+                            <button onclick="toggleGeminiSets()" id="ia-gemini-toggle-btn" style="width:100%;text-align:center;font-size:11px;color:var(--g400);background:none;border:none;padding:6px 0;cursor:pointer;font-family:var(--font)">Ver otros sets ▾</button>
                         </div>
-                        <div class="strow" id="ia-key-row-grok" style="cursor:pointer;display:none" onclick="abrirConfigGrok()">
-                            <div>
-                                <div class="stlbl">API Key de Grok (xAI)</div>
-                                <div style="font-size:12px;color:var(--g400)" id="ia-key-status-lbl-grok">No configurada</div>
+                        <!-- GROK KEYS -->
+                        <div id="ia-key-row-grok" style="display:none">
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0 4px">
+                                <div style="font-size:12px;color:var(--g600);font-weight:700">Set activo — Grok</div>
+                                <div class="psel" id="ia-grok-set-sel" style="margin:0;gap:4px">
+                                    <button class="pbtn on" style="min-width:40px;padding:5px 8px;font-size:12px" onclick="setGrokActiveSet(1,this)">1</button>
+                                    <button class="pbtn" style="min-width:40px;padding:5px 8px;font-size:12px" onclick="setGrokActiveSet(2,this)">2</button>
+                                    <button class="pbtn" style="min-width:40px;padding:5px 8px;font-size:12px" onclick="setGrokActiveSet(3,this)">3</button>
+                                    <button class="pbtn" style="min-width:40px;padding:5px 8px;font-size:12px" onclick="setGrokActiveSet(4,this)">4</button>
+                                </div>
                             </div>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--g400)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                            <div class="strow" style="cursor:pointer" onclick="abrirConfigGrokSet(window._grokActiveSet||1)">
+                                <div>
+                                    <div class="stlbl" id="ia-grok-active-lbl">Set 1</div>
+                                    <div style="font-size:12px;color:var(--g400)" id="ia-grok-active-info">No configurada</div>
+                                </div>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--g400)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                            </div>
+                            <div id="ia-grok-other-sets" style="display:none"></div>
+                            <button onclick="toggleGrokSets()" id="ia-grok-toggle-btn" style="width:100%;text-align:center;font-size:11px;color:var(--g400);background:none;border:none;padding:6px 0;cursor:pointer;font-family:var(--font)">Ver otros sets ▾</button>
                         </div>
                         <div class="strow">
                             <div>
@@ -6228,6 +6297,11 @@
                     ...d.data()
                 };
             });
+            // Reload all polygons and refit bounds when data arrives/changes
+            if (typeof leafletMap !== 'undefined' && leafletMap) {
+                ZONE_NAMES.forEach(name => loadZonePolygon(name));
+                setTimeout(() => _fitMapToAllZones(), 100);
+            }
             applyZoneColors();
             renderMapNotes();
             updateAddrZonesList();
@@ -7561,9 +7635,34 @@
     // ══════════════════════════════════════════════════════════════════════
     // ── ASISTENTE IA (Gemini) ────────────────────────────────────────────────
     // ══════════════════════════════════════════════════════════════════════
-    const IA_KEY_STORAGE = 'dp_gemini_api_key';
-    const IA_GROK_KEY_STORAGE = 'dp_grok_api_key';
+    // Multi-set API key storage (sets 1–4 per provider)
+    const IA_KEY_STORAGE = 'dp_gemini_api_key'; // legacy single key (migrated to set1)
+    const IA_GROK_KEY_STORAGE = 'dp_grok_api_key'; // legacy single key (migrated to set1)
     const IA_PROVIDER_STORAGE = 'dp_ia_provider'; // 'gemini' | 'grok'
+    const IA_GEMINI_ACTIVE_SET_KEY = 'dp_gemini_active_set'; // '1'–'4'
+    const IA_GROK_ACTIVE_SET_KEY   = 'dp_grok_active_set';
+
+    function _geminiSetKey(n) { return n === 1 ? IA_KEY_STORAGE : 'dp_gemini_api_key_s' + n; }
+    function _grokSetKey(n)   { return n === 1 ? IA_GROK_KEY_STORAGE : 'dp_grok_api_key_s' + n; }
+
+    function getGeminiActiveSetNum() {
+        return parseInt(localStorage.getItem(IA_GEMINI_ACTIVE_SET_KEY) || '1') || 1;
+    }
+    function getGrokActiveSetNum() {
+        return parseInt(localStorage.getItem(IA_GROK_ACTIVE_SET_KEY) || '1') || 1;
+    }
+    window.setGeminiActiveSet = function(n, btn) {
+        localStorage.setItem(IA_GEMINI_ACTIVE_SET_KEY, String(n));
+        document.querySelectorAll('#ia-gemini-set-sel .pbtn').forEach((b,i) => b.classList.toggle('on', i+1 === n));
+        actualizarKeyStatusLbl();
+        renderAsistente();
+    };
+    window.setGrokActiveSet = function(n, btn) {
+        localStorage.setItem(IA_GROK_ACTIVE_SET_KEY, String(n));
+        document.querySelectorAll('#ia-grok-set-sel .pbtn').forEach((b,i) => b.classList.toggle('on', i+1 === n));
+        actualizarKeyStatusLbl();
+        renderAsistente();
+    };
     const IA_CHAT_STORAGE = 'dp_ia_chat_v1';
     const IA_HIST_STORAGE = 'dp_ia_chats_guardados';
     const IA_PREFS_STORAGE = 'dp_ia_prefs';
@@ -7595,17 +7694,26 @@
         const rowGemini = document.getElementById('ia-key-row-gemini');
         const rowGrok = document.getElementById('ia-key-row-grok');
         if (rowGemini)
-            rowGemini.style.display = p === 'gemini' ? 'flex' : 'none';
+            rowGemini.style.display = p === 'gemini' ? 'block' : 'none';
         if (rowGrok)
-            rowGrok.style.display = p === 'grok' ? 'flex' : 'none';
+            rowGrok.style.display = p === 'grok' ? 'block' : 'none';
     }
 
     function getGeminiKey() {
-        return (localStorage.getItem(IA_KEY_STORAGE) || '').trim();
+        const n = getGeminiActiveSetNum();
+        return (localStorage.getItem(_geminiSetKey(n)) || '').trim();
     }
 
     function getGrokKey() {
-        return (localStorage.getItem(IA_GROK_KEY_STORAGE) || '').trim();
+        const n = getGrokActiveSetNum();
+        return (localStorage.getItem(_grokSetKey(n)) || '').trim();
+    }
+
+    function getGeminiKeyBySet(n) {
+        return (localStorage.getItem(_geminiSetKey(n)) || '').trim();
+    }
+    function getGrokKeyBySet(n) {
+        return (localStorage.getItem(_grokSetKey(n)) || '').trim();
     }
 
     // Devuelve la key del proveedor activo (Gemini o Grok)
@@ -7614,46 +7722,125 @@
     }
 
     function actualizarKeyStatusLbl() {
-        const checkIcoSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px"><polyline points="20 6 9 17 4 12"/></svg>';
-        const p = getIAProvider();
-        const lblG = document.getElementById('ia-key-status-lbl');
-        if (lblG)
-            lblG.innerHTML = getGeminiKey() ? checkIcoSvg + 'Configurada' : 'No configurada';
-        const lblX = document.getElementById('ia-key-status-lbl-grok');
-        if (lblX)
-            lblX.innerHTML = getGrokKey() ? checkIcoSvg + 'Configurada' : 'No configurada';
+        const checkIco = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green,#2e7d32)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px"><polyline points="20 6 9 17 4 12"/></svg>';
+
+        // ── GEMINI ──
+        const gN = getGeminiActiveSetNum();
+        window._geminiActiveSet = gN;
+        const gK = getGeminiKeyBySet(gN);
+        const gLbl = document.getElementById('ia-gemini-active-lbl');
+        const gInfo = document.getElementById('ia-gemini-active-info');
+        if (gLbl) gLbl.textContent = 'API Key Gemini · Set ' + gN;
+        if (gInfo) gInfo.innerHTML = gK ? checkIco + gK.slice(0,6) + '••••••' + gK.slice(-4) : 'No configurada';
+        // Update selector buttons
+        document.querySelectorAll('#ia-gemini-set-sel .pbtn').forEach((b,i) => b.classList.toggle('on', i+1 === gN));
+        // Rebuild other sets panel if visible
+        const gOther = document.getElementById('ia-gemini-other-sets');
+        if (gOther && gOther.style.display !== 'none') _renderGeminiOtherSets(gOther, gN);
+
+        // ── GROK ──
+        const xN = getGrokActiveSetNum();
+        window._grokActiveSet = xN;
+        const xK = getGrokKeyBySet(xN);
+        const xLbl = document.getElementById('ia-grok-active-lbl');
+        const xInfo = document.getElementById('ia-grok-active-info');
+        if (xLbl) xLbl.textContent = 'API Key Grok · Set ' + xN;
+        if (xInfo) xInfo.innerHTML = xK ? checkIco + xK.slice(0,6) + '••••••' + xK.slice(-4) : 'No configurada';
+        document.querySelectorAll('#ia-grok-set-sel .pbtn').forEach((b,i) => b.classList.toggle('on', i+1 === xN));
+        const xOther = document.getElementById('ia-grok-other-sets');
+        if (xOther && xOther.style.display !== 'none') _renderGrokOtherSets(xOther, xN);
     }
 
-    window.abrirConfigIA = function() {
-        const actual = getGeminiKey();
-        appPrompt('Pega tu API Key de Gemini (gratis en aistudio.google.com/apikey). Se guarda solo en este dispositivo:', actual, val => {
+    function _renderGeminiOtherSets(container, activeN) {
+        const checkIco = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green,#2e7d32)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px"><polyline points="20 6 9 17 4 12"/></svg>';
+        let html = '';
+        for (let i = 1; i <= 4; i++) {
+            if (i === activeN) continue;
+            const k = getGeminiKeyBySet(i);
+            html += '<div class="strow" style="cursor:pointer;opacity:.85" onclick="abrirConfigIASet(' + i + ')">'
+                + '<div><div class="stlbl" style="font-size:12px">Set ' + i + '</div>'
+                + '<div style="font-size:11px;color:var(--g400)">' + (k ? checkIco + k.slice(0,6) + '••••' + k.slice(-4) : 'No configurada') + '</div></div>'
+                + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--g300)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>'
+                + '</div>';
+        }
+        container.innerHTML = html;
+    }
+
+    function _renderGrokOtherSets(container, activeN) {
+        const checkIco = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green,#2e7d32)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px"><polyline points="20 6 9 17 4 12"/></svg>';
+        let html = '';
+        for (let i = 1; i <= 4; i++) {
+            if (i === activeN) continue;
+            const k = getGrokKeyBySet(i);
+            html += '<div class="strow" style="cursor:pointer;opacity:.85" onclick="abrirConfigGrokSet(' + i + ')">'
+                + '<div><div class="stlbl" style="font-size:12px">Set ' + i + '</div>'
+                + '<div style="font-size:11px;color:var(--g400)">' + (k ? checkIco + k.slice(0,6) + '••••' + k.slice(-4) : 'No configurada') + '</div></div>'
+                + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--g300)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>'
+                + '</div>';
+        }
+        container.innerHTML = html;
+    }
+
+    window.toggleGeminiSets = function() {
+        const el = document.getElementById('ia-gemini-other-sets');
+        const btn = document.getElementById('ia-gemini-toggle-btn');
+        if (!el) return;
+        const open = el.style.display === 'none';
+        if (open) {
+            _renderGeminiOtherSets(el, getGeminiActiveSetNum());
+            el.style.display = 'block';
+            if (btn) btn.textContent = 'Ocultar otros sets ▴';
+        } else {
+            el.style.display = 'none';
+            if (btn) btn.textContent = 'Ver otros sets ▾';
+        }
+    };
+
+    window.toggleGrokSets = function() {
+        const el = document.getElementById('ia-grok-other-sets');
+        const btn = document.getElementById('ia-grok-toggle-btn');
+        if (!el) return;
+        const open = el.style.display === 'none';
+        if (open) {
+            _renderGrokOtherSets(el, getGrokActiveSetNum());
+            el.style.display = 'block';
+            if (btn) btn.textContent = 'Ocultar otros sets ▴';
+        } else {
+            el.style.display = 'none';
+            if (btn) btn.textContent = 'Ver otros sets ▾';
+        }
+    };
+
+    window.abrirConfigIA = function() { abrirConfigIASet(getGeminiActiveSetNum()); };
+    window.abrirConfigIASet = function(n) {
+        n = n || 1;
+        const storKey = _geminiSetKey(n);
+        const actual = (localStorage.getItem(storKey) || '').trim();
+        appPrompt('API Key de Gemini — Set ' + n + '\n(gratis en aistudio.google.com/apikey). Se guarda solo en este dispositivo.', actual, val => {
             const key = (val || '').trim();
-            if (key) {
-                localStorage.setItem(IA_KEY_STORAGE, key);
-            } else {
-                localStorage.removeItem(IA_KEY_STORAGE);
-            }
+            if (key) localStorage.setItem(storKey, key);
+            else localStorage.removeItem(storKey);
             actualizarKeyStatusLbl();
             renderAsistente();
         }, {
-            title: 'API Key de Gemini',
+            title: 'API Key Gemini · Set ' + n,
             placeholder: 'Pega tu API Key aquí'
         });
     };
 
-    window.abrirConfigGrok = function() {
-        const actual = getGrokKey();
-        appPrompt('Pega tu API Key de Grok / xAI (console.x.ai). Se guarda solo en este dispositivo:', actual, val => {
+    window.abrirConfigGrok = function() { abrirConfigGrokSet(getGrokActiveSetNum()); };
+    window.abrirConfigGrokSet = function(n) {
+        n = n || 1;
+        const storKey = _grokSetKey(n);
+        const actual = (localStorage.getItem(storKey) || '').trim();
+        appPrompt('API Key de Grok / xAI — Set ' + n + '\n(console.x.ai). Se guarda solo en este dispositivo.', actual, val => {
             const key = (val || '').trim();
-            if (key) {
-                localStorage.setItem(IA_GROK_KEY_STORAGE, key);
-            } else {
-                localStorage.removeItem(IA_GROK_KEY_STORAGE);
-            }
+            if (key) localStorage.setItem(storKey, key);
+            else localStorage.removeItem(storKey);
             actualizarKeyStatusLbl();
             renderAsistente();
         }, {
-            title: 'API Key de Grok',
+            title: 'API Key Grok · Set ' + n,
             placeholder: 'Pega tu API Key aquí'
         });
     };
@@ -8249,7 +8436,11 @@
                             ventana: VENTANA_LABEL[p.cfg.ventana] || p.cfg.ventana,
                             pondera_dias_recientes: !!p.cfg.ponderarReciente,
                             modo_estimacion: p.cfg.modoEstimacion,
-                            ajusta_por_tendencia: !!p.cfg.tendencia
+                            ajusta_por_tendencia: !!p.cfg.tendencia,
+                            tipo_dia_separado: !!p.cfg.tipoDia,
+                            pondera_franja_horaria: !!p.cfg.franjHoraria,
+                            excluye_outliers: !!p.cfg.excluirOutliers,
+                            min_muestras: p.cfg.minMuestras || 3
                         },
                         por_dia: diasConTurno.map(d => {
                             const at = atipicosP.find(a => a.fecha === d.fecha) || {};
@@ -11167,7 +11358,33 @@
         });
         ZONE_NAMES.forEach(name => loadZonePolygon(name));
         initZoneEditButtons();
-        setTimeout(() => leafletMap.invalidateSize(), 200);
+        setTimeout(() => {
+            leafletMap.invalidateSize();
+            _fitMapToAllZones();
+        }, 250);
+    }
+
+    function _fitMapToAllZones() {
+        if (!leafletMap) return;
+        const allBounds = [];
+        ZONE_NAMES.forEach(name => {
+            const z = ZONAS[name] || {};
+            if (z.polygon && z.polygon.length >= 3) {
+                try {
+                    const coords = coordsToLatLng(z.polygon);
+                    const poly = L.polygon(coords);
+                    const b = poly.getBounds();
+                    if (b.isValid()) allBounds.push(b);
+                } catch(e) {}
+            }
+        });
+        if (allBounds.length > 0) {
+            let combined = allBounds[0];
+            for (let i = 1; i < allBounds.length; i++) combined = combined.extend(allBounds[i]);
+            try {
+                leafletMap.fitBounds(combined, { padding: [20, 20], maxZoom: 15 });
+            } catch(e) {}
+        }
     }
 
     function coordsToLatLng(polygon) {
@@ -11499,8 +11716,26 @@
             hasBounds = true;
         }
 
-        if (!hasBounds)
-            zoneSubMap.setView([-33.660, -70.930], 13);
+        if (!hasBounds) {
+            // Fallback: try to fit all sub-zone polygons in notes
+            const subBounds = [];
+            (z.notes || []).forEach(note => {
+                if (note.polygon && note.polygon.length >= 3) {
+                    try {
+                        const coords = coordsToLatLng(note.polygon);
+                        const b = L.polygon(coords).getBounds();
+                        if (b.isValid()) subBounds.push(b);
+                    } catch(e) {}
+                }
+            });
+            if (subBounds.length > 0) {
+                let combined = subBounds[0];
+                for (let i = 1; i < subBounds.length; i++) combined = combined.extend(subBounds[i]);
+                try { zoneSubMap.fitBounds(combined, { padding: [16, 16], maxZoom: 16 }); } catch(e) {}
+            } else {
+                zoneSubMap.setView([-33.660, -70.930], 13);
+            }
+        }
 
         // Dibujar sub-polígonos de cada nota
         renderSubPolygons(zoneName);
@@ -13612,18 +13847,18 @@
                 incentivos: !!c.incentivos,
                 periodoMes: !!c.periodoMes,
                 feriados: !!c.feriados,
-                // Eficiencia estimada (0.5–1): reemplaza los antiguos "factores por tipo
-                // de día". Limita las horas activas y los viajes proyectados para días
-                // futuros a, como máximo, este % del turno/mediana histórica, para que
-                // días puntuales con horas o viajes atípicos no infle la predicción.
                 eficienciaEstimada: (typeof c.eficienciaEstimada === 'number' && c.eficienciaEstimada > 0 && c.eficienciaEstimada <= 1) ? c.eficienciaEstimada : 0.7,
-                // Ponderar más los días históricos más recientes en vez de un promedio simple
                 ponderarReciente: !!c.ponderarReciente,
-                // Modo de estimación: desplaza el estimado usando la desviación histórica
-                // 'conservador' resta parte de la desviación, 'optimista' la suma
                 modoEstimacion: ['conservador', 'normal', 'optimista'].includes(c.modoEstimacion) ? c.modoEstimacion : 'normal',
-                // Ajusta el estimado según la tendencia reciente (subiendo/bajando)
-                tendencia: !!c.tendencia
+                tendencia: !!c.tendencia,
+                // NUEVO: Promedio separado por tipo de día (entre semana / finde / feriado)
+                tipoDia: !!c.tipoDia,
+                // NUEVO: Ponderar el estimado según la franja horaria del turno
+                franjHoraria: !!c.franjHoraria,
+                // NUEVO: Mínimo de muestras para emitir un estimado (default 3)
+                minMuestras: (typeof c.minMuestras === 'number' && c.minMuestras >= 1 && c.minMuestras <= 5) ? c.minMuestras : 3,
+                // NUEVO: Excluir días atípicos (outliers) del promedio histórico
+                excluirOutliers: !!c.excluirOutliers
             };
         } catch (e) {
             return {
@@ -13634,7 +13869,11 @@
                 eficienciaEstimada: 0.7,
                 ponderarReciente: false,
                 modoEstimacion: 'normal',
-                tendencia: false
+                tendencia: false,
+                tipoDia: false,
+                franjHoraria: false,
+                minMuestras: 3,
+                excluirOutliers: false
             };
         }
     }
@@ -13701,28 +13940,23 @@
         const cfg = getPredConfig();
         document.querySelectorAll('#pred-config-ventana .pbtn').forEach(b => b.classList.toggle('on', b.dataset.v === cfg.ventana));
         document.querySelectorAll('#pred-config-modo .pbtn').forEach(b => b.classList.toggle('on', b.dataset.m === cfg.modoEstimacion));
-        const chkI = document.getElementById('pred-cfg-incentivos');
-        const chkP = document.getElementById('pred-cfg-periodo');
-        const chkF = document.getElementById('pred-cfg-feriados');
-        const chkPond = document.getElementById('pred-cfg-ponderar');
-        const chkTend = document.getElementById('pred-cfg-tendencia');
-        if (chkI)
-            chkI.checked = cfg.incentivos;
-        if (chkP)
-            chkP.checked = cfg.periodoMes;
-        if (chkF)
-            chkF.checked = cfg.feriados;
-        if (chkPond)
-            chkPond.checked = cfg.ponderarReciente;
-        if (chkTend)
-            chkTend.checked = cfg.tendencia;
+        const _chk = (id, v) => { const el = document.getElementById(id); if (el) el.checked = v; };
+        _chk('pred-cfg-incentivos', cfg.incentivos);
+        _chk('pred-cfg-periodo', cfg.periodoMes);
+        _chk('pred-cfg-feriados', cfg.feriados);
+        _chk('pred-cfg-ponderar', cfg.ponderarReciente);
+        _chk('pred-cfg-tendencia', cfg.tendencia);
+        _chk('pred-cfg-tipoDia', cfg.tipoDia);
+        _chk('pred-cfg-franja', cfg.franjHoraria);
+        _chk('pred-cfg-excluirOutliers', cfg.excluirOutliers);
+        const selMin = document.getElementById('pred-cfg-minMuestras');
+        if (selMin) selMin.value = String(cfg.minMuestras || 3);
         const efPct = Math.round((cfg.eficienciaEstimada || 0.7) * 100);
         let hayPresetOn = false;
         document.querySelectorAll('#pred-config-eficiencia .pbtn').forEach(b => {
             const match = Math.round(parseFloat(b.dataset.e) * 100) === efPct;
             b.classList.toggle('on', match);
-            if (match)
-                hayPresetOn = true;
+            if (match) hayPresetOn = true;
         });
         const infoEl = document.getElementById('pred-eficiencia-auto-info');
         if (infoEl) {
@@ -13819,22 +14053,24 @@
 
     window.guardarPredConfig = function() {
         const c = getPredConfig();
-        c.incentivos = !!document.getElementById('pred-cfg-incentivos').checked;
-        c.periodoMes = !!document.getElementById('pred-cfg-periodo').checked;
-        c.feriados = !!document.getElementById('pred-cfg-feriados').checked;
-        const chkPond = document.getElementById('pred-cfg-ponderar');
-        const chkTend = document.getElementById('pred-cfg-tendencia');
-        c.ponderarReciente = chkPond ? !!chkPond.checked : false;
-        c.tendencia = chkTend ? !!chkTend.checked : false;
+        const _chkVal = id => { const el = document.getElementById(id); return el ? !!el.checked : false; };
+        const _selVal = (id, def) => { const el = document.getElementById(id); return el ? (parseInt(el.value) || def) : def; };
+        c.incentivos      = _chkVal('pred-cfg-incentivos');
+        c.periodoMes      = _chkVal('pred-cfg-periodo');
+        c.feriados        = _chkVal('pred-cfg-feriados');
+        c.ponderarReciente= _chkVal('pred-cfg-ponderar');
+        c.tendencia       = _chkVal('pred-cfg-tendencia');
+        c.tipoDia         = _chkVal('pred-cfg-tipoDia');
+        c.franjHoraria    = _chkVal('pred-cfg-franja');
+        c.excluirOutliers = _chkVal('pred-cfg-excluirOutliers');
+        c.minMuestras     = _selVal('pred-cfg-minMuestras', 3);
         const eficEl = document.querySelector('#pred-config-eficiencia .pbtn.on');
         c.eficienciaEstimada = eficEl ? parseFloat(eficEl.dataset.e) : (c.eficienciaEstimada || 0.7);
         setPredConfig(c);
+        const panel = document.getElementById('pred-config-panel');
+        if (panel) panel.style.display = 'none';
         renderPredicciones();
         toast('Configuración de predicción guardada');
-        // Cerrar el panel de configuración para no ocupar espacio innecesario
-        const panel = document.getElementById('pred-config-panel');
-        if (panel)
-            panel.style.display = 'none';
     };
 
     window.setSemanaPrediccion = function(offset) {
@@ -13881,6 +14117,10 @@
         const maxDiasAtras = opts.maxDiasAtras || 200;
         const periodoObjetivo = opts.periodoMes ? periodoDelMes(antesDe) : null;
         const buscarSoloFeriados = !!opts.feriados && esFeriadoCL(antesDe);
+        // NEW: tipoDia — filter by same day type (weekday / weekend / holiday)
+        const tipoDiaActivo = !!opts.tipoDia;
+        const esFinDeSemana = d => { const dow = new Date(d + 'T12:00').getDay(); return dow === 0 || dow === 6; };
+        const tipoDiaObjetivo = buscarSoloFeriados ? 'feriado' : esFinDeSemana(antesDe) ? 'finde' : 'semana';
 
         const recolectar = (requierePeriodo, requiereFeriado, limiteDias) => {
             const out = [];
@@ -13899,6 +14139,11 @@
                     continue;
                 if (requiereFeriado && !esFeriadoCL(fs))
                     continue;
+                // NEW: tipoDia filter — only use samples matching the same day-type
+                if (tipoDiaActivo && !requiereFeriado) {
+                    const fsTipo = esFeriadoCL(fs) ? 'feriado' : esFinDeSemana(fs) ? 'finde' : 'semana';
+                    if (fsTipo !== tipoDiaObjetivo) continue;
+                }
                 out.push(fs);
             }
             return out;
@@ -13934,6 +14179,28 @@
         }
 
         if (!candidatas.length)
+            return null;
+
+        // NEW: excluirOutliers — remove samples whose neto is beyond 1.5 IQR from median
+        if (opts.excluirOutliers && candidatas.length >= 4) {
+            const netosRaw = candidatas.map(fs => {
+                const vs = VIAJES.filter(v => v.fecha === fs);
+                return calcMetrics(vs).quedo;
+            });
+            netosRaw.sort((a, b) => a - b);
+            const q1 = netosRaw[Math.floor(netosRaw.length * 0.25)];
+            const q3 = netosRaw[Math.floor(netosRaw.length * 0.75)];
+            const iqr = q3 - q1;
+            candidatas = candidatas.filter(fs => {
+                const vs = VIAJES.filter(v => v.fecha === fs);
+                const n = calcMetrics(vs).quedo;
+                return n >= (q1 - 1.5 * iqr) && n <= (q3 + 1.5 * iqr);
+            });
+        }
+
+        // NEW: minMuestras — require minimum sample count to emit a prediction
+        const minM = opts.minMuestras || 1;
+        if (candidatas.length < minM)
             return null;
         let sumBruto = 0,
             sumViajes = 0,
@@ -14057,7 +14324,10 @@
             const hist = promedioHistoricoDiaSemana(idx, fecha, vp.maxMuestras, {
                 maxDiasAtras: vp.maxDiasAtras,
                 periodoMes: cfg.periodoMes,
-                feriados: cfg.feriados
+                feriados: cfg.feriados,
+                tipoDia: cfg.tipoDia,
+                excluirOutliers: cfg.excluirOutliers,
+                minMuestras: cfg.minMuestras || 3
             });
             // Ajusta el promedio histórico según la configuración de predicción:
             // - ponderarReciente: usa el promedio ponderado por recencia en vez del simple
@@ -14078,6 +14348,13 @@
                 if (cfg.tendencia && hist.tendenciaPct !== null) {
                     const factorTendencia = Math.max(0.85, Math.min(1.15, 1 + (hist.tendenciaPct / 100) * 0.5));
                     base *= factorTendencia;
+                }
+                // NEW: franja horaria — boost estimate if turno falls in peak hour blocks
+                if (cfg.franjHoraria && turno && turno.ini) {
+                    const hIni = parseInt((turno.ini || '00:00').split(':')[0]);
+                    // Peak windows: 8-10h morning, 12-14h lunch, 18-20h evening
+                    const esPico = (hIni >= 8 && hIni < 10) || (hIni >= 12 && hIni < 14) || (hIni >= 18 && hIni < 20);
+                    if (esPico) base *= 1.07; // +7% for peak-hour starts
                 }
                 histNetoAjustado = Math.max(0, base);
                 rangoMin = Math.max(0, histNetoAjustado - desv);
@@ -14266,6 +14543,14 @@
             cfgBits.push('modo ' + pred.cfg.modoEstimacion);
         if (pred.cfg.tendencia)
             cfgBits.push('ajuste por tendencia');
+        if (pred.cfg.tipoDia)
+            cfgBits.push('tipo de día sep.');
+        if (pred.cfg.franjHoraria)
+            cfgBits.push('franja horaria');
+        if (pred.cfg.excluirOutliers)
+            cfgBits.push('sin días atípicos');
+        if ((pred.cfg.minMuestras || 3) !== 3)
+            cfgBits.push('mín. ' + pred.cfg.minMuestras + ' muestras');
         cfgBits.push('eficiencia estimada ' + Math.round((pred.cfg.eficienciaEstimada || 0.7) * 100) + '%');
         const feriadosEnSemana = diasConTurno.filter(d => d.esFeriado);
 
@@ -14567,8 +14852,16 @@
             cfgBits.push('modo ' + pred.cfg.modoEstimacion);
         if (pred.cfg.tendencia)
             cfgBits.push('ajuste por tendencia');
+        if (pred.cfg.tipoDia)
+            cfgBits.push('tipo de día sep.');
+        if (pred.cfg.franjHoraria)
+            cfgBits.push('franja horaria');
+        if (pred.cfg.excluirOutliers)
+            cfgBits.push('sin días atípicos');
+        if ((pred.cfg.minMuestras || 3) !== 3)
+            cfgBits.push('mín. ' + pred.cfg.minMuestras + ' muestras');
         cfgBits.push('eficiencia estimada ' + Math.round((pred.cfg.eficienciaEstimada || 0.7) * 100) + '%');
-        let txt = 'Predicción Driver Pro — ' + (pred.offset === 0 ? 'semana actual' : 'semana siguiente') + '\n';
+        let txt = 'Predicción Driver Pro — ' + (pred.offset === 0 ? 'Semana actual' : 'Semana siguiente') + '\n';
         txt += 'Rango: ' + pred.fechas[0] + ' a ' + pred.fechas[6] + '\n';
         txt += 'Configuración: ' + cfgBits.join(' · ') + '\n';
         txt += 'Lo que me quedo estimado (sin incentivos): ' + CLP(totalNeto) + '\n';
@@ -16193,4 +16486,3 @@
 
 </body>
 </html>
-
