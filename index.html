@@ -6814,6 +6814,15 @@
     // por una ventana emergente con el estilo visual de la app (fondo blanco). ──
     function _appDialogShow(opts) {
         const bg = document.getElementById('mbg-appdialog');
+        // Save current scroll position of every scrollable tab panel before opening
+        // the dialog — the input.focus() call can cause the browser to scroll the
+        // page to bring the (off-screen) input into view on mobile.
+        const _savedScrolls = [];
+        document.querySelectorAll('.page').forEach(el => {
+            if (el.scrollTop > 0) _savedScrolls.push({ el, top: el.scrollTop });
+        });
+        const _bodyScrollY = window.scrollY || 0;
+
         document.getElementById('appdlg-title').textContent = opts.title || '';
         document.getElementById('appdlg-msg').textContent = opts.message || '';
         const inputWrap = document.getElementById('appdlg-input-wrap');
@@ -6839,14 +6848,25 @@
                 btn.style.cssText = 'flex:1';
             btn.onclick = () => {
                 bg.classList.remove('open');
+                // Restore all scroll positions after dialog closes
+                _savedScrolls.forEach(s => { try { s.el.scrollTop = s.top; } catch(e){} });
+                if (_bodyScrollY) window.scrollTo(0, _bodyScrollY);
                 if (b.onClick)
                     b.onClick(opts.input ? input.value : undefined);
             };
             btnsWrap.appendChild(btn);
         });
         bg.classList.add('open');
-        if (opts.input)
-            setTimeout(() => input.focus(), 80);
+        if (opts.input) {
+            setTimeout(() => {
+                // preventScroll stops the browser from scrolling the page to show
+                // the focused input (which is inside a fixed overlay, so no scroll needed)
+                input.focus({ preventScroll: true });
+                // Belt-and-suspenders: restore scroll positions right after focus
+                _savedScrolls.forEach(s => { try { s.el.scrollTop = s.top; } catch(e){} });
+                if (_bodyScrollY) window.scrollTo(0, _bodyScrollY);
+            }, 80);
+        }
     }
 
     // appConfirm(mensaje, onConfirm, opts?) — reemplaza confirm(). onConfirm se
