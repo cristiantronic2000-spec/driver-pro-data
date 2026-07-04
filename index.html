@@ -4094,9 +4094,10 @@
                 <!-- ── SUB TAB: PREDICCIONES ─────────────────────────────── -->
                 <div id="asub-predicciones" style="display:none">
                     <div style="height:12px"></div>
-                    <div class="psel" style="margin:0 16px 14px">
+                    <div class="psel" style="margin:0 16px 14px;flex-wrap:wrap">
                         <button class="pbtn on" id="pred-sel-actual" onclick="setSemanaPrediccion(0)">Semana actual</button>
                         <button class="pbtn" id="pred-sel-siguiente" onclick="setSemanaPrediccion(1)">Semana siguiente</button>
+                        <button class="pbtn" id="pred-sel-mes" onclick="setSemanaPrediccion('mes')">Mes actual</button>
                     </div>
                     <div style="display:flex;gap:8px;margin:0 16px 14px">
                         <button class="ia-tool-btn" onclick="togglePredConfigPanel()" title="Configurar predicción">
@@ -4181,6 +4182,14 @@
                                 <div style="font-size:11px;color:var(--g400);margin-top:2px">Descarta días con ganancias muy por encima o muy por debajo del promedio (outliers) para no sesgar el estimado.</div>
                             </div>
                             <input type="checkbox" id="pred-cfg-excluirOutliers" style="margin-left:12px;flex-shrink:0">
+                        </label>
+                        <!-- NUEVO: Respaldo por tipo de día si faltan muestras exactas -->
+                        <label style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--g200);cursor:pointer">
+                            <div>
+                                <span style="font-size:13px">Respaldo si faltan muestras exactas</span>
+                                <div style="font-size:11px;color:var(--g400);margin-top:2px">Si un día (p.ej. un feriado) tiene menos de 3 muestras del mismo día, completa promediando cualquier otro día de semana o fin de semana según corresponda, en vez de dejarlo sin estimado.</div>
+                            </div>
+                            <input type="checkbox" id="pred-cfg-fallbackTipoDia" style="margin-left:12px;flex-shrink:0">
                         </label>
                         <div style="font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;margin:12px 0 6px;padding-top:8px;border-top:1px solid var(--g200)">Modo de estimación</div>
                         <div style="font-size:11px;color:var(--g400);margin-bottom:8px">Desplaza el estimado usando la variabilidad histórica: conservador apunta más bajo, optimista más alto.</div>
@@ -8419,6 +8428,7 @@
             try {
                 const predActual = calcularPrediccionSemana(0);
                 const predSig = calcularPrediccionSemana(1);
+                const predMes = calcularPrediccionSemana('mes');
                 const resumenPred = p => {
                     const diasConTurno = p.dias.filter(d => d.tieneTurno);
                     if (!diasConTurno.length)
@@ -8440,7 +8450,7 @@
                     const tendenciasP = diasConTurno.map(d => d.hist ? d.hist.tendenciaPct : null).filter(t => t !== null);
                     const tendenciaPromP = tendenciasP.length ? tendenciasP.reduce((a, b) => a + b, 0) / tendenciasP.length : null;
                     return {
-                        rango: p.fechas[0] + ' a ' + p.fechas[6],
+                        rango: p.fechas[0] + ' a ' + p.fechas[p.fechas.length - 1],
                         neto_estimado_total_SIN_incentivos: Math.round(totalNeto),
                         incentivos_estimados_total: Math.round(totalIncentivo),
                         neto_estimado_total_CON_incentivos: Math.round(totalNeto + totalIncentivo),
@@ -8460,6 +8470,7 @@
                             tipo_dia_separado: !!p.cfg.tipoDia,
                             pondera_franja_horaria: !!p.cfg.franjHoraria,
                             excluye_outliers: !!p.cfg.excluirOutliers,
+                            respaldo_tipo_dia_si_faltan_muestras: !!p.cfg.fallbackTipoDia,
                             min_muestras: p.cfg.minMuestras || 3
                         },
                         por_dia: diasConTurno.map(d => {
@@ -8488,6 +8499,7 @@
                 };
                 ctx.prediccion_semana_actual = resumenPred(predActual) || 'Sin turnos planificados esta semana';
                 ctx.prediccion_semana_siguiente = resumenPred(predSig) || 'Sin turnos planificados la próxima semana';
+                ctx.prediccion_mes_actual = resumenPred(predMes) || 'Sin turnos planificados este mes';
                 ctx.configuracion_prediccion = getPredConfig();
             } catch (e) {}
         }
@@ -8625,7 +8637,7 @@
                 'IMPORTANTE: el campo "historico_completo_desde_primer_viaje" contiene el resumen de TODOS los meses desde que el usuario empezó a usar la app, no solo el último mes, e incluye "detalle_por_dia_TODOS_los_dias_con_datos" con el desglose de CADA día individual (fecha, viajes, bruto, neto, gasto en bencina, si tuvo cierre de turno). Úsalo para responder preguntas sobre CUALQUIER fecha específica que te pidan (ej: "cuánto gané el 15 de mayo"), no solo semana/mes actual. Si preguntan por una fecha exacta, busca ese día en ese arreglo antes de responder. ' +
                 'IMPORTANTE: no confundas conceptos distintos. "turnos_planificados" son los horarios de trabajo agendados (con hora_inicio_planificada, hora_fin_planificada y horas_planificadas), incluyendo turnos futuros (es_futuro:true) — úsalos para proyectar y predecir próximos días de trabajo. NO tienen relación con metas de viajes. "incentivos_activos" e "incentivos_cerrados_recientes" son metas de VIAJES con su propio premio en pesos (campo meta_viajes), cada incentivo es independiente y puede tener su propio rango de fechas/horas. "configuracion.meta_diaria_viajes" y "meta_mensual" son metas generales configuradas por el usuario, distintas de cualquier incentivo puntual. Si te preguntan por horas trabajadas, usa los campos de horas (turnos_historico, turnos_planificados); si preguntan por metas o incentivos, usa los campos de incentivos. Nunca mezcles un número de viajes con una cantidad de horas. ' +
                 'Para predicciones (ej: "cuánto voy a ganar este mes"), combina el ritmo de los días ya trabajados en el período con los turnos_planificados aún no cumplidos (es_futuro:true) para proyectar el resto del período. ' +
-                'Los campos "prediccion_semana_actual" y "prediccion_semana_siguiente" ya traen la proyección calculada por la app (misma que ve el usuario en la pestaña Predicciones), con desglose por día y si es dato real o estimado; úsalos como base cuando te pregunten por la semana actual o siguiente en vez de recalcular desde cero, y menciona la config activa en "configuracion_prediccion" (ventana de datos usada, si considera incentivos, fin/inicio de mes o feriados) si es relevante. ' +
+                'Los campos "prediccion_semana_actual", "prediccion_semana_siguiente" y "prediccion_mes_actual" ya traen la proyección calculada por la app (misma que ve el usuario en la pestaña Predicciones, incluyendo la opción "Mes actual"), con desglose por día y si es dato real o estimado; úsalos como base cuando te pregunten por la semana actual, la siguiente o el mes en curso en vez de recalcular desde cero, y menciona la config activa en "configuracion_prediccion" (ventana de datos usada, si considera incentivos, fin/inicio de mes o feriados) si es relevante. ' +
                 'Cada predicción trae además "factor_eficiencia_estimado_pct" y "valor_hora_estimado_promedio" a nivel de semana, y por día "efectividad_pct" (horas activas estimadas vs. horas de turno planificadas), "valor_hora_estimado" (lo que se queda dividido en horas activas de ese día) y dos banderas booleanas: "dia_con_mas_horas_de_lo_habitual" y "dia_con_ganancia_superior_a_lo_habitual", que marcan días que se salen bastante del promedio de esa semana. Úsalas para responder preguntas sobre qué tan efectivo es un día/semana, cuánto rinde la hora trabajada, o qué días destacan por exceso de horas o de ganancias. ' +
                 'También trae "rango_estimado_total" (y por día "rango_estimado"), un mínimo y máximo basado en qué tan variable ha sido el historial — comunícalo como incertidumbre razonable, no como un error de cálculo. "tendencia_reciente_pct" indica si el rendimiento viene subiendo o bajando en las últimas semanas (positivo = subiendo). "metodo_usado" indica qué ajustes tiene activados el usuario (ventana de datos, si pondera días recientes, el modo de estimación conservador/normal/optimista, y si ajusta por tendencia); menciónalo si es relevante para explicar por qué el estimado es más alto, más bajo o más amplio de lo que esperaban. ' +
                 'El campo "horas_activas_por_semana" trae, semana a semana, las horas de turno vs. las horas activas (con viajes reales) y la eficiencia %; el campo "horas_activas_ventana_semanas_usada" indica si se usaron las últimas 4 semanas o, si no había datos en ese rango, se amplió a las últimas 8. Úsalo para responder preguntas sobre horas trabajadas efectivas, tiempo inactivo o eficiencia. ' +
@@ -13878,8 +13890,12 @@
                 // NUEVO: Mínimo de muestras para emitir un estimado (default 3)
                 minMuestras: (typeof c.minMuestras === 'number' && c.minMuestras >= 1 && c.minMuestras <= 5) ? c.minMuestras : 3,
                 // NUEVO: Excluir días atípicos (outliers) del promedio histórico
-                excluirOutliers: !!c.excluirOutliers
-            };
+                excluirOutliers: !!c.excluirOutliers,
+                // NUEVO: si no hay (o hay muy pocas) muestras del mismo día exacto,
+                // completa promediando cualquier otro día de semana o fin de semana
+                // (según corresponda) hasta reunir ~3 muestras, en vez de dejar el
+                // día sin estimado.
+                fallbackTipoDia: !!c.fallbackTipoDia            };
         } catch (e) {
             return {
                 ventana: 'semanas',
@@ -13893,7 +13909,8 @@
                 tipoDia: false,
                 franjHoraria: false,
                 minMuestras: 3,
-                excluirOutliers: false
+                excluirOutliers: false,
+                fallbackTipoDia: false
             };
         }
     }
@@ -13969,6 +13986,7 @@
         _chk('pred-cfg-tipoDia', cfg.tipoDia);
         _chk('pred-cfg-franja', cfg.franjHoraria);
         _chk('pred-cfg-excluirOutliers', cfg.excluirOutliers);
+        _chk('pred-cfg-fallbackTipoDia', cfg.fallbackTipoDia);
         const selMin = document.getElementById('pred-cfg-minMuestras');
         if (selMin) selMin.value = String(cfg.minMuestras || 3);
         const efPct = Math.round((cfg.eficienciaEstimada || 0.7) * 100);
@@ -14083,6 +14101,7 @@
         c.tipoDia         = _chkVal('pred-cfg-tipoDia');
         c.franjHoraria    = _chkVal('pred-cfg-franja');
         c.excluirOutliers = _chkVal('pred-cfg-excluirOutliers');
+        c.fallbackTipoDia = _chkVal('pred-cfg-fallbackTipoDia');
         c.minMuestras     = _selVal('pred-cfg-minMuestras', 3);
         const eficEl = document.querySelector('#pred-config-eficiencia .pbtn.on');
         c.eficienciaEstimada = eficEl ? parseFloat(eficEl.dataset.e) : (c.eficienciaEstimada || 0.7);
@@ -14097,10 +14116,13 @@
         predSemanaOffset = offset;
         const bA = document.getElementById('pred-sel-actual');
         const bS = document.getElementById('pred-sel-siguiente');
+        const bM = document.getElementById('pred-sel-mes');
         if (bA)
             bA.classList.toggle('on', offset === 0);
         if (bS)
             bS.classList.toggle('on', offset === 1);
+        if (bM)
+            bM.classList.toggle('on', offset === 'mes');
         renderPredicciones();
     };
 
@@ -14114,6 +14136,26 @@
             dias.push(d.toISOString().slice(0, 10));
         }
         return dias;
+    }
+
+    // Todas las fechas (1 → último día) del mes calendario actual
+    function fechasMesActual() {
+        const hoyStr = today();
+        const now = new Date(hoyStr + 'T12:00:00');
+        const y = now.getFullYear(),
+            m = now.getMonth();
+        const lastDay = new Date(y, m + 1, 0).getDate();
+        const mesStr = y + '-' + String(m + 1).padStart(2, '0');
+        const dias = [];
+        for (let i = 1; i <= lastDay; i++)
+            dias.push(mesStr + '-' + String(i).padStart(2, '0'));
+        return dias;
+    }
+
+    // Devuelve las fechas a usar según el selector de período elegido:
+    // 0 = semana actual, 1 = semana siguiente, 'mes' = mes calendario actual.
+    function fechasParaPrediccion(offset) {
+        return offset === 'mes' ? fechasMesActual() : fechasSemanaOffset(offset);
     }
 
     // Mediana de un arreglo de números: ordena y toma el valor central (o el
@@ -14196,6 +14238,27 @@
                 if (candidatas.length < maxMuestras && !candidatas.includes(f))
                     candidatas.push(f);
             });
+        }
+
+        // 5) NUEVO: respaldo por tipo de día — si todavía hay muy pocas muestras
+        // (menos de 3) y el activador está encendido, se completa con cualquier
+        // otro día que sea del mismo tipo (entre semana o fin de semana), sin
+        // exigir que sea el mismo día de la semana. Esto evita que un feriado u
+        // otro día con poco historial exacto quede en $0 por falta de datos.
+        if (opts.fallbackTipoDia && candidatas.length < 3) {
+            const cursorFallback = new Date(antesDe + 'T12:00:00');
+            const limiteFallback = Math.max(maxDiasAtras, 60);
+            for (let back = 1; back <= limiteFallback && candidatas.length < 3; back++) {
+                cursorFallback.setDate(cursorFallback.getDate() - 1);
+                const fs = cursorFallback.toISOString().slice(0, 10);
+                if (candidatas.includes(fs))
+                    continue;
+                if (!VIAJES.some(v => v.fecha === fs))
+                    continue;
+                if (esFinDeSemana(fs) !== esFinDeSemana(antesDe))
+                    continue;
+                candidatas.push(fs);
+            }
         }
 
         if (!candidatas.length)
@@ -14331,12 +14394,14 @@
 
     // Calcula la predicción completa de una semana (offset 0 o 1)
     function calcularPrediccionSemana(offset) {
-        const fechas = fechasSemanaOffset(offset);
+        const fechas = fechasParaPrediccion(offset);
         const hoyStr = today();
         const cfg = getPredConfig();
         const vp = ventanaParams(cfg.ventana);
         const incentivoDia = cfg.incentivos ? estimarIncentivoPromedioDia() : 0;
-        const dias = fechas.map((fecha, idx) => {
+        const dias = fechas.map((fecha) => {
+            const dowRaw = new Date(fecha + 'T12:00:00').getDay();
+            const idx = dowRaw === 0 ? 6 : dowRaw - 1; // 0=Lun..6=Dom, según el día real de la fecha
             const turno = TURNOS.find(t => t.fecha === fecha);
             const yaOcurrio = fecha < hoyStr;
             const real = yaOcurrio ? VIAJES.filter(v => v.fecha === fecha) : [];
@@ -14347,7 +14412,8 @@
                 feriados: cfg.feriados,
                 tipoDia: cfg.tipoDia,
                 excluirOutliers: cfg.excluirOutliers,
-                minMuestras: cfg.minMuestras || 3
+                minMuestras: cfg.minMuestras || 3,
+                fallbackTipoDia: cfg.fallbackTipoDia
             });
             // Ajusta el promedio histórico según la configuración de predicción:
             // - ponderarReciente: usa el promedio ponderado por recencia en vez del simple
@@ -14510,6 +14576,73 @@
         return '<div class="cflat" style="text-align:center;padding:24px 16px;color:var(--g400);font-size:13px">' + texto + '</div>';
     }
 
+    // ── Agrupación por semana (para la predicción de "Mes actual") ─────────
+    // Agrupa un arreglo de días (los que trae calcularPrediccionSemana) en
+    // semanas Lun→Dom, en el orden en que aparecen los días (cronológico).
+    function agruparDiasPorSemana(dias) {
+        const grupos = [];
+        const mapa = {};
+        dias.forEach(d => {
+            const lun = lunesDe(d.fecha);
+            if (!mapa[lun]) {
+                mapa[lun] = {
+                    lun,
+                    dias: []
+                };
+                grupos.push(mapa[lun]);
+            }
+            mapa[lun].dias.push(d);
+        });
+        return grupos;
+    }
+
+    // Totales agregados de un grupo de días (una semana) para la predicción del mes
+    function statsGrupoPrediccion(diasGrupo) {
+        const totalNeto = diasGrupo.reduce((s, d) => s + predNetoBaseDia(d), 0);
+        const totalHrsAct = diasGrupo.reduce((s, d) => s + (d.horasActivasEst || 0), 0);
+        const totalHrsPlan = diasGrupo.reduce((s, d) => s + (d.horasPlan || 0), 0);
+        const totalViajes = diasGrupo.reduce((s, d) => s + (d.viajesEst || 0), 0);
+        const totalBruto = diasGrupo.reduce((s, d) => s + (d.brutoReal !== null ? d.brutoReal : (d.hist ? d.hist.bruto * (d.ratioEficiencia || 1) : 0)), 0);
+        const rangoMin = diasGrupo.reduce((s, d) => {
+            const r = predRangoDia(d);
+            return s + (r ? r.min : predNetoBaseDia(d));
+        }, 0);
+        const rangoMax = diasGrupo.reduce((s, d) => {
+            const r = predRangoDia(d);
+            return s + (r ? r.max : predNetoBaseDia(d));
+        }, 0);
+        return {
+            totalNeto,
+            totalHrsAct,
+            totalHrsPlan,
+            totalViajes,
+            totalBruto,
+            rangoMin,
+            rangoMax
+        };
+    }
+
+    // Etiqueta "dd/mm–dd/mm" para la semana que empieza en lunStr
+    function fmtRangoSemanaPred(lunStr) {
+        const dom = new Date(lunStr + 'T12:00:00');
+        dom.setDate(dom.getDate() + 6);
+        const domStr = dom.toISOString().slice(0, 10);
+        const fmt = s => s.slice(8) + '/' + s.slice(5, 7);
+        return fmt(lunStr) + '–' + fmt(domStr);
+    }
+
+    // Abre/cierra el detalle de días dentro de una semana agrupada (predicción del mes)
+    window.togglePredSemanaGrupo = function(id) {
+        const el = document.getElementById('predsem-' + id);
+        const chev = document.getElementById('predsem-chev-' + id);
+        if (!el)
+            return;
+        const abierto = el.style.display !== 'none';
+        el.style.display = abierto ? 'none' : 'block';
+        if (chev)
+            chev.style.transform = abierto ? 'rotate(0deg)' : 'rotate(180deg)';
+    };
+
     function renderPredicciones() {
         const cont = document.getElementById('pred-contenido');
         if (!cont)
@@ -14518,7 +14651,8 @@
         const diasConTurno = pred.dias.filter(d => d.tieneTurno);
 
         if (!diasConTurno.length) {
-            cont.innerHTML = _predEmptyMsg('No tienes turnos planificados para esta semana todavía. Planifica tus turnos en Más → Turnos para ver predicciones basadas en tu historial.');
+            const periodoTxt = pred.offset === 'mes' ? 'este mes' : 'esta semana';
+            cont.innerHTML = _predEmptyMsg('No tienes turnos planificados para ' + periodoTxt + ' todavía. Planifica tus turnos en Más → Turnos para ver predicciones basadas en tu historial.');
             return;
         }
 
@@ -14569,21 +14703,26 @@
             cfgBits.push('franja horaria');
         if (pred.cfg.excluirOutliers)
             cfgBits.push('sin días atípicos');
+        if (pred.cfg.fallbackTipoDia)
+            cfgBits.push('respaldo por tipo de día');
         if ((pred.cfg.minMuestras || 3) !== 3)
             cfgBits.push('mín. ' + pred.cfg.minMuestras + ' muestras');
         cfgBits.push('eficiencia estimada ' + Math.round((pred.cfg.eficienciaEstimada || 0.7) * 100) + '%');
         const feriadosEnSemana = diasConTurno.filter(d => d.esFeriado);
+        const agrupar = pred.offset === 'mes';
+        const textoGrupo = agrupar ? 'del mes' : 'de la semana';
 
         const iconoReloj = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg>';
         const iconoBolt = '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="vertical-align:-1px;margin-right:3px"><path d="M13 2L3 14h7l-1 8 11-13h-7l0-7z"/></svg>';
-        const detalleDiasHtml = diasConTurno.map(d => {
+        // Genera la tarjeta de un solo día (se usa tanto suelta -semana- como anidada -mes-)
+        const cardDiaHtml = d => {
             const at = atipicos.find(a => a.fecha === d.fecha) || {};
             const efect = predEfectividadDia(d);
             const valorHora = predValorHoraDia(d);
             const rango = predRangoDia(d);
             const badges = [];
             if (at.masHoras)
-                badges.push('<span class="bdg" style="background:#FFF3E0;color:#E65100;font-size:10px">' + iconoBolt + 'Más horas que el resto de la semana</span>');
+                badges.push('<span class="bdg" style="background:#FFF3E0;color:#E65100;font-size:10px">' + iconoBolt + 'Más horas que el resto ' + textoGrupo + '</span>');
             if (at.masGanancia)
                 badges.push('<span class="bdg" style="background:#E6F4EA;color:#1B5E20;font-size:10px">' + iconoBolt + 'Ganancia superior a lo habitual</span>');
             return '<div class="cflat" style="margin-bottom:8px;padding:12px">' +
@@ -14601,35 +14740,66 @@
                 '</div>' +
                 (badges.length ? '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">' + badges.join('') + '</div>' : '') +
                 '</div>';
-        }).join('');
+        };
+
+        // Grupos por semana: sólo se usan para la vista de "Mes actual", donde
+        // agrupar 20-30 días en tarjetas individuales resulta abrumador. Cada
+        // grupo se muestra colapsado con su total, y se puede expandir para
+        // ver el detalle de cada día individual dentro de esa semana.
+        const gruposSemana = agrupar ? agruparDiasPorSemana(diasConTurno) : null;
+        const hoyLunActual = lunesDe(today());
+        const detalleDiasHtml = agrupar ?
+            gruposSemana.map((g, i) => {
+                const st = statsGrupoPrediccion(g.dias);
+                const abiertoDefault = g.lun === hoyLunActual;
+                const conMuestrasG = g.dias.filter(d => d.hist).length;
+                return '<div class="cflat" style="margin-bottom:8px;padding:0;overflow:hidden">' +
+                    '<button onclick="togglePredSemanaGrupo(\'' + g.lun + '\')" style="width:100%;text-align:left;border:none;background:none;padding:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-family:var(--font)">' +
+                    '<div>' +
+                    '<div style="font-weight:800;font-size:13px">Semana ' + (i + 1) + ' · ' + fmtRangoSemanaPred(g.lun) + '</div>' +
+                    '<div style="font-size:11px;color:var(--g400);margin-top:2px">' + g.dias.length + ' día(s) con turno · ' + conMuestrasG + ' con historial</div>' +
+                    '</div>' +
+                    '<div style="display:flex;align-items:center;gap:8px">' +
+                    '<div style="text-align:right">' +
+                    '<div style="font-weight:900;font-size:15px">' + CLP(Math.round(st.totalNeto)) + '</div>' +
+                    '</div>' +
+                    '<svg id="predsem-chev-' + g.lun + '" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .15s;transform:rotate(' + (abiertoDefault ? '180' : '0') + 'deg)"><polyline points="6 9 12 15 18 9"/></svg>' +
+                    '</div>' +
+                    '</button>' +
+                    '<div id="predsem-' + g.lun + '" style="display:' + (abiertoDefault ? 'block' : 'none') + ';padding:0 12px 12px">' +
+                    g.dias.map(cardDiaHtml).join('') +
+                    '</div>' +
+                    '</div>';
+            }).join('') :
+            diasConTurno.map(cardDiaHtml).join('');
 
         cont.innerHTML =
             '<div class="cflat" style="margin-bottom:12px">' +
-            '<div style="font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Lo que me quedo (estimado) — ' + (pred.offset === 0 ? 'esta semana' : 'próxima semana') + '</div>' +
+            '<div style="font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Lo que me quedo (estimado) — ' + (pred.offset === 'mes' ? 'este mes' : (pred.offset === 0 ? 'esta semana' : 'próxima semana')) + '</div>' +
             '<div style="font-size:28px;font-weight:900">' + CLP(totalNetoEst) + '</div>' +
             '<div style="font-size:12px;color:var(--g400);margin-top:2px">Basado en ' + conMuestras + ' de ' + diasConTurno.length + ' días con historial · ' + totalHrsActEst.toFixed(1) + 'h activas est. de ' + totalHrsPlan.toFixed(1) + 'h planificadas</div>' +
-            '<div style="font-size:12px;color:var(--g400);margin-top:2px">' + Math.round(totalViajesEst) + ' viajes promedio est. esta semana · Bruto est.: ' + CLP(Math.round(totalBrutoEst)) + '</div>' +
+            '<div style="font-size:12px;color:var(--g400);margin-top:2px">' + Math.round(totalViajesEst) + ' viajes promedio est. ' + (pred.offset === 'mes' ? 'este mes' : 'esta semana') + ' · Bruto est.: ' + CLP(Math.round(totalBrutoEst)) + '</div>' +
             (diasConRango.length ? '<div style="font-size:12px;color:var(--g400);margin-top:2px">Rango estimado: ' + CLP(Math.round(totalRangoMin)) + ' – ' + CLP(Math.round(totalRangoMax)) + '</div>' : '') +
             (tendenciaPromSemana !== null ? '<div style="font-size:12px;color:' + (tendenciaPromSemana >= 0 ? '#1B5E20' : '#B71C1C') + ';margin-top:2px">Tendencia reciente: ' + (tendenciaPromSemana >= 0 ? '+' : '') + Math.round(tendenciaPromSemana) + '% vs. semanas anteriores' + (pred.cfg.tendencia ? ' (ya aplicado al estimado)' : '') + '</div>' : '') +
             ((valorHoraProm !== null || factorEficienciaPct !== null) ?
                 '<div style="display:flex;gap:8px;margin-top:12px">' +
                 (valorHoraProm !== null ? '<div style="flex:1;background:var(--g50);border-radius:12px;padding:10px 8px;text-align:center"><div style="font-size:10px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.03em">Estimado por hora</div><div style="font-size:18px;font-weight:900;margin-top:3px">' + CLP(Math.round(valorHoraProm)) + '/h</div></div>' : '') +
-                (factorEficienciaPct !== null ? '<div style="flex:1;background:var(--g50);border-radius:12px;padding:10px 8px;text-align:center"><div style="font-size:10px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.03em">Efectividad de la semana</div><div style="font-size:18px;font-weight:900;margin-top:3px">' + factorEficienciaPct + '%</div></div>' : '') +
+                (factorEficienciaPct !== null ? '<div style="flex:1;background:var(--g50);border-radius:12px;padding:10px 8px;text-align:center"><div style="font-size:10px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.03em">Efectividad de' + (pred.offset === 'mes' ? 'l mes' : ' la semana') + '</div><div style="font-size:18px;font-weight:900;margin-top:3px">' + factorEficienciaPct + '%</div></div>' : '') +
                 '</div>' : '') +
             (totalIncentivoEst > 0 ?
                 '<div style="font-size:13px;font-weight:800;margin-top:10px;padding-top:10px;border-top:1px dashed var(--g200)">+ ' + CLP(totalIncentivoEst) + ' <span style="font-weight:600;color:var(--g400);font-size:12px">est. en incentivos (activador activado)</span></div>' +
                 '<div style="font-size:12px;color:var(--g600);margin-top:2px">Total con incentivos: <b>' + CLP(totalNetoEst + totalIncentivoEst) + '</b></div>' : '') +
-            '<div style="font-size:11px;color:var(--g400);margin-top:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> ' + cfgBits.join(' · ') + (feriadosEnSemana.length ? ' · <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:3px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg> ' + feriadosEnSemana.length + ' feriado(s) en la semana' : '') + '</div>' +
+            '<div style="font-size:11px;color:var(--g400);margin-top:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> ' + cfgBits.join(' · ') + (feriadosEnSemana.length ? ' · <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:3px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg> ' + feriadosEnSemana.length + ' feriado(s) en ' + (pred.offset === 'mes' ? 'el mes' : 'la semana') : '') + '</div>' +
             '</div>' +
-            '<div class="slbl">Estimado por día — lo que me quedo (vs. últimos ' + Math.max(...diasConTurno.map(d => d.hist ? d.hist.muestras : 0)) + ' iguales)</div>' +
+            '<div class="slbl">Estimado por ' + (agrupar ? 'semana' : 'día') + ' — lo que me quedo (vs. últimos ' + Math.max(...diasConTurno.map(d => d.hist ? d.hist.muestras : 0)) + ' iguales)</div>' +
             '<div class="card" style="padding:12px;margin-bottom:16px"><div style="position:relative;height:200px"><canvas id="ch-pred-dias"></canvas></div></div>' +
-            '<div class="slbl">Detalle por día — efectividad y valor hora</div>' +
+            '<div class="slbl">Detalle por ' + (agrupar ? 'semana' : 'día') + (agrupar ? ' — toca cada semana para ver el detalle de sus días' : ' — efectividad y valor hora') + '</div>' +
             detalleDiasHtml +
             '<div class="slbl">Estimado por bloque horario</div>' +
             '<div class="card" style="padding:12px;margin-bottom:16px"><div style="position:relative;height:180px"><canvas id="ch-pred-horas"></canvas></div></div>' +
-            '<div class="slbl">Horas efectivas estimadas vs. horas de turno</div>' +
+            '<div class="slbl">Horas efectivas estimadas vs. horas de turno' + (agrupar ? ' (por semana)' : '') + '</div>' +
             '<div class="card" style="padding:12px;margin-bottom:16px"><div style="position:relative;height:180px"><canvas id="ch-pred-hrs-vs-turno"></canvas></div></div>' +
-            '<div class="slbl">Horas activas estimadas por día</div>' +
+            '<div class="slbl">Horas activas estimadas por ' + (agrupar ? 'semana' : 'día') + '</div>' +
             '<div class="card" style="padding:12px;margin-bottom:8px"><div style="position:relative;height:180px"><canvas id="ch-pred-horas-activas"></canvas></div></div>' +
             '<div class="slbl">¿Cómo se calcula esto?</div>' +
             '<div class="cflat" style="margin-bottom:16px;font-size:12px;line-height:1.7;color:var(--g600)">' +
@@ -14645,9 +14815,15 @@
             'En Configurar puedes afinar el método: "ponderar días recientes" hace que las últimas semanas influyan más que las antiguas en el promedio; "ajustar por tendencia" sube o baja levemente el estimado si tu rendimiento viene en alza o en baja (con un tope de ±15% para no exagerar); y el "modo de estimación" (conservador/normal/optimista) desplaza el estimado usando qué tan parejo o variable ha sido tu historial — conservador apunta más bajo, optimista más alto. El "rango estimado" que ves junto al total y en cada día viene de esa misma variabilidad histórica.' +
             '</div>';
 
-        const labels = diasConTurno.map(d => (d.esFeriado ? '★' : d.dow) + ' ' + d.fecha.slice(8) + '/' + d.fecha.slice(5, 7));
-        const netoVals = diasConTurno.map(d => Math.round(predNetoBaseDia(d)));
-        const esReal = diasConTurno.map(d => d.netoReal !== null);
+        const labels = agrupar ?
+            gruposSemana.map((g, i) => 'Sem ' + (i + 1) + ' (' + fmtRangoSemanaPred(g.lun) + ')') :
+            diasConTurno.map(d => (d.esFeriado ? '★' : d.dow) + ' ' + d.fecha.slice(8) + '/' + d.fecha.slice(5, 7));
+        const netoVals = agrupar ?
+            gruposSemana.map(g => Math.round(statsGrupoPrediccion(g.dias).totalNeto)) :
+            diasConTurno.map(d => Math.round(predNetoBaseDia(d)));
+        const esReal = agrupar ?
+            gruposSemana.map(g => g.dias.every(d => d.netoReal !== null)) :
+            diasConTurno.map(d => d.netoReal !== null);
 
         requestAnimationFrame(() => {
             // 1) Estimado por día
@@ -14737,8 +14913,13 @@
             }
 
             // 3) Horas efectivas estimadas vs horas de turno planificadas
-            const hrsEfectivas = diasConTurno.map(d => d.hist && d.hist.horasActivas ? +d.hist.horasActivas.toFixed(1) : (d.horasPlan || 0));
-            const hrsPlanArr = diasConTurno.map(d => d.horasPlan ? +d.horasPlan.toFixed(1) : 0);
+            const hrsEfDia = d => d.hist && d.hist.horasActivas ? d.hist.horasActivas : (d.horasPlan || 0);
+            const hrsEfectivas = agrupar ?
+                gruposSemana.map(g => +g.dias.reduce((s, d) => s + hrsEfDia(d), 0).toFixed(1)) :
+                diasConTurno.map(d => d.hist && d.hist.horasActivas ? +d.hist.horasActivas.toFixed(1) : (d.horasPlan || 0));
+            const hrsPlanArr = agrupar ?
+                gruposSemana.map(g => +g.dias.reduce((s, d) => s + (d.horasPlan || 0), 0).toFixed(1)) :
+                diasConTurno.map(d => d.horasPlan ? +d.horasPlan.toFixed(1) : 0);
             const cvsHrsVs = document.getElementById('ch-pred-hrs-vs-turno');
             if (cvsHrsVs) {
                 if (window._chPredHrsVs)
@@ -14878,10 +15059,12 @@
             cfgBits.push('franja horaria');
         if (pred.cfg.excluirOutliers)
             cfgBits.push('sin días atípicos');
+        if (pred.cfg.fallbackTipoDia)
+            cfgBits.push('respaldo por tipo de día');
         if ((pred.cfg.minMuestras || 3) !== 3)
             cfgBits.push('mín. ' + pred.cfg.minMuestras + ' muestras');
         cfgBits.push('eficiencia estimada ' + Math.round((pred.cfg.eficienciaEstimada || 0.7) * 100) + '%');
-        let txt = 'Predicción Driver Pro — ' + (pred.offset === 0 ? 'Semana actual' : 'Semana siguiente') + '\n';
+        let txt = 'Predicción Driver Pro — ' + (pred.offset === 'mes' ? 'Mes actual' : (pred.offset === 0 ? 'Semana actual' : 'Semana siguiente')) + '\n';
         txt += 'Rango: ' + pred.fechas[0] + ' a ' + pred.fechas[6] + '\n';
         txt += 'Configuración: ' + cfgBits.join(' · ') + '\n';
         txt += 'Lo que me quedo estimado (sin incentivos): ' + CLP(totalNeto) + '\n';
@@ -15134,7 +15317,7 @@
             });
             return '<div class="ia-hist-item" onclick="toggleDetallePrediccionGuardada(\'' + p.id + '\')">' +
                 '<div style="flex:1;min-width:0">' +
-                '<div style="font-size:14px;font-weight:700">' + (p.offset === 0 ? 'Semana actual' : 'Semana siguiente') + ' · ' + p.rango + '</div>' +
+                '<div style="font-size:14px;font-weight:700">' + (p.offset === 'mes' ? 'Mes actual' : (p.offset === 0 ? 'Semana actual' : 'Semana siguiente')) + ' · ' + p.rango + '</div>' +
                 '<div style="font-size:12px;color:var(--black);font-weight:700;margin-top:2px">' + CLP(p.totalNeto) + ' estimado</div>' +
                 '<div style="font-size:11px;color:var(--g400);margin-top:2px">Guardada ' + fechaStr + '</div>' +
                 '<div id="pred-hist-detalle-' + p.id + '" style="display:none;white-space:pre-wrap;font-size:12px;color:var(--g600);margin-top:8px;background:var(--g50);border-radius:10px;padding:10px">' + escapeHtml(p.texto) + '</div>' +
