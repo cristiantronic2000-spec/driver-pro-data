@@ -8449,6 +8449,8 @@
                     }, 0);
                     const tendenciasP = diasConTurno.map(d => d.hist ? d.hist.tendenciaPct : null).filter(t => t !== null);
                     const tendenciaPromP = tendenciasP.length ? tendenciasP.reduce((a, b) => a + b, 0) / tendenciasP.length : null;
+                    const totalKmP = diasConTurno.reduce((s, d) => s + (d.kmEst || 0), 0);
+                    const totalBencinaP = diasConTurno.reduce((s, d) => s + (d.bencinaEst || 0), 0);
                     return {
                         rango: p.fechas[0] + ' a ' + p.fechas[p.fechas.length - 1],
                         neto_estimado_total_SIN_incentivos: Math.round(totalNeto),
@@ -8460,6 +8462,8 @@
                         } : null,
                         tendencia_reciente_pct: tendenciaPromP !== null ? Math.round(tendenciaPromP) : null,
                         horas_activas_estimadas_total: Math.round(totalHrsAct * 10) / 10,
+                        km_estimados_total: Math.round(totalKmP),
+                        gasto_bencina_estimado_total: Math.round(totalBencinaP),
                         factor_eficiencia_estimado_pct: totalHrsPlanP > 0 ? Math.round((totalHrsAct / totalHrsPlanP) * 100) : null,
                         valor_hora_estimado_promedio: totalHrsAct > 0 ? Math.round(totalNeto / totalHrsAct) : null,
                         metodo_usado: {
@@ -8489,6 +8493,8 @@
                                 es_real: d.netoReal !== null,
                                 muestras_usadas: d.hist ? d.hist.muestras : 0,
                                 horas_activas_estimadas: Math.round((d.horasActivasEst || 0) * 10) / 10,
+                                km_estimado: Math.round(d.kmEst || 0),
+                                gasto_bencina_estimado: Math.round(d.bencinaEst || 0),
                                 efectividad_pct: predEfectividadDia(d),
                                 valor_hora_estimado: predValorHoraDia(d) !== null ? Math.round(predValorHoraDia(d)) : null,
                                 dia_con_mas_horas_de_lo_habitual: !!at.masHoras,
@@ -8638,7 +8644,7 @@
                 'IMPORTANTE: no confundas conceptos distintos. "turnos_planificados" son los horarios de trabajo agendados (con hora_inicio_planificada, hora_fin_planificada y horas_planificadas), incluyendo turnos futuros (es_futuro:true) — úsalos para proyectar y predecir próximos días de trabajo. NO tienen relación con metas de viajes. "incentivos_activos" e "incentivos_cerrados_recientes" son metas de VIAJES con su propio premio en pesos (campo meta_viajes), cada incentivo es independiente y puede tener su propio rango de fechas/horas. "configuracion.meta_diaria_viajes" y "meta_mensual" son metas generales configuradas por el usuario, distintas de cualquier incentivo puntual. Si te preguntan por horas trabajadas, usa los campos de horas (turnos_historico, turnos_planificados); si preguntan por metas o incentivos, usa los campos de incentivos. Nunca mezcles un número de viajes con una cantidad de horas. ' +
                 'Para predicciones (ej: "cuánto voy a ganar este mes"), combina el ritmo de los días ya trabajados en el período con los turnos_planificados aún no cumplidos (es_futuro:true) para proyectar el resto del período. ' +
                 'Los campos "prediccion_semana_actual", "prediccion_semana_siguiente" y "prediccion_mes_actual" ya traen la proyección calculada por la app (misma que ve el usuario en la pestaña Predicciones, incluyendo la opción "Mes actual"), con desglose por día y si es dato real o estimado; úsalos como base cuando te pregunten por la semana actual, la siguiente o el mes en curso en vez de recalcular desde cero, y menciona la config activa en "configuracion_prediccion" (ventana de datos usada, si considera incentivos, fin/inicio de mes o feriados) si es relevante. ' +
-                'Cada predicción trae además "factor_eficiencia_estimado_pct" y "valor_hora_estimado_promedio" a nivel de semana, y por día "efectividad_pct" (horas activas estimadas vs. horas de turno planificadas), "valor_hora_estimado" (lo que se queda dividido en horas activas de ese día) y dos banderas booleanas: "dia_con_mas_horas_de_lo_habitual" y "dia_con_ganancia_superior_a_lo_habitual", que marcan días que se salen bastante del promedio de esa semana. Úsalas para responder preguntas sobre qué tan efectivo es un día/semana, cuánto rinde la hora trabajada, o qué días destacan por exceso de horas o de ganancias. ' +
+                'Cada predicción trae además "factor_eficiencia_estimado_pct" y "valor_hora_estimado_promedio" a nivel de semana, y por día "efectividad_pct" (horas activas estimadas vs. horas de turno planificadas), "valor_hora_estimado" (lo que se queda dividido en horas activas de ese día) y dos banderas booleanas: "dia_con_mas_horas_de_lo_habitual" y "dia_con_ganancia_superior_a_lo_habitual", que marcan días que se salen bastante del promedio de esa semana. También trae "km_estimados_total"/"gasto_bencina_estimado_total" a nivel de semana y "km_estimado"/"gasto_bencina_estimado" por día, calculados con el rendimiento (km/L) y precio del litro configurados por el usuario; este gasto en bencina puede estar ya reflejado en el neto de un día si ese día (o la muestra histórica usada) tenía un cierre de turno con km registrado, pero no siempre es así, así que trátalo como un dato informativo aparte cuando te pregunten específicamente por combustible/bencina/km, en vez de asumir que siempre está descontado. Úsalas para responder preguntas sobre qué tan efectivo es un día/semana, cuánto rinde la hora trabajada, o qué días destacan por exceso de horas o de ganancias. ' +
                 'También trae "rango_estimado_total" (y por día "rango_estimado"), un mínimo y máximo basado en qué tan variable ha sido el historial — comunícalo como incertidumbre razonable, no como un error de cálculo. "tendencia_reciente_pct" indica si el rendimiento viene subiendo o bajando en las últimas semanas (positivo = subiendo). "metodo_usado" indica qué ajustes tiene activados el usuario (ventana de datos, si pondera días recientes, el modo de estimación conservador/normal/optimista, y si ajusta por tendencia); menciónalo si es relevante para explicar por qué el estimado es más alto, más bajo o más amplio de lo que esperaban. ' +
                 'El campo "horas_activas_por_semana" trae, semana a semana, las horas de turno vs. las horas activas (con viajes reales) y la eficiencia %; el campo "horas_activas_ventana_semanas_usada" indica si se usaron las últimas 4 semanas o, si no había datos en ese rango, se amplió a las últimas 8. Úsalo para responder preguntas sobre horas trabajadas efectivas, tiempo inactivo o eficiencia. ' +
                 'El campo "ingreso_promedio_por_franja_horaria" trae, por cada bloque horario, "promedio_por_hora" (ingreso dividido en las horas realmente cubiertas en esa franja — este es el dato correcto para responder "cuál es mi mejor franja horaria" o comparar el rendimiento de una hora trabajada entre franjas), y por separado "promedio_por_viaje" (el monto promedio de un viaje individual en esa franja, útil solo para hablar de viajes puntuales, NO para hablar de rendimiento por hora). No confundas ambos: si te preguntan por rendimiento por hora, usa siempre "promedio_por_hora", nunca "promedio_por_viaje". Usa normalmente las últimas 4 semanas; si no había ningún viaje registrado en esas 4 semanas, se amplía automáticamente hasta las últimas 8 (revisa "ingreso_promedio_por_franja_horaria_ventana_semanas_usada" para saber cuál se usó). Si, incluso después de ampliar a 8 semanas, "ingreso_promedio_por_franja_horaria_sin_datos" es true (no hay viajes en ninguna franja), responde EXACTAMENTE y sin agregar nada más: "Actualmente, no tengo datos sobre tu ingreso promedio por franja horaria para darte una recomendación. Los datos de las últimas 4 semanas no registran viajes en ninguna franja." ' +
@@ -14304,6 +14310,7 @@
         const brutoPorMuestra = [];
         const viajesPorMuestra = [];
         const horasActivasPorMuestra = [];
+        const kmPorMuestra = [];
         candidatas.forEach(fs => {
             const vs = VIAJES.filter(v => v.fecha === fs);
             const met = calcMetrics(vs);
@@ -14312,6 +14319,7 @@
             netosPorMuestra.push(met.quedo);
             brutoPorMuestra.push(met.bruto);
             viajesPorMuestra.push(met.viajes);
+            kmPorMuestra.push(kmDesdeViajes(vs));
             const c = CIERRES[fs];
             if (c && c.hrs) {
                 sumHrsReales += c.hrs;
@@ -14375,6 +14383,7 @@
         const netoMediana = mediana(netosPorMuestra);
         const viajesMediana = mediana(viajesPorMuestra);
         const horasActivasMediana = horasActivasPorMuestra.length ? mediana(horasActivasPorMuestra) : null;
+        const kmMediana = kmPorMuestra.length ? mediana(kmPorMuestra) : null;
         return {
             muestras: n,
             fechas: candidatas,
@@ -14385,6 +14394,7 @@
             tendenciaPct,
             viajes: viajesMediana,
             horasActivas: horasActivasMediana,
+            km: kmMediana,
             horasPlanHist: nHrsPlan ? sumHrsPlan / nHrsPlan : null,
             porBloque: sumBloque.map((s, i) => cntBloque[i] ? s / n : 0),
             filtroFeriado: buscarSoloFeriados,
@@ -14483,6 +14493,32 @@
             // histórica: se usa para que la ganancia estimada baje en la misma medida
             // que bajan las horas/viajes proyectados (y no queden desalineadas entre sí).
             const ratioEficiencia = (!cierreReal && histHorasBase > 0) ? (horasActivasEst / histHorasBase) : 1;
+            // Km y bencina estimados: si el día ya ocurrió se usa el km real del
+            // cierre (o, si no se registró cierre, el km sumado desde los viajes de
+            // ese día) para calcular el gasto real en bencina. Si el día es futuro,
+            // se usa la mediana histórica de km de días similares, acotada por la
+            // misma proporción de eficiencia usada para horas/viajes, y con eso se
+            // estima el gasto en bencina según el rendimiento (km/L) y precio del
+            // litro configurados.
+            const rendCfg = parseFloat(CONFIG.rend) || 16;
+            const pliCfg = parseFloat(CONFIG.bencina) || 1200;
+            let kmEst = 0,
+                bencinaEst = 0,
+                kmEsReal = false;
+            if (yaOcurrio) {
+                if (cierreReal && cierreReal.km > 0) {
+                    kmEst = cierreReal.km;
+                    bencinaEst = costoBencina(cierreReal);
+                    kmEsReal = true;
+                } else {
+                    kmEst = kmDesdeViajes(real);
+                    bencinaEst = combustibleEstimado(real);
+                }
+            } else {
+                const kmHistBase = (hist && hist.km) ? hist.km : 0;
+                kmEst = kmHistBase * (ratioEficiencia || 1);
+                bencinaEst = kmEst > 0 ? (kmEst / rendCfg) * pliCfg : 0;
+            }
             return {
                 fecha,
                 dow: DIAS[idx],
@@ -14491,6 +14527,9 @@
                 horasActivasEst,
                 viajesEst,
                 ratioEficiencia,
+                kmEst,
+                bencinaEst,
+                kmEsReal,
                 yaOcurrio,
                 brutoReal: metReal ? metReal.bruto : null,
                 netoReal: metReal ? metReal.quedo : null,
@@ -14603,6 +14642,8 @@
         const totalHrsPlan = diasGrupo.reduce((s, d) => s + (d.horasPlan || 0), 0);
         const totalViajes = diasGrupo.reduce((s, d) => s + (d.viajesEst || 0), 0);
         const totalBruto = diasGrupo.reduce((s, d) => s + (d.brutoReal !== null ? d.brutoReal : (d.hist ? d.hist.bruto * (d.ratioEficiencia || 1) : 0)), 0);
+        const totalKm = diasGrupo.reduce((s, d) => s + (d.kmEst || 0), 0);
+        const totalBencina = diasGrupo.reduce((s, d) => s + (d.bencinaEst || 0), 0);
         const rangoMin = diasGrupo.reduce((s, d) => {
             const r = predRangoDia(d);
             return s + (r ? r.min : predNetoBaseDia(d));
@@ -14617,6 +14658,8 @@
             totalHrsPlan,
             totalViajes,
             totalBruto,
+            totalKm,
+            totalBencina,
             rangoMin,
             rangoMax
         };
@@ -14663,6 +14706,8 @@
         const totalViajesEst = diasConTurno.reduce((s, d) => s + (d.viajesEst || 0), 0);
         const totalHrsActEst = diasConTurno.reduce((s, d) => s + (d.horasActivasEst || 0), 0);
         const totalHrsPlan = diasConTurno.reduce((s, d) => s + (d.horasPlan || 0), 0);
+        const totalKmEst = diasConTurno.reduce((s, d) => s + (d.kmEst || 0), 0);
+        const totalBencinaEst = diasConTurno.reduce((s, d) => s + (d.bencinaEst || 0), 0);
         const conMuestras = diasConTurno.filter(d => d.hist).length;
         const factorEficienciaPct = totalHrsPlan > 0 ? Math.round((totalHrsActEst / totalHrsPlan) * 100) : null;
         const valorHoraProm = totalHrsActEst > 0 ? totalNetoEst / totalHrsActEst : null;
@@ -14734,6 +14779,7 @@
                 '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;font-size:11px;color:var(--g600)">' +
                 '<span>' + iconoReloj + (d.horasActivasEst || 0).toFixed(1) + 'h activas' + (d.horasPlan ? ' de ' + d.horasPlan.toFixed(1) + 'h turno' : '') + '</span>' +
                 (d.viajesEst ? '<span>' + Math.round(d.viajesEst) + ' viajes promedio est.</span>' : '') +
+                (d.kmEst > 0 ? '<span>' + Math.round(d.kmEst) + ' km' + (d.kmEsReal ? ' real' : ' est.') + ' · ' + CLP(Math.round(d.bencinaEst || 0)) + ' bencina' + (d.kmEsReal ? '' : ' est.') + '</span>' : '') +
                 (efect !== null ? '<span>Efectividad: <b>' + efect + '%</b></span>' : '') +
                 (valorHora !== null ? '<span>Valor hora est.: <b>' + CLP(Math.round(valorHora)) + '/h</b></span>' : '') +
                 (d.netoReal !== null ? '<span style="color:var(--g400)">Dato real</span>' : (d.hist ? '<span style="color:var(--g400)">' + d.hist.muestras + ' muestra(s)</span>' : '<span style="color:var(--g400)">Sin historial</span>')) +
@@ -14757,7 +14803,7 @@
                     '<button onclick="togglePredSemanaGrupo(\'' + g.lun + '\')" style="width:100%;text-align:left;border:none;background:none;padding:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-family:var(--font)">' +
                     '<div>' +
                     '<div style="font-weight:800;font-size:13px">Semana ' + (i + 1) + ' · ' + fmtRangoSemanaPred(g.lun) + '</div>' +
-                    '<div style="font-size:11px;color:var(--g400);margin-top:2px">' + g.dias.length + ' día(s) con turno · ' + conMuestrasG + ' con historial</div>' +
+                    '<div style="font-size:11px;color:var(--g400);margin-top:2px">' + g.dias.length + ' día(s) con turno · ' + conMuestrasG + ' con historial' + (st.totalKm > 0 ? ' · ' + Math.round(st.totalKm) + ' km · ' + CLP(Math.round(st.totalBencina)) + ' bencina' : '') + '</div>' +
                     '</div>' +
                     '<div style="display:flex;align-items:center;gap:8px">' +
                     '<div style="text-align:right">' +
@@ -14780,6 +14826,7 @@
             '<div style="font-size:12px;color:var(--g400);margin-top:2px">Basado en ' + conMuestras + ' de ' + diasConTurno.length + ' días con historial · ' + totalHrsActEst.toFixed(1) + 'h activas est. de ' + totalHrsPlan.toFixed(1) + 'h planificadas</div>' +
             '<div style="font-size:12px;color:var(--g400);margin-top:2px">' + Math.round(totalViajesEst) + ' viajes promedio est. ' + (pred.offset === 'mes' ? 'este mes' : 'esta semana') + ' · Bruto est.: ' + CLP(Math.round(totalBrutoEst)) + '</div>' +
             (diasConRango.length ? '<div style="font-size:12px;color:var(--g400);margin-top:2px">Rango estimado: ' + CLP(Math.round(totalRangoMin)) + ' – ' + CLP(Math.round(totalRangoMax)) + '</div>' : '') +
+            (totalKmEst > 0 ? '<div style="font-size:12px;color:var(--g400);margin-top:2px">' + Math.round(totalKmEst) + ' km estimados · ' + CLP(Math.round(totalBencinaEst)) + ' en bencina est.</div>' : '') +
             (tendenciaPromSemana !== null ? '<div style="font-size:12px;color:' + (tendenciaPromSemana >= 0 ? '#1B5E20' : '#B71C1C') + ';margin-top:2px">Tendencia reciente: ' + (tendenciaPromSemana >= 0 ? '+' : '') + Math.round(tendenciaPromSemana) + '% vs. semanas anteriores' + (pred.cfg.tendencia ? ' (ya aplicado al estimado)' : '') + '</div>' : '') +
             ((valorHoraProm !== null || factorEficienciaPct !== null) ?
                 '<div style="display:flex;gap:8px;margin-top:12px">' +
@@ -14805,6 +14852,7 @@
             '<div class="cflat" style="margin-bottom:16px;font-size:12px;line-height:1.7;color:var(--g600)">' +
             'La predicción toma tus turnos planificados para la semana y, para cada día que aún no ocurre, busca días anteriores con el mismo día de la semana dentro de la ventana de datos elegida (últimas semanas, 1, 2 o 3 meses). ' +
             'Con esos días históricos calcula el promedio de lo que ganaste bruto, lo que te quedó neto (ya descontando el % de SII y el gasto estimado en bencina) y las horas activas realmente trabajadas. ' +
+            'Los km y el gasto en bencina que ves por día se calculan aparte: si el día ya ocurrió se usa el km real del cierre de turno (o el km registrado en los viajes si no cerraste turno ese día); si es un día futuro, se usa la mediana histórica de km de días similares (acotada igual que las horas/viajes) y se convierte a pesos con el rendimiento (km/L) y el precio del litro que configuraste en Ajustes. ' +
             'Si un día ya ocurrió, se usa el dato real registrado ese día en vez de un promedio. ' +
             'Si activas "período del mes", se priorizan muestras del mismo tramo (inicio, quincena o fin de mes); si activas "feriados", se priorizan otros feriados como referencia para un día feriado. ' +
             'Para cada franja histórica se usa la mediana (no el promedio) de lo ganado, los viajes y las horas activas, para que un día puntual muy por encima o por debajo de lo normal no infle ni desinfle el estimado. La "eficiencia estimada" que eliges en Configurar limita además cuántas horas activas y viajes se proyectan para los días futuros: nunca más que ese % de tu turno planificado (o de la mediana histórica de viajes), para que un día con más horas o viajes de lo habitual no se arrastre como si fuera la norma; la ganancia estimada se ajusta en la misma proporción. ' +
@@ -15064,8 +15112,10 @@
         if ((pred.cfg.minMuestras || 3) !== 3)
             cfgBits.push('mín. ' + pred.cfg.minMuestras + ' muestras');
         cfgBits.push('eficiencia estimada ' + Math.round((pred.cfg.eficienciaEstimada || 0.7) * 100) + '%');
+        const totalKmTxt = diasConTurno.reduce((s, d) => s + (d.kmEst || 0), 0);
+        const totalBencinaTxt = diasConTurno.reduce((s, d) => s + (d.bencinaEst || 0), 0);
         let txt = 'Predicción Driver Pro — ' + (pred.offset === 'mes' ? 'Mes actual' : (pred.offset === 0 ? 'Semana actual' : 'Semana siguiente')) + '\n';
-        txt += 'Rango: ' + pred.fechas[0] + ' a ' + pred.fechas[6] + '\n';
+        txt += 'Rango: ' + pred.fechas[0] + ' a ' + pred.fechas[pred.fechas.length - 1] + '\n';
         txt += 'Configuración: ' + cfgBits.join(' · ') + '\n';
         txt += 'Lo que me quedo estimado (sin incentivos): ' + CLP(totalNeto) + '\n';
         if (totalIncentivo > 0) {
@@ -15080,6 +15130,8 @@
             txt += 'Rango estimado: ' + CLP(Math.round(totalRangoMinTxt)) + ' a ' + CLP(Math.round(totalRangoMaxTxt)) + '\n';
         if (tendenciaPromTxt !== null)
             txt += 'Tendencia reciente: ' + (tendenciaPromTxt >= 0 ? '+' : '') + Math.round(tendenciaPromTxt) + '% vs. semanas anteriores\n';
+        if (totalKmTxt > 0)
+            txt += 'Km estimados: ' + Math.round(totalKmTxt) + ' km · Bencina estimada: ' + CLP(Math.round(totalBencinaTxt)) + '\n';
         txt += '\n';
         diasConTurno.forEach(d => {
             const val = Math.round(predNetoBaseDia(d));
@@ -15097,6 +15149,8 @@
                 txt += ' · efectividad ' + efect + '%';
             if (valorHora !== null)
                 txt += ' · valor hora ' + CLP(Math.round(valorHora)) + '/h';
+            if (d.kmEst > 0)
+                txt += ' · ' + Math.round(d.kmEst) + ' km' + (d.kmEsReal ? ' real' : ' est.') + ' (' + CLP(Math.round(d.bencinaEst || 0)) + ' bencina)';
             if (flags.length)
                 txt += ' · ' + flags.join(', ');
             txt += '\n';
