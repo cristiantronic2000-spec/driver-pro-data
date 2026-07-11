@@ -728,31 +728,43 @@
         }
     }
 
-    /* ── Botón circular de voz en la tarjeta negra de Inicio ─────────────── */
+    /* ── Botón circular de IA en la tarjeta negra de Inicio ─────────────── */
     .hero-voice-btn {
         position: absolute;
-        top: 20px;
-        right: 20px;
-        width: 62px;
-        height: 62px;
+        top: 16px;
+        right: 16px;
+        width: 70px;
+        height: 70px;
         border-radius: 50%;
         background: #fff;
         border: none;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
+        gap: 3px;
         cursor: pointer;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
-        z-index: 2
+        box-shadow: 0 2px 12px rgba(0, 0, 0, .35);
+        z-index: 2;
+        animation: heroIAPulse 2.8s ease-in-out infinite;
+        transition: transform .15s, box-shadow .15s
+    }
+    .hero-voice-btn:active { transform: scale(.93) }
+    @keyframes heroIAPulse {
+        0%,100%{box-shadow:0 2px 12px rgba(0,0,0,.35),0 0 0 0 rgba(255,255,255,.4)}
+        50%{box-shadow:0 2px 12px rgba(0,0,0,.35),0 0 0 8px rgba(255,255,255,0)}
+    }
+    .hero-voice-btn-label {
+        font-size: 9px;
+        font-weight: 800;
+        color: #000;
+        font-family: var(--font);
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        line-height: 1
     }
 
-    .hero-voice-btn svg {
-        width: 16px;
-        height: 16px;
-        stroke: #000
-    }
-
-    /* Loader más grande específico del botón de IA en Inicio */
+    /* Loader más grande específico del botón de IA en Inicio - colores invertidos (negro sobre blanco) */
     .hero-voice-btn .ldr01-2-lg {
         width: 34px;
         height: 34px
@@ -2224,8 +2236,9 @@
                     <span id="sync-lbl">Conectando...</span>
                 </div>
                 <div class="hero" style="position:relative;overflow:hidden">
-                    <button class="hero-voice-btn" id="hero-voice-btn" onclick="iniciarVozDesdeInicio()" title="Preguntar con voz">
+                    <button class="hero-voice-btn" id="hero-voice-btn" onclick="iniciarVozDesdeInicio()" title="Hablar con la IA">
                         <div class="ldr01-2-lg" style="color:#000"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                        <span class="hero-voice-btn-label">IA</span>
                     </button>
                     <div class="hgreet">
                         <img class="hlogo" src="https://raw.githubusercontent.com/cristiantronic2000-spec/driver-pro-data/main/favicon.png" alt="Driver Pro" style="border-radius:5px">
@@ -4077,17 +4090,30 @@
 
                     <div id="ia-chat-log" style="padding:0 16px;display:flex;flex-direction:column;gap:10px;min-height:120px;padding-bottom:76px"></div>
 
-                    <div id="ia-input-bar" style="position:fixed;left:0;right:0;bottom:calc(var(--nav-h) + var(--safe));max-width:480px;margin:0 auto;z-index:50;background:#fff;padding:10px 16px calc(4px + var(--safe));display:flex;gap:8px;align-items:flex-end;border-top:1px solid var(--g200)">
-                        <textarea id="ia-input" rows="1" placeholder="Pregúntale algo a tu asistente..." style="flex:1;resize:none;border:1px solid var(--g200);border-radius:14px;padding:10px 14px;font-family:var(--font);font-size:14px;max-height:90px" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarMensajeIA();}"></textarea>
-                        <button id="ia-mic-btn" onclick="toggleEscuchaIA()" style="flex-shrink:0;width:42px;height:42px;border-radius:50%;background:var(--black);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer" title="Hablar con el asistente">
-                            <div class="ldr01-2" style="color:#fff"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-                        </button>
-                        <button id="ia-send-btn" onclick="enviarMensajeIA()" style="flex-shrink:0;width:42px;height:42px;border-radius:50%;background:var(--black);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="22" y1="2" x2="11" y2="13"/>
-                                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                            </svg>
-                        </button>
+                    <div id="ia-input-bar" style="position:fixed;left:0;right:0;bottom:calc(var(--nav-h) + var(--safe));max-width:480px;margin:0 auto;z-index:50;background:#fff;padding:10px 16px calc(4px + var(--safe));display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--g200)">
+                        <div id="ia-img-preview-row" style="display:none;align-items:center;gap:8px;background:var(--g50);border-radius:10px;padding:6px 8px">
+                            <img id="ia-img-preview" style="width:40px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0">
+                            <span style="font-size:12px;color:var(--g600);flex:1">Captura de viaje adjunta</span>
+                            <button onclick="quitarImagenIA()" style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--g200);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--g600)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:flex-end">
+                            <input type="file" id="ia-img-input" accept="image/*" style="display:none" onchange="onIaImagenSeleccionada(this)">
+                            <button id="ia-attach-btn" onclick="document.getElementById('ia-img-input').click()" style="flex-shrink:0;width:42px;height:42px;border-radius:50%;background:var(--g100);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer" title="Adjuntar captura de un viaje">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--g600)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            </button>
+                            <textarea id="ia-input" rows="1" placeholder="Pregúntale algo a tu asistente..." style="flex:1;resize:none;border:1px solid var(--g200);border-radius:14px;padding:10px 14px;font-family:var(--font);font-size:14px;max-height:90px" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarMensajeIA();}"></textarea>
+                            <button id="ia-mic-btn" onclick="toggleEscuchaIA()" style="flex-shrink:0;width:42px;height:42px;border-radius:50%;background:var(--black);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer" title="Hablar con el asistente">
+                                <div class="ldr01-2" style="color:#fff"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                            </button>
+                            <button id="ia-send-btn" onclick="enviarMensajeIA()" style="flex-shrink:0;width:42px;height:42px;border-radius:50%;background:var(--black);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="22" y1="2" x2="11" y2="13"/>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -7699,6 +7725,87 @@
     const IA_GROK_MODEL = 'grok-4';
     let IA_CHAT = [];
     let iaCargando = false;
+    // Imagen (captura de un viaje) seleccionada y pendiente de enviar en el
+    // próximo mensaje del chat IA. Solo vive en memoria: no se guarda en el
+    // historial persistido (localStorage), para no inflarlo con base64.
+    let iaImagenPendiente = null; // { mime, data (base64 sin prefijo), previewUrl }
+
+    window.onIaImagenSeleccionada = function(input) {
+        const file = input.files && input.files[0];
+        if (!file)
+            return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            const dataUrl = reader.result; // "data:image/png;base64,AAAA..."
+            const comma = dataUrl.indexOf(',');
+            const mime = (dataUrl.slice(5, dataUrl.indexOf(';')) || file.type || 'image/png');
+            iaImagenPendiente = {
+                mime,
+                data: dataUrl.slice(comma + 1),
+                previewUrl: dataUrl
+            };
+            const row = document.getElementById('ia-img-preview-row');
+            const prev = document.getElementById('ia-img-preview');
+            if (prev)
+                prev.src = dataUrl;
+            if (row)
+                row.style.display = 'flex';
+        };
+        reader.readAsDataURL(file);
+        input.value = ''; // permite volver a elegir la misma imagen si la quita y la re-adjunta
+    };
+
+    window.quitarImagenIA = function() {
+        iaImagenPendiente = null;
+        const row = document.getElementById('ia-img-preview-row');
+        if (row)
+            row.style.display = 'none';
+    };
+
+    // Rellena el formulario "Registrar viaje" con los datos que la IA extrajo
+    // de una captura de pantalla (oferta de viaje o resumen de viaje). Cambia
+    // a la pestaña Viajes → Agregar, deja los campos listos para revisar y
+    // guardar; nunca guarda el viaje automáticamente por si algún dato quedó
+    // mal interpretado por la IA.
+    window.prellenarViajeDesdeIA = function(datos) {
+        showTab('viajes');
+        stab('v', 'agregar', document.querySelector('#vtabs .stab'));
+        setTimeout(() => {
+            initViajeAgregar();
+            if (datos.monto !== null && datos.monto !== undefined) {
+                const el = document.getElementById('v-monto');
+                if (el)
+                    el.value = Math.round(datos.monto);
+            }
+            if (datos.kv !== null && datos.kv !== undefined) {
+                const el = document.getElementById('v-kv');
+                if (el)
+                    el.value = datos.kv;
+            }
+            if (datos.kj !== null && datos.kj !== undefined) {
+                const el = document.getElementById('v-kj');
+                if (el)
+                    el.value = datos.kj;
+            }
+            const tiposValidos = ['UberX', 'Prioridad UberX', 'Uber Comfort', 'Uber Pet', 'Uber Envíos', 'Cancelación'];
+            if (datos.tipo && tiposValidos.includes(datos.tipo)) {
+                const sel = document.getElementById('v-tipo');
+                if (sel)
+                    sel.value = datos.tipo;
+            }
+            if (datos.pago) {
+                const idxPago = {
+                    ef: 0,
+                    tk: 1,
+                    tr: 2
+                } [datos.pago];
+                const btns = document.querySelectorAll('#v-popts .popt');
+                if (idxPago !== undefined && btns[idxPago])
+                    selPay('v', btns[idxPago], datos.pago);
+            }
+            toast('Datos de la captura precargados. Revisa y guarda el viaje.');
+        }, 150);
+    };
     let iaChatActivoId = null; // id del chat guardado que se está editando (si aplica)
 
     function getIAProvider() {
@@ -8429,80 +8536,7 @@
                 const predActual = calcularPrediccionSemana(0);
                 const predSig = calcularPrediccionSemana(1);
                 const predMes = calcularPrediccionSemana('mes');
-                const resumenPred = p => {
-                    const diasConTurno = p.dias.filter(d => d.tieneTurno);
-                    if (!diasConTurno.length)
-                        return null;
-                    const totalNeto = diasConTurno.reduce((s, d) => s + predNetoBaseDia(d), 0);
-                    const totalIncentivo = diasConTurno.reduce((s, d) => s + (d.incentivoEstimado || 0), 0);
-                    const totalHrsAct = diasConTurno.reduce((s, d) => s + (d.horasActivasEst || 0), 0);
-                    const totalHrsPlanP = diasConTurno.reduce((s, d) => s + (d.horasPlan || 0), 0);
-                    const atipicosP = predDiasAtipicos(diasConTurno);
-                    const rangosP = diasConTurno.map(d => predRangoDia(d)).filter(r => r !== null);
-                    const rangoMinP = diasConTurno.reduce((s, d) => {
-                        const r = predRangoDia(d);
-                        return s + (r ? r.min : predNetoBaseDia(d));
-                    }, 0);
-                    const rangoMaxP = diasConTurno.reduce((s, d) => {
-                        const r = predRangoDia(d);
-                        return s + (r ? r.max : predNetoBaseDia(d));
-                    }, 0);
-                    const tendenciasP = diasConTurno.map(d => d.hist ? d.hist.tendenciaPct : null).filter(t => t !== null);
-                    const tendenciaPromP = tendenciasP.length ? tendenciasP.reduce((a, b) => a + b, 0) / tendenciasP.length : null;
-                    const totalKmP = diasConTurno.reduce((s, d) => s + (d.kmEst || 0), 0);
-                    const totalBencinaP = diasConTurno.reduce((s, d) => s + (d.bencinaEst || 0), 0);
-                    return {
-                        rango: p.fechas[0] + ' a ' + p.fechas[p.fechas.length - 1],
-                        neto_estimado_total_SIN_incentivos: Math.round(totalNeto),
-                        incentivos_estimados_total: Math.round(totalIncentivo),
-                        neto_estimado_total_CON_incentivos: Math.round(totalNeto + totalIncentivo),
-                        rango_estimado_total: rangosP.length ? {
-                            min: Math.round(rangoMinP),
-                            max: Math.round(rangoMaxP)
-                        } : null,
-                        tendencia_reciente_pct: tendenciaPromP !== null ? Math.round(tendenciaPromP) : null,
-                        horas_activas_estimadas_total: Math.round(totalHrsAct * 10) / 10,
-                        km_estimados_total: Math.round(totalKmP),
-                        gasto_bencina_estimado_total: Math.round(totalBencinaP),
-                        factor_eficiencia_estimado_pct: totalHrsPlanP > 0 ? Math.round((totalHrsAct / totalHrsPlanP) * 100) : null,
-                        valor_hora_estimado_promedio: totalHrsAct > 0 ? Math.round(totalNeto / totalHrsAct) : null,
-                        metodo_usado: {
-                            ventana: VENTANA_LABEL[p.cfg.ventana] || p.cfg.ventana,
-                            pondera_dias_recientes: !!p.cfg.ponderarReciente,
-                            modo_estimacion: p.cfg.modoEstimacion,
-                            ajusta_por_tendencia: !!p.cfg.tendencia,
-                            tipo_dia_separado: !!p.cfg.tipoDia,
-                            pondera_franja_horaria: !!p.cfg.franjHoraria,
-                            excluye_outliers: !!p.cfg.excluirOutliers,
-                            respaldo_tipo_dia_si_faltan_muestras: !!p.cfg.fallbackTipoDia,
-                            min_muestras: p.cfg.minMuestras || 3
-                        },
-                        por_dia: diasConTurno.map(d => {
-                            const at = atipicosP.find(a => a.fecha === d.fecha) || {};
-                            const rangoD = predRangoDia(d);
-                            return {
-                                fecha: d.fecha,
-                                dia: d.dow,
-                                ya_ocurrio: d.yaOcurrio,
-                                neto_real_o_estimado_sin_incentivos: Math.round(predNetoBaseDia(d)),
-                                rango_estimado: rangoD ? {
-                                    min: Math.round(rangoD.min),
-                                    max: Math.round(rangoD.max)
-                                } : null,
-                                incentivo_estimado: Math.round(d.incentivoEstimado || 0),
-                                es_real: d.netoReal !== null,
-                                muestras_usadas: d.hist ? d.hist.muestras : 0,
-                                horas_activas_estimadas: Math.round((d.horasActivasEst || 0) * 10) / 10,
-                                km_estimado: Math.round(d.kmEst || 0),
-                                gasto_bencina_estimado: Math.round(d.bencinaEst || 0),
-                                efectividad_pct: predEfectividadDia(d),
-                                valor_hora_estimado: predValorHoraDia(d) !== null ? Math.round(predValorHoraDia(d)) : null,
-                                dia_con_mas_horas_de_lo_habitual: !!at.masHoras,
-                                dia_con_ganancia_superior_a_lo_habitual: !!at.masGanancia
-                            };
-                        })
-                    };
-                };
+                const resumenPred = resumenPrediccion;
                 ctx.prediccion_semana_actual = resumenPred(predActual) || 'Sin turnos planificados esta semana';
                 ctx.prediccion_semana_siguiente = resumenPred(predSig) || 'Sin turnos planificados la próxima semana';
                 ctx.prediccion_mes_actual = resumenPred(predMes) || 'Sin turnos planificados este mes';
@@ -8522,13 +8556,33 @@
             pg.scrollTop = pg.scrollHeight;
     }
 
-    function iaRenderMensaje(role, text, isError) {
+    function iaRenderMensaje(role, text, isError, opts) {
+        opts = opts || {};
         const log = document.getElementById('ia-chat-log');
         if (!log)
             return;
         const div = document.createElement('div');
         div.className = 'ia-msg ' + (role === 'user' ? 'ia-user' : 'ia-bot') + (isError ? ' ia-error' : '');
-        div.textContent = text;
+        if (opts.imageUrl) {
+            const img = document.createElement('img');
+            img.src = opts.imageUrl;
+            img.style.cssText = 'max-width:200px;max-height:280px;border-radius:10px;display:block;margin-bottom:6px;object-fit:contain';
+            div.appendChild(img);
+        }
+        if (text) {
+            const span = document.createElement('span');
+            span.style.whiteSpace = 'pre-wrap';
+            span.textContent = text;
+            div.appendChild(span);
+        }
+        if (opts.viajeData) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = '🚗 Usar estos datos para registrar viaje';
+            btn.style.cssText = 'margin-top:8px;display:block;padding:9px 12px;background:var(--black);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;width:100%';
+            btn.onclick = () => window.prellenarViajeDesdeIA(opts.viajeData);
+            div.appendChild(btn);
+        }
         log.appendChild(div);
     }
 
@@ -8536,6 +8590,37 @@
         label: '¿Qué días me conviene más trabajar?',
         prompt: 'Considerando un promedio general de 17 viajes diarios, ¿qué días de la semana me convendría más trabajar para maximizar mis ingresos, excluyendo los días que ya sé que son excepcionalmente altos con más de 24 viajes, y cuáles días serían los más adecuados para tomarme libre si quiero un día de fin de semana y un día entre semana?'
     }];
+
+    // Extrae los últimos mensajes únicos del usuario de los chats guardados
+    // para usarlos como atajos de contexto histórico en los chips.
+    function _getChipsHistoricos() {
+        try {
+            const hist = JSON.parse(localStorage.getItem('dp_ia_chat_historial') || '[]');
+            if (!hist.length) return [];
+            // Recopilar todos los mensajes de usuario de chats guardados
+            const msgs = [];
+            hist.forEach(chat => {
+                const ms = chat.msgs || chat.messages || [];
+                ms.forEach(m => {
+                    const role = m.role || m.type;
+                    const text = (m.text || m.content || m.parts?.[0]?.text || '').trim();
+                    if ((role === 'user') && text && text.length > 5 && text.length < 120) {
+                        msgs.push(text);
+                    }
+                });
+            });
+            // Deduplicar, conservar orden de aparición más reciente, tomar últimos 8
+            const seen = new Set();
+            const unique = [];
+            for (let i = msgs.length - 1; i >= 0; i--) {
+                const t = msgs[i];
+                const key = t.toLowerCase().slice(0, 40);
+                if (!seen.has(key)) { seen.add(key); unique.push(t); }
+                if (unique.length >= 8) break;
+            }
+            return unique.slice(0, 8);
+        } catch (e) { return []; }
+    }
 
     // ── Ajusta dinámicamente el offset "top" de la barra de herramientas del
     // chat para que quede pegada justo debajo del header + sub-tabs (que se
@@ -8562,12 +8647,19 @@
         const chips = document.getElementById('ia-chips');
         if (chips) {
             chips.innerHTML = '';
-            IA_SUGERENCIAS.forEach(s => {
+            // Primero mostrar atajos de contexto histórico (últimas preguntas del usuario de chats guardados)
+            const chipsHistoricos = _getChipsHistoricos();
+            const chipsList = chipsHistoricos.length ? chipsHistoricos : IA_SUGERENCIAS;
+            chipsList.forEach(s => {
                 const label = typeof s === 'string' ? s : s.label;
                 const prompt = typeof s === 'string' ? s : s.prompt;
                 const b = document.createElement('button');
                 b.className = 'ia-chip';
                 b.textContent = label;
+                if (chipsHistoricos.length) {
+                    b.title = 'Pregunta reciente del historial';
+                    b.style.cssText = 'border-color:var(--black);background:rgba(0,0,0,.04)';
+                }
                 b.onclick = () => {
                     const inp = document.getElementById('ia-input');
                     if (inp)
@@ -8582,7 +8674,7 @@
         if (log) {
             log.innerHTML = '';
             if (IA_CHAT.length === 0) {
-                iaRenderMensaje('model', '¡Hola! Soy tu asistente. Puedo analizar tus viajes, ganancias y horarios para darte predicciones y recomendaciones. ¿En qué te ayudo?');
+                iaRenderMensaje('model', '¡Hola! Soy tu asistente. Puedo analizar tus viajes, ganancias y horarios para darte predicciones y recomendaciones. También puedes adjuntarme una captura de una oferta o resumen de viaje (con el 📎) y te ayudo a registrarla. ¿En qué te ayudo?');
             } else {
                 IA_CHAT.forEach(m => iaRenderMensaje(m.role === 'user' ? 'user' : 'model', m.text));
             }
@@ -8597,7 +8689,8 @@
         if (!inp)
             return;
         const texto = inp.value.trim();
-        if (!texto)
+        const imagenEnviada = iaImagenPendiente; // se captura antes de limpiar el input
+        if (!texto && !imagenEnviada)
             return;
 
         const key = getActiveKey();
@@ -8610,11 +8703,15 @@
         }
 
         inp.value = '';
+        quitarImagenIA();
+        const textoGuardado = texto || (imagenEnviada ? '📷 Captura de un viaje enviada para análisis' : '');
         IA_CHAT.push({
             role: 'user',
-            text: texto
+            text: textoGuardado
         });
-        iaRenderMensaje('user', texto);
+        iaRenderMensaje('user', texto, false, imagenEnviada ? {
+            imageUrl: imagenEnviada.previewUrl
+        } : {});
         guardarChatIA();
 
         // Indicador "escribiendo..."
@@ -8651,19 +8748,39 @@
                 'Usa montos en pesos chilenos (CLP) con separador de miles (ej: $45.000). ' + estiloRespuesta + 'Usa emojis con moderación. ' +
                 'Responde SIEMPRE en texto plano: nunca uses asteriscos para negrita/cursiva (**texto**) ni encabezados con #, el chat no renderiza markdown y se vería literalmente con los símbolos. Si necesitas dar énfasis, hazlo con las palabras, no con símbolos. ' +
                 'No inventes datos que no estén en el contexto; si falta información dilo con honestidad. ' +
+                'Si el usuario adjunta una imagen (captura de pantalla de una oferta de viaje, un viaje en curso, o el resumen de un viaje ya finalizado, de Uber, Didi u otra app similar), analízala y describe en un par de frases lo que ves: precio ofrecido, distancia y minutos hasta el pasajero (si aplica), distancia y duración del viaje, tipo de servicio, método de pago, y cualquier dato relevante adicional (nombre del pasajero, calificación, si es viaje largo). Si la imagen no es de un viaje, dilo y responde solo a lo que sí puedas ver. ' +
+                'Si de la imagen logras identificar con confianza al menos el monto o alguna distancia del viaje, agrega EXACTAMENTE al final de tu respuesta, en su propia línea, sin explicarlo ni mencionarlo al usuario, un bloque con este formato literal: [[VIAJE_JSON]]{"monto":NUMERO_o_null,"kv":NUMERO_o_null,"kj":NUMERO_o_null,"tipo":"UberX"_o_"Prioridad UberX"_o_"Uber Comfort"_o_"Uber Pet"_o_"Uber Envíos"_o_"Cancelación"_o_null,"pago":"ef"_o_"tk"_o_"tr"_o_null}[[/VIAJE_JSON]] — donde "monto" es el precio en pesos chilenos sin puntos ni signo peso, "kv" es el km hasta el pasajero (distancia de recogida/pickup) y "kj" es el km del viaje en sí (con el pasajero a bordo, o el "viaje: X km" que muestre la pantalla); usa null en cualquier campo que no puedas determinar con confianza. Para "pago" usa "ef" si dice efectivo, "tk" si dice tarjeta/pago con la app/tarjeta de crédito verificada, "tr" si dice transferencia, o null si no aparece. Nunca agregues este bloque si el usuario no adjuntó una imagen de un viaje en este mensaje. ' +
                 'Datos actuales del usuario en formato JSON:\n' + contexto;
 
             const provider = getIAProvider();
             let resp, data;
             if (provider === 'grok') {
                 // xAI Grok — API compatible con formato OpenAI chat/completions
+                const histSlice = IA_CHAT.slice(-16);
                 const messages = [{
                     role: 'system',
                     content: systemPrompt
-                }].concat(IA_CHAT.slice(-16).map(m => ({
-                    role: m.role === 'user' ? 'user' : 'assistant',
-                    content: m.text
-                })));
+                }].concat(histSlice.map((m, i) => {
+                    const esUltimoUsuario = m.role === 'user' && i === histSlice.length - 1;
+                    if (esUltimoUsuario && imagenEnviada) {
+                        return {
+                            role: 'user',
+                            content: [{
+                                type: 'text',
+                                text: m.text
+                            }, {
+                                type: 'image_url',
+                                image_url: {
+                                    url: 'data:' + imagenEnviada.mime + ';base64,' + imagenEnviada.data
+                                }
+                            }]
+                        };
+                    }
+                    return {
+                        role: m.role === 'user' ? 'user' : 'assistant',
+                        content: m.text
+                    };
+                }));
                 resp = await fetch('https://api.x.ai/v1/chat/completions', {
                     method: 'POST',
                     headers: {
@@ -8679,12 +8796,25 @@
                 });
                 data = await resp.json();
             } else {
-                const contents = IA_CHAT.slice(-16).map(m => ({
-                    role: m.role === 'user' ? 'user' : 'model',
-                    parts: [{
+                const histSlice = IA_CHAT.slice(-16);
+                const contents = histSlice.map((m, i) => {
+                    const esUltimoUsuario = m.role === 'user' && i === histSlice.length - 1;
+                    const parts = [{
                         text: m.text
-                    }]
-                }));
+                    }];
+                    if (esUltimoUsuario && imagenEnviada) {
+                        parts.push({
+                            inline_data: {
+                                mime_type: imagenEnviada.mime,
+                                data: imagenEnviada.data
+                            }
+                        });
+                    }
+                    return {
+                        role: m.role === 'user' ? 'user' : 'model',
+                        parts
+                    };
+                });
 
                 resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + IA_MODEL + ':generateContent?key=' + encodeURIComponent(key), {
                     method: 'POST',
@@ -8727,11 +8857,36 @@
                 }
                 // Limpiar markdown que no se renderiza en el chat (texto plano)
                 textoResp = textoResp.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1').replace(/^#{1,6}\s*/gm, '');
+                // Si la IA analizó una captura de viaje, puede venir con un bloque
+                // [[VIAJE_JSON]]{...}[[/VIAJE_JSON]] al final: se extrae, se valida
+                // y se quita del texto visible; con eso se ofrece un botón para
+                // precargar el formulario de "Registrar viaje".
+                let viajeData = null;
+                const mMarker = textoResp.match(/\[\[VIAJE_JSON\]\]([\s\S]*?)\[\[\/VIAJE_JSON\]\]/);
+                if (mMarker) {
+                    textoResp = textoResp.replace(mMarker[0], '').trim();
+                    try {
+                        const parsed = JSON.parse(mMarker[1]);
+                        if (parsed && (parsed.monto || parsed.kv || parsed.kj)) {
+                            viajeData = {
+                                monto: parsed.monto || null,
+                                kv: parsed.kv || null,
+                                kj: parsed.kj || null,
+                                tipo: parsed.tipo || null,
+                                pago: parsed.pago || null
+                            };
+                        }
+                    } catch (e) {
+                        viajeData = null;
+                    }
+                }
                 IA_CHAT.push({
                     role: 'model',
                     text: textoResp
                 });
-                iaRenderMensaje('model', textoResp);
+                iaRenderMensaje('model', textoResp, false, viajeData ? {
+                    viajeData
+                } : {});
                 guardarChatIA();
                 if (getVozRespuestaActiva())
                     hablarTextoIA(textoResp);
@@ -8943,10 +9098,13 @@
     // Acceso rápido desde el botón circular de la tarjeta de Inicio
     window.iniciarVozDesdeInicio = function() {
         showTab('asistente');
+        // Asegurar que el sub-tab activo sea "chat"
+        const chatTabBtn = document.querySelector('#atabs .stab');
+        if (chatTabBtn) stab('a', 'chat', chatTabBtn);
         setTimeout(() => {
             setVozRespuestaActiva(true);
             window.toggleEscuchaIA();
-        }, 250);
+        }, 280);
     };
 
     function vPeriod() {
@@ -14615,6 +14773,116 @@
         return '<div class="cflat" style="text-align:center;padding:24px 16px;color:var(--g400);font-size:13px">' + texto + '</div>';
     }
 
+    // ── Resumen serializable de una predicción calculada (mismo formato que se ──
+    // le pasa a la IA). Se reutiliza tanto para el contexto del asistente como
+    // para lo que se guarda en la base de datos.
+    function resumenPrediccion(p) {
+        const diasConTurno = p.dias.filter(d => d.tieneTurno);
+        if (!diasConTurno.length)
+            return null;
+        const totalNeto = diasConTurno.reduce((s, d) => s + predNetoBaseDia(d), 0);
+        const totalIncentivo = diasConTurno.reduce((s, d) => s + (d.incentivoEstimado || 0), 0);
+        const totalHrsAct = diasConTurno.reduce((s, d) => s + (d.horasActivasEst || 0), 0);
+        const totalHrsPlanP = diasConTurno.reduce((s, d) => s + (d.horasPlan || 0), 0);
+        const atipicosP = predDiasAtipicos(diasConTurno);
+        const rangosP = diasConTurno.map(d => predRangoDia(d)).filter(r => r !== null);
+        const rangoMinP = diasConTurno.reduce((s, d) => {
+            const r = predRangoDia(d);
+            return s + (r ? r.min : predNetoBaseDia(d));
+        }, 0);
+        const rangoMaxP = diasConTurno.reduce((s, d) => {
+            const r = predRangoDia(d);
+            return s + (r ? r.max : predNetoBaseDia(d));
+        }, 0);
+        const tendenciasP = diasConTurno.map(d => d.hist ? d.hist.tendenciaPct : null).filter(t => t !== null);
+        const tendenciaPromP = tendenciasP.length ? tendenciasP.reduce((a, b) => a + b, 0) / tendenciasP.length : null;
+        const totalKmP = diasConTurno.reduce((s, d) => s + (d.kmEst || 0), 0);
+        const totalBencinaP = diasConTurno.reduce((s, d) => s + (d.bencinaEst || 0), 0);
+        return {
+            rango: p.fechas[0] + ' a ' + p.fechas[p.fechas.length - 1],
+            neto_estimado_total_sin_incentivos: Math.round(totalNeto),
+            incentivos_estimados_total: Math.round(totalIncentivo),
+            neto_estimado_total_con_incentivos: Math.round(totalNeto + totalIncentivo),
+            rango_estimado_total: rangosP.length ? {
+                min: Math.round(rangoMinP),
+                max: Math.round(rangoMaxP)
+            } : null,
+            tendencia_reciente_pct: tendenciaPromP !== null ? Math.round(tendenciaPromP) : null,
+            horas_activas_estimadas_total: Math.round(totalHrsAct * 10) / 10,
+            km_estimados_total: Math.round(totalKmP),
+            gasto_bencina_estimado_total: Math.round(totalBencinaP),
+            factor_eficiencia_estimado_pct: totalHrsPlanP > 0 ? Math.round((totalHrsAct / totalHrsPlanP) * 100) : null,
+            valor_hora_estimado_promedio: totalHrsAct > 0 ? Math.round(totalNeto / totalHrsAct) : null,
+            metodo_usado: {
+                ventana: VENTANA_LABEL[p.cfg.ventana] || p.cfg.ventana,
+                pondera_dias_recientes: !!p.cfg.ponderarReciente,
+                modo_estimacion: p.cfg.modoEstimacion,
+                ajusta_por_tendencia: !!p.cfg.tendencia,
+                tipo_dia_separado: !!p.cfg.tipoDia,
+                pondera_franja_horaria: !!p.cfg.franjHoraria,
+                excluye_outliers: !!p.cfg.excluirOutliers,
+                respaldo_tipo_dia_si_faltan_muestras: !!p.cfg.fallbackTipoDia,
+                min_muestras: p.cfg.minMuestras || 3
+            },
+            por_dia: diasConTurno.map(d => {
+                const at = atipicosP.find(a => a.fecha === d.fecha) || {};
+                const rangoD = predRangoDia(d);
+                return {
+                    fecha: d.fecha,
+                    dia: d.dow,
+                    ya_ocurrio: d.yaOcurrio,
+                    neto_real_o_estimado_sin_incentivos: Math.round(predNetoBaseDia(d)),
+                    rango_estimado: rangoD ? {
+                        min: Math.round(rangoD.min),
+                        max: Math.round(rangoD.max)
+                    } : null,
+                    incentivo_estimado: Math.round(d.incentivoEstimado || 0),
+                    es_real: d.netoReal !== null,
+                    muestras_usadas: d.hist ? d.hist.muestras : 0,
+                    horas_activas_estimadas: Math.round((d.horasActivasEst || 0) * 10) / 10,
+                    km_estimado: Math.round(d.kmEst || 0),
+                    gasto_bencina_estimado: Math.round(d.bencinaEst || 0),
+                    efectividad_pct: predEfectividadDia(d),
+                    valor_hora_estimado: predValorHoraDia(d) !== null ? Math.round(predValorHoraDia(d)) : null,
+                    dia_con_mas_horas_de_lo_habitual: !!at.masHoras,
+                    dia_con_ganancia_superior_a_lo_habitual: !!at.masGanancia
+                };
+            })
+        };
+    }
+
+    // ── Guarda automáticamente en la base de datos (Firestore) la predicción ──
+    // recién calculada. Cada período (semana actual / semana siguiente / mes
+    // actual) tiene su propio documento fijo que se SOBREESCRIBE por completo
+    // en cada nuevo cálculo (setDoc sin merge), en vez de acumular historial.
+    const PRED_DB_DOC_ID = {
+        0: 'semana_actual',
+        1: 'semana_siguiente',
+        'mes': 'mes_actual'
+    };
+    const _predDbSaveTimers = {};
+    function guardarPrediccionEnDB(pred) {
+        const docId = PRED_DB_DOC_ID[pred.offset];
+        if (!docId)
+            return;
+        // Pequeño debounce por período para no escribir de más si el usuario
+        // cambia de pestaña o ajusta la configuración varias veces seguidas.
+        clearTimeout(_predDbSaveTimers[docId]);
+        _predDbSaveTimers[docId] = setTimeout(async () => {
+            try {
+                const resumen = resumenPrediccion(pred);
+                await setDoc(doc(db, 'predicciones', docId), {
+                    offset: String(pred.offset),
+                    actualizado: Date.now(),
+                    config: pred.cfg,
+                    resumen: resumen // null si no hay turnos planificados para el período
+                });
+            } catch (e) {
+                console.error('Error guardando predicción en la base de datos:', e);
+            }
+        }, 500);
+    }
+
     // ── Agrupación por semana (para la predicción de "Mes actual") ─────────
     // Agrupa un arreglo de días (los que trae calcularPrediccionSemana) en
     // semanas Lun→Dom, en el orden en que aparecen los días (cronológico).
@@ -14692,6 +14960,10 @@
             return;
         const pred = calcularPrediccionSemana(predSemanaOffset);
         const diasConTurno = pred.dias.filter(d => d.tieneTurno);
+
+        // Sobreescribe en la base de datos la predicción de este período con el
+        // cálculo recién hecho (no acumula: reemplaza la anterior).
+        guardarPrediccionEnDB(pred);
 
         if (!diasConTurno.length) {
             const periodoTxt = pred.offset === 'mes' ? 'este mes' : 'esta semana';
@@ -14840,10 +15112,14 @@
             '</div>' +
             '<div class="slbl">Estimado por ' + (agrupar ? 'semana' : 'día') + ' — lo que me quedo (vs. últimos ' + Math.max(...diasConTurno.map(d => d.hist ? d.hist.muestras : 0)) + ' iguales)</div>' +
             '<div class="card" style="padding:12px;margin-bottom:16px"><div style="position:relative;height:200px"><canvas id="ch-pred-dias"></canvas></div></div>' +
+            '<div class="slbl">Neto acumulado estimado</div>' +
+            '<div class="card" style="padding:12px;margin-bottom:16px"><div style="position:relative;height:170px"><canvas id="ch-pred-acum"></canvas></div></div>' +
             '<div class="slbl">Detalle por ' + (agrupar ? 'semana' : 'día') + (agrupar ? ' — toca cada semana para ver el detalle de sus días' : ' — efectividad y valor hora') + '</div>' +
             detalleDiasHtml +
             '<div class="slbl">Estimado por bloque horario</div>' +
             '<div class="card" style="padding:12px;margin-bottom:16px"><div style="position:relative;height:180px"><canvas id="ch-pred-horas"></canvas></div></div>' +
+            '<div class="slbl">Valor hora estimado por ' + (agrupar ? 'semana' : 'día') + '</div>' +
+            '<div class="card" style="padding:12px;margin-bottom:16px"><div style="position:relative;height:160px"><canvas id="ch-pred-valor-hora"></canvas></div></div>' +
             '<div class="slbl">Horas efectivas estimadas vs. horas de turno' + (agrupar ? ' (por semana)' : '') + '</div>' +
             '<div class="card" style="padding:12px;margin-bottom:16px"><div style="position:relative;height:180px"><canvas id="ch-pred-hrs-vs-turno"></canvas></div></div>' +
             '<div class="slbl">Horas activas estimadas por ' + (agrupar ? 'semana' : 'día') + '</div>' +
@@ -15061,6 +15337,66 @@
                                 }
                             }
                         }
+                    }
+                });
+            }
+
+            // 5) Neto acumulado estimado (línea creciente)
+            const cvsAcum = document.getElementById('ch-pred-acum');
+            if (cvsAcum) {
+                if (window._chPredAcum) window._chPredAcum.destroy();
+                let acum = 0;
+                const acumVals = netoVals.map(v => { acum += v; return Math.round(acum); });
+                window._chPredAcum = new Chart(cvsAcum, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [{
+                            data: acumVals,
+                            borderColor: '#000',
+                            backgroundColor: 'rgba(0,0,0,.06)',
+                            fill: true,
+                            tension: .35,
+                            pointRadius: 3,
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => 'Acumulado: ' + CLP(ctx.raw) } } },
+                        scales: { y: { beginAtZero: true, ticks: { callback: v => '$' + Math.round(v / 1000) + 'k' } } }
+                    }
+                });
+            }
+
+            // 6) Valor hora estimado por día
+            const cvsVH = document.getElementById('ch-pred-valor-hora');
+            if (cvsVH) {
+                if (window._chPredVH) window._chPredVH.destroy();
+                const valorHoraVals = agrupar
+                    ? gruposSemana.map(g => {
+                        const st = statsGrupoPrediccion(g.dias);
+                        return st.totalHrsAct > 0 ? Math.round(st.totalNeto / st.totalHrsAct) : 0;
+                    })
+                    : diasConTurno.map(d => {
+                        const vh = predValorHoraDia(d);
+                        return vh ? Math.round(vh) : 0;
+                    });
+                window._chPredVH = new Chart(cvsVH, {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [{
+                            data: valorHoraVals,
+                            backgroundColor: valorHoraVals.map(v => v > 0 ? 'rgba(0,0,0,.7)' : 'rgba(0,0,0,.12)'),
+                            borderRadius: 6,
+                            maxBarThickness: 30
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw > 0 ? CLP(ctx.raw) + '/h' : '—' } } },
+                        scales: { y: { beginAtZero: true, ticks: { callback: v => '$' + Math.round(v / 1000) + 'k' } } }
                     }
                 });
             }
